@@ -7,7 +7,7 @@
     <div class="flex flex-wrap items-center justify-between gap-3">
       <span class="flex items-center gap-2 text-xs text-accent"
         ><app-icon name="check" class="size-4" />Ready to shine<span
-          class="mono ml-2 text-[10px] text-muted"
+          class="mono ml-2 text-xs text-muted"
           >{{ file.bytes / 1024 | number: '1.0-0' }} KB</span
         ></span
       >
@@ -29,9 +29,7 @@
         }
       </div>
     </div>
-    <dl
-      class="mt-4 flex flex-wrap gap-x-6 gap-y-2 border-t border-line pt-3 text-[10px] text-muted"
-    >
+    <dl class="mt-4 flex flex-wrap gap-x-6 gap-y-2 border-t border-line pt-3 text-xs text-muted">
       <div class="flex gap-2">
         <dt>Measured peak</dt>
         <dd class="mono text-foreground">{{ file.stats.peakNits | number: '1.0-0' }} nits</dd>

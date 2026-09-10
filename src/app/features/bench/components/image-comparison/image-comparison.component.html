@@ -1,6 +1,6 @@
 <div class="mb-4 flex items-center justify-between">
   <h2 class="text-base font-semibold">Preview</h2>
-  <span class="mono text-[10px] text-muted">{{
+  <span class="mono text-xs text-muted">{{
     source() ? source()!.width + ' × ' + source()!.height + ' px' : 'NO IMAGE SELECTED'
   }}</span>
 </div>
@@ -16,7 +16,7 @@
       }
     </div>
     <figcaption class="mt-3 flex flex-wrap justify-between gap-1 text-xs">
-      <span>Original</span><span class="mono text-[10px] text-muted">sRGB</span>
+      <span>Original</span><span class="mono text-xs text-muted">sRGB</span>
     </figcaption>
   </figure>
   <figure class="min-w-0">
@@ -39,7 +39,7 @@
     </div>
     <figcaption class="mt-3 flex flex-wrap justify-between gap-1 text-xs">
       <span>{{ result()?.settings?.preserveTransparency ? 'Encoded PNG' : 'Encoded' }}</span
-      ><span class="mono text-[10px] text-muted">{{
+      ><span class="mono text-xs text-muted">{{
         result() ? result()!.width + ' × ' + result()!.height : 'ST 2084'
       }}</span>
     </figcaption>
@@ -53,7 +53,7 @@
       ><button type="button" [attr.aria-pressed]="light()" (click)="light.set(true)">Light</button>
     </div>
   </div>
-  <span class="flex items-center gap-2 text-[10px] text-muted"
+  <span class="flex items-center gap-2 text-xs text-muted"
     >Actual encoded output <app-icon name="info" class="size-3.5"
   /></span>
 </div>

@@ -1,0 +1,83 @@
+/* Montserrat Light (300) */
+@font-face {
+  font-family: Montserrat;
+  src:
+    url('/assets/fonts/montserrat/Montserrat-Light.woff2') format('woff2'),
+    url('/assets/fonts/montserrat/Montserrat-Light.woff') format('woff'),
+    url('/assets/fonts/montserrat/Montserrat-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Montserrat Regular (400) */
+@font-face {
+  font-family: Montserrat;
+  src:
+    url('/assets/fonts/montserrat/Montserrat-Regular.woff2') format('woff2'),
+    url('/assets/fonts/montserrat/Montserrat-Regular.woff') format('woff'),
+    url('/assets/fonts/montserrat/Montserrat-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Montserrat Medium (500) */
+@font-face {
+  font-family: Montserrat;
+  src:
+    url('/assets/fonts/montserrat/Montserrat-Medium.woff2') format('woff2'),
+    url('/assets/fonts/montserrat/Montserrat-Medium.woff') format('woff'),
+    url('/assets/fonts/montserrat/Montserrat-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Montserrat SemiBold (600) */
+@font-face {
+  font-family: Montserrat;
+  src:
+    url('/assets/fonts/montserrat/Montserrat-SemiBold.woff2') format('woff2'),
+    url('/assets/fonts/montserrat/Montserrat-SemiBold.woff') format('woff'),
+    url('/assets/fonts/montserrat/Montserrat-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Montserrat Bold (700) */
+@font-face {
+  font-family: Montserrat;
+  src:
+    url('/assets/fonts/montserrat/Montserrat-Bold.woff2') format('woff2'),
+    url('/assets/fonts/montserrat/Montserrat-Bold.woff') format('woff'),
+    url('/assets/fonts/montserrat/Montserrat-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* JetBrains Mono Regular */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  src:
+    url('/assets/fonts/jetbrains/JetBrainsMono-Regular.woff2') format('woff2'),
+    url('/assets/fonts/jetbrains/JetBrainsMono-Regular.woff') format('woff'),
+    url('/assets/fonts/jetbrains/JetBrainsMono-Regular.ttf') format('truetype');
+  font-display: swap;
+}
+
+/* JetBrains Mono Bold */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  src:
+    url('/assets/fonts/jetbrains/JetBrainsMono-Bold.woff2') format('woff2'),
+    url('/assets/fonts/jetbrains/JetBrainsMono-Bold.woff') format('woff'),
+    url('/assets/fonts/jetbrains/JetBrainsMono-Bold.ttf') format('truetype');
+  font-display: swap;
+}

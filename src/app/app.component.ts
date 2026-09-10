@@ -1,12 +1,10 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Bench } from './features/bench/bench.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [Bench],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class App {
-  protected readonly title = signal('hdr-spotlight');
-}
+export class App {}

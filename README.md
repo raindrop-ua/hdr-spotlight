@@ -1,59 +1,56 @@
-# HdrSpotlight
+# Spotlight
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.0.0.
+A local HDR image workbench built with Angular 22 and Tailwind CSS 4. Upload, drop or paste PNG, JPEG, WebP or SVG artwork, adjust exposure and export a PQ-encoded BT.2020 image. No files are uploaded to a server.
 
-## Development server
+## Development
 
-To start a local development server, run:
-
-```bash
-ng serve
+```sh
+npm ci
+npm start
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Open http://localhost:4200. Validation:
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+```sh
+npm run build
+npm test -- --watch=false
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Structure
 
-```bash
-ng generate --help
+```text
+src/app/
+  features/bench/
+    bench.component.*             # Workspace composition and browser events
+    components/
+      source-upload/              # File selection and drag/drop
+      light-controls/             # Exposure, masks, background, output size
+      image-comparison/           # Original / actual HDR file, preview backdrop
+      export-results/             # Downloads and measured luminance statistics
+    services/
+      bench-store.service.ts      # Signals, async lifecycle, cancellation, URL ownership
+      image-encoder.service.ts    # Decode, fit/composite, worker, canvas export
+    engine/
+      color.ts                    # sRGB / BT.2020 / ST 2084 mathematics
+      encoder.ts                  # Pure pixel transformation and statistics
+      encoder.worker.ts           # Pixel transformation off the UI thread
+      icc.ts                      # ICC v4.4 profile with CICP
+      container.ts                # JPEG profile and PNG cICP embedding
+    models/                       # Typed contracts, settings and defaults
+  shared/ui/icon/                 # Shared SVG icon component
 ```
 
-## Building
+Presentation components use signal inputs/outputs and OnPush. The workspace provides its own store; browser APIs initialize after rendering, so SSR and hydration work. The store owns and revokes image object URLs, ignores stale uploads and cancels processing on settings changes or destruction. A yielding strip-based fallback is available when workers are not supported.
 
-To build the project run:
+## Image behavior
 
-```bash
-ng build
-```
+- Colour mathematics and binary profile/container code are ported from the supplied superGLOW scripts: https://superglow.stacktreelabs.com/. The original imperative `main.js` UI is replaced with Angular components and services.
+- Pipeline: sRGB decode → background compositing → selected highlight boost → linear BT.2020 → absolute luminance anchored at 203 nits → ST 2084 PQ with ordered dithering.
+- JPEG includes an ICC v4.4 profile with CICP `9 / 16 / 0 / 1`. It uses the browser's highest-quality JPEG encoding; exact chroma subsampling is browser-dependent.
+- PNG is a diagnostic control export with the same opaque pixels and a PNG `cICP` chunk. Both outputs flatten transparency onto the selected background, matching the reference bench.
+- Preset sizes fit the artwork inside a square without stretching. Original dimensions preserve width and height.
+- Inputs are limited to 32 MB, 16 megapixels and 16,384 pixels per side. Output presets run through 3840 × 3840.
+- Input colour is normalized through an sRGB canvas. This is not a wide-gamut preservation workflow or a gain-map encoder.
+- HDR appearance depends on the display, browser, colour management and power settings. The preview uses the actual exported file, without simulated CSS brightness. The Light/Dark preview backdrop does not change output pixels.
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Unit tests cover PQ values, masks, coverage/clipping, ICC fields, JPEG metadata replacement, PNG CRCs and asynchronous store races. Browser checks cover SVG upload, PNG paste, image encoding, real export metadata, original dimensions and responsive layouts.

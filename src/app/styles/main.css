@@ -78,7 +78,7 @@
     box-shadow: inset 0 0 0 1px var(--color-accent);
   }
   .segments.compact button {
-    @apply px-4 py-2 text-[10px];
+    @apply px-4 py-2 text-xs;
   }
   .primary-button {
     @apply flex min-h-12 items-center justify-center gap-2 rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-background transition-colors hover:bg-[#e0f9ac] disabled:bg-[#68734f] disabled:text-[#171c10];

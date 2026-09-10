@@ -3,14 +3,14 @@
  *
  * Two things make this work where a plain PQ profile fails:
  *
- *  1. The `cicp` tag (ICC v4.4, ICC.1:2022). Without it, a colour manager sees
+ *  1. The `cicp` tag (ICC v4.4, ICC.1:2022). Without it, a color manager sees
  *     an ordinary tone curve, applies it, reads ~0.3, and paints mid-grey — the
  *     "dim, badly rendered result" the W3C HDR report describes. With it,
- *     Blink's colour library recognises BT.2020 + ST 2084 and switches the
+ *     Blink's color library recognizes BT.2020 + ST 2084 and switches the
  *     image to an HDR pipeline.
  *  2. It is an ICC profile at all. LinkedIn's re-encode discards gain maps,
- *     MPF segments and XMP, but preserves colour management — so the HDR has
- *     to travel inside the profile or it does not travel.
+ *     MPF segments, and XMP, but preserves color management — so the HDR has
+ *     to travel inside the profile, or it does not travel.
  *
  * Verified byte-for-byte against an Apple-generated profile pulled from a live
  * glowing logo: same description, same CICP values, same colorants to four
@@ -32,7 +32,7 @@ const D50 = [0.9642, 1.0, 0.82491];
 
 /** CICP code points: BT.2020 primaries / ST 2084 / RGB / full range. */
 export const CICP = Object.freeze({
-  colourPrimaries: 9,
+  colorPrimaries: 9,
   transferCharacteristics: 16,
   matrixCoefficients: 0,
   videoFullRangeFlag: 1,
@@ -86,7 +86,7 @@ function cicpType() {
     0,
     0,
     0,
-    CICP.colourPrimaries,
+    CICP.colorPrimaries,
     CICP.transferCharacteristics,
     CICP.matrixCoefficients,
     CICP.videoFullRangeFlag,

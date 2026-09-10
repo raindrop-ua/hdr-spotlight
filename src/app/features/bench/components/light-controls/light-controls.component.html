@@ -84,7 +84,7 @@
   <div>
     <div class="control-label">
       {{ settings().preserveTransparency ? 'JPEG background' : 'Background' }}
-      <span class="mono text-[10px] text-muted">{{ settings().background.toUpperCase() }}</span>
+      <span class="mono text-xs text-muted">{{ settings().background.toUpperCase() }}</span>
     </div>
     <div class="flex items-center gap-3.5">
       @for (background of backgrounds; track background.value) {
@@ -116,7 +116,7 @@
     class="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-line px-3 py-3"
   >
     <span class="text-xs font-medium"
-      >Preserve transparency<span class="mt-1 block text-[10px] font-normal text-muted"
+      >Preserve transparency<span class="mt-1 block text-xs font-normal text-muted"
         >PNG only · keeps the original alpha channel</span
       ></span
     >

@@ -44,7 +44,7 @@ export class ImageEncoderService {
   ): Promise<EncodeResult> {
     const width = settings.size || source.width;
     const height = settings.size || source.height;
-    // Composite JPEG before the colour transform; compositing PQ values would darken edges.
+    // Composite JPEG before the color transform; compositing PQ values would darken edges.
     const jpegRender = await this.render(
       source,
       { ...settings, preserveTransparency: false },
@@ -165,7 +165,7 @@ export class ImageEncoderService {
         worker.postMessage({ image, settings }, [image.data.buffer]);
       });
     }
-    // Yield between strips on browsers without workers. Strip height preserves Bayer phase.
+    // Yield between strips on browsers without workers. Strip height preserves the Bayer phase.
     const stats: EncodeStats = { peakNits: 0, litFraction: 0, clippedFraction: 0 };
     for (let y = 0; y < image.height; y += 16) {
       signal.throwIfAborted();

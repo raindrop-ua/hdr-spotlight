@@ -37,7 +37,7 @@ export interface EncodeStats {
 }
 
 export interface Cicp {
-  colourPrimaries: number;
+  colorPrimaries: number;
   transferCharacteristics: number;
   matrixCoefficients: number;
   videoFullRangeFlag: number;

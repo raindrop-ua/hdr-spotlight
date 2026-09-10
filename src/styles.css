@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import './app/styles/main.css';
 
 @theme {
   --color-background: #101110;
@@ -8,9 +9,8 @@
   --color-muted: #9b9e96;
   --color-line: #34382e;
   --color-accent: #d6f58b;
-  --font-sans: 'Inter', 'Helvetica Neue', Arial, sans-serif;
-  --font-mono: 'SFMono-Regular', Consolas, monospace;
 }
+
 
 @layer base {
   :root {

@@ -32,7 +32,7 @@ export class ImageEncoderService {
     } catch (error) {
       URL.revokeObjectURL(url);
       if (error instanceof DOMException)
-        throw new Error('Could not read this image. Try another file.');
+        throw new Error('Could not read this image. Try another file.', { cause: error });
       throw error;
     }
   }

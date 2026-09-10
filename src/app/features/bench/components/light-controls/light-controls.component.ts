@@ -15,13 +15,13 @@ export class LightControls {
   readonly ready = input(false);
   readonly busy = input(false);
   readonly changed = output<Partial<EncodeSettings>>();
-  readonly reset = output<void>();
+  readonly resetRequested = output<void>();
   readonly encode = output<void>();
   protected readonly peak = computed(() => Math.round(stopsToNits(this.settings().stops)));
   protected readonly presets = [
     { label: 'Subtle', stops: 2 },
     { label: 'Standard', stops: 3 },
-    { label: 'Reference', stops: 3.9 },
+    { label: 'Intense', stops: 3.9 },
   ];
   protected readonly modes: { label: string; value: GlowMode; description: string }[] = [
     { label: 'Whites', value: 'whites', description: 'Boost near-neutral whites' },

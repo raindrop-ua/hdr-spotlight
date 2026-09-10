@@ -1,11 +1,11 @@
-<main id="bench" class="mx-auto max-w-[1280px] px-5 py-8 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
+<main id="bench" class="mx-auto max-w-7xl px-5 py-8 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
   <header class="mb-9 flex flex-wrap items-center justify-between gap-5">
     <div class="flex items-center gap-3">
       <app-icon name="aperture" class="size-8 text-accent" />
       <h1 class="text-2xl font-medium tracking-tight">
         Spotlight<span class="sr-only"> HDR image encoder</span>
       </h1>
-      <span class="ml-2 hidden border-l border-line pl-4 text-xs text-muted sm:block"
+      <span class="ml-2 hidden border-l border-line pl-4 text-s text-muted sm:block"
         >HDR image studio</span
       >
     </div>
@@ -60,7 +60,7 @@
           [ready]="!!store.source() && !store.loading()"
           [busy]="store.encoding()"
           (changed)="store.update($event)"
-          (reset)="store.reset()"
+          (resetRequested)="store.reset()"
           (encode)="store.encode()"
         />
         @if (store.error()) {

@@ -6,11 +6,13 @@ export interface PixelOptions {
   threshold: number;
   feather?: number;
   dither?: boolean;
+  preserveTransparency?: boolean;
 }
 
 export interface EncodeSettings extends PixelOptions {
   background: string;
   size: number;
+  preserveTransparency: boolean;
 }
 
 export const DEFAULT_SETTINGS: Readonly<EncodeSettings> = {
@@ -19,6 +21,7 @@ export const DEFAULT_SETTINGS: Readonly<EncodeSettings> = {
   threshold: 0.85,
   background: '#000000',
   size: 400,
+  preserveTransparency: false,
 };
 
 export interface PixelImage {

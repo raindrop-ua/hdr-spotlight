@@ -7,56 +7,7 @@ import { EncodeResult } from '../../models/bench.models';
   selector: 'app-export-results',
   imports: [DecimalPipe, Icon],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    @if (result(); as file) {
-      <section
-        class="mt-6 rounded-xl border border-accent/20 bg-accent/3 p-4"
-        aria-label="Export result"
-        aria-live="polite"
-      >
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <span class="flex items-center gap-2 text-xs text-accent"
-            ><app-icon name="check" class="size-4" />Ready to shine<span
-              class="mono ml-2 text-[10px] text-muted"
-              >{{ file.bytes / 1024 | number: '1.0-0' }} KB</span
-            ></span
-          >
-          <div class="flex items-center gap-4">
-            <a class="quiet-button text-xs" [href]="file.pngUrl" [download]="file.name + '.png'"
-              >PNG control</a
-            ><a class="download-button" [href]="file.jpegUrl" [download]="file.name + '.jpg'"
-              ><app-icon name="download" class="size-4" />Download JPEG</a
-            >
-          </div>
-        </div>
-        <dl
-          class="mt-4 flex flex-wrap gap-x-6 gap-y-2 border-t border-line pt-3 text-[10px] text-muted"
-        >
-          <div class="flex gap-2">
-            <dt>Measured peak</dt>
-            <dd class="mono text-foreground">{{ file.stats.peakNits | number: '1.0-0' }} nits</dd>
-          </div>
-          <div class="flex gap-2">
-            <dt>Above 1,000 nits</dt>
-            <dd class="mono text-foreground">
-              {{ file.stats.litFraction * 100 | number: '1.1-1' }}%
-            </dd>
-          </div>
-          <div class="flex gap-2">
-            <dt>Clipped</dt>
-            <dd class="mono text-foreground">
-              {{ file.stats.clippedFraction * 100 | number: '1.1-1' }}%
-            </dd>
-          </div>
-        </dl>
-        @if (file.stats.litFraction > 0.25) {
-          <p class="mt-3 text-xs leading-5 text-amber-200/85">
-            A large part of this image exceeds 1,000 nits. Try a lower boost or a darker background.
-          </p>
-        }
-      </section>
-    }
-  `,
+  templateUrl: './export-results.component.html',
 })
 export class ExportResults {
   readonly result = input<EncodeResult | null>(null);

@@ -50,7 +50,14 @@ export const LIT_THRESHOLD_NITS = 1000;
  */
 export function encodeToPQ(image: PixelImage, options: PixelOptions): EncodeStats {
   const { data, width, height } = image;
-  const { stops, mode = GLOW_MODES.ALL, threshold = 0.85, feather = 0.15, dither = true } = options;
+  const {
+    stops,
+    mode = GLOW_MODES.ALL,
+    threshold = 0.85,
+    feather = 0.15,
+    dither = true,
+    preserveTransparency = false,
+  } = options;
 
   const gain = Math.pow(2, stops) - 1;
   const edge0 = Math.max(0, threshold - feather);
@@ -68,6 +75,7 @@ export function encodeToPQ(image: PixelImage, options: PixelOptions): EncodeStat
       const r = data[i];
       const g = data[i + 1];
       const b = data[i + 2];
+      const alpha = preserveTransparency ? data[i + 3] / 255 : 1;
 
       let weight;
       if (mode === GLOW_MODES.ALL) {
@@ -89,15 +97,17 @@ export function encodeToPQ(image: PixelImage, options: PixelOptions): EncodeStat
       const B = RGB_709_TO_2020[6] * lr + RGB_709_TO_2020[7] * lg + RGB_709_TO_2020[8] * lb;
 
       const nits = (LUMA_2020[0] * R + LUMA_2020[1] * G + LUMA_2020[2] * B) * DIFFUSE_WHITE_NITS;
-      if (nits > LIT_THRESHOLD_NITS) lit++;
-      if (nits > peak) peak = nits;
-      if (R * toPQScale > 1 || G * toPQScale > 1 || B * toPQScale > 1) clipped++;
+      // Weight coverage by opacity; invisible RGB must not affect the readout.
+      if (nits > LIT_THRESHOLD_NITS) lit += alpha;
+      if (alpha > 0 && nits > peak) peak = nits;
+      if (R * toPQScale > 1 || G * toPQScale > 1 || B * toPQScale > 1) clipped += alpha;
 
       const offset = dither ? ditherRow[x & 3] / 16 - 0.5 : 0;
       data[i] = clamp8(255 * pqOETF(clamp01(R * toPQScale)) + offset);
       data[i + 1] = clamp8(255 * pqOETF(clamp01(G * toPQScale)) + offset);
       data[i + 2] = clamp8(255 * pqOETF(clamp01(B * toPQScale)) + offset);
-      data[i + 3] = 255; // JPEG has no alpha; the caller composited already
+      // Alpha is linear opacity, never PQ-encoded.
+      if (!preserveTransparency) data[i + 3] = 255;
     }
   }
 

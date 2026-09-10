@@ -44,13 +44,53 @@ export class ImageEncoderService {
   ): Promise<EncodeResult> {
     const width = settings.size || source.width;
     const height = settings.size || source.height;
+    // Composite JPEG before the colour transform; compositing PQ values would darken edges.
+    const jpegRender = await this.render(
+      source,
+      { ...settings, preserveTransparency: false },
+      signal,
+    );
+    const canvas = jpegRender.canvas;
+    const jpegBlob = await this.blob(canvas, 'image/jpeg');
+    signal.throwIfAborted();
+    const jpeg = embedICCProfile(new Uint8Array(await jpegBlob.arrayBuffer()), this.profile);
+    const pngRender = settings.preserveTransparency
+      ? await this.render(source, settings, signal)
+      : jpegRender;
+    const pngBlob = await this.blob(pngRender.canvas, 'image/png');
+    signal.throwIfAborted();
+    const png = embedPNGCICP(new Uint8Array(await pngBlob.arrayBuffer()), CICP);
+    signal.throwIfAborted();
+    const name =
+      source.name
+        .replace(/\.[^.]+$/, '')
+        .replace(/[^\p{L}\p{N}_-]/gu, '-')
+        .slice(0, 80) || 'image';
+    return {
+      jpegUrl: URL.createObjectURL(new Blob([jpeg], { type: 'image/jpeg' })),
+      pngUrl: URL.createObjectURL(new Blob([png], { type: 'image/png' })),
+      width,
+      height,
+      bytes: settings.preserveTransparency ? png.length : jpeg.length,
+      settings: { ...settings },
+      stats: pngRender.stats,
+      name: `${name}-hdr-${settings.stops.toFixed(1)}stops`,
+    };
+  }
+
+  private async render(source: SourceImage, settings: EncodeSettings, signal: AbortSignal) {
+    signal.throwIfAborted();
+    const width = settings.size || source.width;
+    const height = settings.size || source.height;
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
     const ctx = canvas.getContext('2d', { willReadFrequently: true, colorSpace: 'srgb' });
     if (!ctx) throw new Error('Your browser could not create an image canvas.');
-    ctx.fillStyle = settings.background;
-    ctx.fillRect(0, 0, width, height);
+    if (!settings.preserveTransparency) {
+      ctx.fillStyle = settings.background;
+      ctx.fillRect(0, 0, width, height);
+    }
     const scale = Math.min(width / source.width, height / source.height);
     const dw = source.width * scale;
     const dh = source.height * scale;
@@ -66,28 +106,7 @@ export class ImageEncoderService {
       0,
       0,
     );
-    const jpegBlob = await this.blob(canvas, 'image/jpeg');
-    signal.throwIfAborted();
-    const jpeg = embedICCProfile(new Uint8Array(await jpegBlob.arrayBuffer()), this.profile);
-    const pngBlob = await this.blob(canvas, 'image/png');
-    signal.throwIfAborted();
-    const png = embedPNGCICP(new Uint8Array(await pngBlob.arrayBuffer()), CICP);
-    signal.throwIfAborted();
-    const name =
-      source.name
-        .replace(/\.[^.]+$/, '')
-        .replace(/[^\p{L}\p{N}_-]/gu, '-')
-        .slice(0, 80) || 'image';
-    return {
-      jpegUrl: URL.createObjectURL(new Blob([jpeg], { type: 'image/jpeg' })),
-      pngUrl: URL.createObjectURL(new Blob([png], { type: 'image/png' })),
-      width,
-      height,
-      bytes: jpeg.length,
-      settings: { ...settings },
-      stats: transformed.stats,
-      name: `${name}-hdr-${settings.stops.toFixed(1)}stops`,
-    };
+    return { canvas, stats: transformed.stats };
   }
 
   downloadProfile(): void {

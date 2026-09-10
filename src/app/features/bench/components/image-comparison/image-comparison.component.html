@@ -23,7 +23,7 @@
     <div class="preview-tile" [class.preview-light]="light()" [attr.aria-busy]="busy()">
       @if (result(); as output) {
         <img
-          [src]="output.jpegUrl"
+          [src]="output.settings.preserveTransparency ? output.pngUrl : output.jpegUrl"
           alt="Actual HDR encoded output"
           class="h-full w-full object-contain"
         />
@@ -38,7 +38,7 @@
       }
     </div>
     <figcaption class="mt-3 flex flex-wrap justify-between gap-1 text-xs">
-      <span>Encoded</span
+      <span>{{ result()?.settings?.preserveTransparency ? 'Encoded PNG' : 'Encoded' }}</span
       ><span class="mono text-[10px] text-muted">{{
         result() ? result()!.width + ' × ' + result()!.height : 'ST 2084'
       }}</span>

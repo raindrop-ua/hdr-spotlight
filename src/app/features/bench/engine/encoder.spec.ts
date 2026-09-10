@@ -50,6 +50,33 @@ describe('HDR encoding', () => {
     expect(brightStats.peakNits).toBeGreaterThan(whiteStats.peakNits * 4);
   });
 
+  it('preserves every alpha value without changing the PQ transform of RGB', () => {
+    const data = new Uint8ClampedArray([255, 255, 255, 0, 255, 255, 255, 128, 255, 255, 255, 255]);
+    const transparent = { width: 3, height: 1, data: data.slice() };
+    const opaque = { ...transparent, data: data.slice() };
+    const options = { stops: 3, mode: 'all' as const, threshold: 0.85, dither: false };
+    const stats = encodeToPQ(transparent, { ...options, preserveTransparency: true });
+    encodeToPQ(opaque, options);
+    for (let i = 0; i < data.length; i += 4) {
+      expect(transparent.data[i + 3]).toBe(data[i + 3]);
+      expect(transparent.data.slice(i, i + 3)).toEqual(opaque.data.slice(i, i + 3));
+      expect(opaque.data[i + 3]).toBe(255);
+    }
+    expect(stats.litFraction).toBeCloseTo((1 + 128 / 255) / 3, 8);
+  });
+
+  it('ignores invisible RGB in peak and clipping measurements', () => {
+    const image = { width: 1, height: 1, data: new Uint8ClampedArray([255, 255, 255, 0]) };
+    const stats = encodeToPQ(image, {
+      stops: 8,
+      mode: 'all',
+      threshold: 0.85,
+      preserveTransparency: true,
+    });
+    expect(stats).toEqual({ peakNits: 0, litFraction: 0, clippedFraction: 0 });
+    expect(image.data[3]).toBe(0);
+  });
+
   it('clamps extreme highlights and reports clipping', () => {
     const image = { width: 1, height: 1, data: new Uint8ClampedArray([255, 255, 255, 255]) };
     const stats = encodeToPQ(image, { stops: 8, mode: 'all', threshold: 0.85, dither: false });

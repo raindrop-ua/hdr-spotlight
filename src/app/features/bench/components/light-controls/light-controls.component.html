@@ -83,7 +83,7 @@
   }
   <div>
     <div class="control-label">
-      Background
+      {{ settings().preserveTransparency ? 'JPEG background' : 'Background' }}
       <span class="mono text-[10px] text-muted">{{ settings().background.toUpperCase() }}</span>
     </div>
     <div class="flex items-center gap-3.5">
@@ -112,6 +112,22 @@
       <p class="mt-3 text-xs text-amber-200/85">White backgrounds can make the whole tile glow.</p>
     }
   </div>
+  <label
+    class="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-line px-3 py-3"
+  >
+    <span class="text-xs font-medium"
+      >Preserve transparency<span class="mt-1 block text-[10px] font-normal text-muted"
+        >PNG only · keeps the original alpha channel</span
+      ></span
+    >
+    <input
+      type="checkbox"
+      role="switch"
+      class="size-4 shrink-0 accent-accent"
+      [checked]="settings().preserveTransparency"
+      (change)="changed.emit({ preserveTransparency: checked($event) })"
+    />
+  </label>
   <div>
     <label class="control-label" for="size">Output size</label>
     <select

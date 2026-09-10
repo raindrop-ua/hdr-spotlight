@@ -38,6 +38,10 @@ export class LightControls {
     const low = pqOETF(203 / 10000);
     return ((pqOETF(nits / 10000) - low) / (1 - low)) * 100;
   }
+  protected checked(event: Event): boolean {
+    return (event.target as HTMLInputElement).checked;
+  }
+
   protected value(event: Event): string {
     return (event.target as HTMLInputElement).value;
   }

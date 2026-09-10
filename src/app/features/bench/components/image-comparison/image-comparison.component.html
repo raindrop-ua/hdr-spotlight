@@ -1,0 +1,59 @@
+<div class="mb-4 flex items-center justify-between">
+  <h2 class="text-base font-semibold">Preview</h2>
+  <span class="mono text-[10px] text-muted">{{
+    source() ? source()!.width + ' × ' + source()!.height + ' px' : 'NO IMAGE SELECTED'
+  }}</span>
+</div>
+<div class="grid grid-cols-2 gap-3 sm:gap-5">
+  <figure class="min-w-0">
+    <div class="preview-tile" [class.preview-light]="light()">
+      @if (source(); as image) {
+        <img [src]="image.url" alt="Original source image" class="h-full w-full object-contain" />
+      } @else {
+        <div class="empty-preview">
+          <app-icon name="image" class="size-12" /><span>Original image</span>
+        </div>
+      }
+    </div>
+    <figcaption class="mt-3 flex flex-wrap justify-between gap-1 text-xs">
+      <span>Original</span><span class="mono text-[10px] text-muted">sRGB</span>
+    </figcaption>
+  </figure>
+  <figure class="min-w-0">
+    <div class="preview-tile" [class.preview-light]="light()" [attr.aria-busy]="busy()">
+      @if (result(); as output) {
+        <img
+          [src]="output.jpegUrl"
+          alt="Actual HDR encoded output"
+          class="h-full w-full object-contain"
+        />
+      } @else {
+        <div class="empty-preview">
+          <app-icon
+            [name]="busy() ? 'aperture' : 'image'"
+            class="size-12"
+            [class.animate-spin]="busy()"
+          /><span>{{ busy() ? 'Encoding…' : 'HDR output' }}</span>
+        </div>
+      }
+    </div>
+    <figcaption class="mt-3 flex flex-wrap justify-between gap-1 text-xs">
+      <span>Encoded</span
+      ><span class="mono text-[10px] text-muted">{{
+        result() ? result()!.width + ' × ' + result()!.height : 'ST 2084'
+      }}</span>
+    </figcaption>
+  </figure>
+</div>
+<div class="mt-6 flex flex-wrap items-center justify-between gap-4">
+  <div class="flex items-center gap-3">
+    <span class="text-xs text-muted">Background</span>
+    <div class="segments compact" role="group" aria-label="Preview background">
+      <button type="button" [attr.aria-pressed]="!light()" (click)="light.set(false)">Dark</button
+      ><button type="button" [attr.aria-pressed]="light()" (click)="light.set(true)">Light</button>
+    </div>
+  </div>
+  <span class="flex items-center gap-2 text-[10px] text-muted"
+    >Actual encoded output <app-icon name="info" class="size-3.5"
+  /></span>
+</div>

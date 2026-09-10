@@ -60,7 +60,7 @@
           [ready]="!!store.source() && !store.loading()"
           [busy]="store.encoding()"
           (changed)="store.update($event)"
-          (reset)="store.reset()"
+          (resetRequested)="store.reset()"
           (encode)="store.encode()"
         />
         @if (store.error()) {

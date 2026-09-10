@@ -15,7 +15,7 @@ export class LightControls {
   readonly ready = input(false);
   readonly busy = input(false);
   readonly changed = output<Partial<EncodeSettings>>();
-  readonly reset = output<void>();
+  readonly resetRequested = output<void>();
   readonly encode = output<void>();
   protected readonly peak = computed(() => Math.round(stopsToNits(this.settings().stops)));
   protected readonly presets = [

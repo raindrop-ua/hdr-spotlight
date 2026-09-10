@@ -115,14 +115,14 @@ export function crc32(bytes: Uint8Array) {
 /**
  * Insert a PNG `cICP` chunk directly after IHDR.
  *
- * PNG Third Edition signals colour space with code points rather than a
+ * PNG Third Edition signals color space with code points rather than a
  * profile, and browsers implement that path more consistently than ICC-in-JPEG.
  * We use it for the control file: same pixels, better odds of rendering, so a
  * flat-looking JPEG can be diagnosed as a viewer limitation rather than a bad
- * encode.
+ * encoding.
  *
  * @param {Uint8Array} png
- * @param {{colourPrimaries:number,transferCharacteristics:number,matrixCoefficients:number,videoFullRangeFlag:number}} cicp
+ * @param {{colorPrimaries:number,transferCharacteristics:number,matrixCoefficients:number,videoFullRangeFlag:number}} cicp
  */
 export function embedPNGCICP(png: Uint8Array, cicp: Cicp) {
   const ihdrLength = ((png[8] << 24) | (png[9] << 16) | (png[10] << 8) | png[11]) >>> 0;
@@ -133,7 +133,7 @@ export function embedPNGCICP(png: Uint8Array, cicp: Cicp) {
     0x49,
     0x43,
     0x50, // 'cICP'
-    cicp.colourPrimaries,
+    cicp.colorPrimaries,
     cicp.transferCharacteristics,
     cicp.matrixCoefficients,
     cicp.videoFullRangeFlag,

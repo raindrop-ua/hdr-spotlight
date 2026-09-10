@@ -11,7 +11,7 @@
         <img [src]="image.url" alt="Original source image" class="h-full w-full object-contain" />
       } @else {
         <div class="empty-preview">
-          <app-icon name="image" class="size-12" /><span>Original image</span>
+          <app-icon name="image" class="size-12" /><span class="text-center">Original image</span>
         </div>
       }
     </div>
@@ -33,7 +33,7 @@
             [name]="busy() ? 'aperture' : 'image'"
             class="size-12"
             [class.animate-spin]="busy()"
-          /><span>{{ busy() ? 'Encoding…' : 'HDR output' }}</span>
+          /><span class="text-center">{{ busy() ? 'Encoding…' : 'HDR output' }}</span>
         </div>
       }
     </div>

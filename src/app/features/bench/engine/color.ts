@@ -1,10 +1,10 @@
 /**
- * Colour science primitives.
+ * Color science primitives.
  *
  * SMPTE ST 2084 (PQ) maps code values to *absolute* luminance in nits, unlike
  * sRGB where 1.0 means "whatever your display calls white". That is the whole
  * basis of the effect: we write a number of nits into the file, and an HDR
- * display honours it even when the surrounding page is at normal brightness.
+ * display honors it even when the surrounding page is at normal brightness.
  */
 
 const M1 = 2610 / 16384;
@@ -19,13 +19,13 @@ export const PQ_PEAK_NITS = 10000;
 /** BT.2408 "graphics white" — the luminance a normal white pixel should get. */
 export const DIFFUSE_WHITE_NITS = 203;
 
-/** Code value (0..1) -> normalised luminance (0..1, where 1.0 = 10,000 nits). */
+/** Code value (0..1) -> normalized luminance (0..1, where 1.0 = 10,000 nits). */
 export function pqEOTF(v: number) {
   const p = Math.pow(Math.max(v, 0), 1 / M2);
   return Math.pow(Math.max(p - C1, 0) / (C2 - C3 * p), 1 / M1);
 }
 
-/** Normalised luminance (0..1) -> code value (0..1). */
+/** Normalized luminance (0..1) -> code value (0..1). */
 export function pqOETF(y: number) {
   const p = Math.pow(Math.max(y, 0), M1);
   return Math.pow((C1 + C2 * p) / (1 + C3 * p), M2);

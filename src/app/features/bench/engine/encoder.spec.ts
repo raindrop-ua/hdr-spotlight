@@ -32,7 +32,7 @@ describe('HDR encoding', () => {
     expect(stats.peakNits).toBeCloseTo(1624, 1);
   });
 
-  it('does not lift saturated colours in whites mode', () => {
+  it('does not lift saturated colors in whites mode', () => {
     const original = { width: 1, height: 1, data: new Uint8ClampedArray([255, 0, 0, 255]) };
     const boosted = { ...original, data: original.data.slice() };
     encodeToPQ(original, { stops: 0, mode: 'all', threshold: 0.85, dither: false });

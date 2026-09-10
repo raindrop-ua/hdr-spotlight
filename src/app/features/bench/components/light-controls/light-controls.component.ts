@@ -25,7 +25,7 @@ export class LightControls {
   ];
   protected readonly modes: { label: string; value: GlowMode; description: string }[] = [
     { label: 'Whites', value: 'whites', description: 'Boost near-neutral whites' },
-    { label: 'Bright', value: 'bright', description: 'Boost bright areas, including colours' },
+    { label: 'Bright', value: 'bright', description: 'Boost bright areas, including colors' },
     { label: 'All', value: 'all', description: 'Boost every pixel' },
   ];
   protected readonly backgrounds = [

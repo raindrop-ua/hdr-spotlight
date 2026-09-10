@@ -1,13 +1,11 @@
 @import './fonts.css';
 
 @theme {
-  --font-sans:
-    'Montserrat', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol', 'Noto Color Emoji';
-  --font-mono:
-    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-    'Liberation Mono', 'Courier New', monospace;
+  --font-sans: 'Montserrat', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+  'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji',
+  'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+  'Liberation Mono', 'Courier New', monospace;
 
   --color-background: #101110;
   --color-surface: #191b18;
@@ -18,36 +16,42 @@
   --color-accent: #d6f58b;
 }
 
-
 @layer base {
   :root {
     color-scheme: dark;
   }
+
   body {
     @apply m-0 bg-background font-sans text-foreground antialiased;
   }
+
   button,
   input,
   select,
   a {
     -webkit-tap-highlight-color: transparent;
   }
+
   button,
   a,
   select {
     touch-action: manipulation;
   }
+
   button:not(:disabled),
   select {
     cursor: pointer;
   }
+
   button:disabled {
     cursor: not-allowed;
   }
+
   :focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 4px;
   }
+
   ::selection {
     background: #d6f58b;
     color: #101110;
@@ -58,44 +62,57 @@
   .mono {
     @apply font-mono tabular-nums;
   }
+
   .control-label {
     @apply mb-3 flex items-center justify-between gap-2 text-sm font-medium;
   }
+
   .quiet-button {
     @apply inline-flex items-center justify-center gap-2 text-muted transition-colors hover:text-foreground;
   }
+
   .segments {
     @apply flex rounded-lg border border-line;
   }
+
   .segments button {
     @apply min-w-0 flex-1 rounded-[7px] px-2 py-2.5 text-xs text-muted transition-colors hover:text-foreground;
   }
+
   .segments button + button {
     border-left: 1px solid var(--color-line);
   }
+
   .segments button[aria-pressed='true'] {
     @apply bg-accent/5 text-accent;
     box-shadow: inset 0 0 0 1px var(--color-accent);
   }
+
   .segments.compact button {
     @apply px-4 py-2 text-xs;
   }
+
   .primary-button {
     @apply flex min-h-12 items-center justify-center gap-2 rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-background transition-colors hover:bg-[#e0f9ac] disabled:bg-[#68734f] disabled:text-[#171c10];
   }
+
   .download-button {
     @apply inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-3 py-2 text-xs font-medium text-background hover:bg-[#e0f9ac];
   }
+
   .upload-zone.dragging {
     @apply border-accent bg-accent/10;
   }
+
   .swatch {
     @apply size-7 rounded-full border border-white/15;
   }
+
   .swatch[aria-pressed='true'] {
     outline: 2px solid var(--color-accent);
     outline-offset: 3px;
   }
+
   .custom-color {
     width: 27px;
     height: 27px;
@@ -106,32 +123,40 @@
     cursor: pointer;
     background: conic-gradient(#fb6570, #f1ed57, #66e298, #68b5fa, #cd85f7, #fb6570);
   }
+
   .custom-color::-webkit-color-swatch-wrapper {
     padding: 7px;
   }
+
   .custom-color::-webkit-color-swatch {
     border: 0;
     border-radius: 50%;
   }
+
   .custom-color::-moz-color-swatch {
     border: 6px solid transparent;
     border-radius: 50%;
   }
+
   .preview-tile {
     @apply relative flex aspect-square items-center justify-center overflow-hidden rounded-lg border border-line p-5 sm:p-7;
     background-color: #181a17;
     background-image: repeating-conic-gradient(#1f221e 0% 25%, transparent 0% 50%);
     background-size: 20px 20px;
   }
+
   .preview-tile.preview-light {
     background: #fff;
   }
+
   .empty-preview {
     @apply flex flex-col items-center gap-4 text-[13px] text-muted/85;
   }
+
   .preview-light .empty-preview {
     color: #73766e;
   }
+
   .luminance-ruler {
     background: repeating-linear-gradient(
       to right,
@@ -144,12 +169,15 @@
     background-repeat: no-repeat;
     background-position: center;
   }
+
   .ruler-label {
     @apply absolute top-5 -translate-x-1/2 font-mono text-[8px] text-muted;
   }
+
   .ruler-label:first-child {
     transform: none;
   }
+
   .ruler-label:nth-child(6) {
     transform: translateX(-100%);
   }
@@ -166,6 +194,7 @@ input[type='range'] {
   background: linear-gradient(to right, var(--color-accent) var(--fill), #3a3d35 var(--fill));
   cursor: pointer;
 }
+
 input[type='range']::-webkit-slider-thumb {
   appearance: none;
   width: 15px;
@@ -174,6 +203,7 @@ input[type='range']::-webkit-slider-thumb {
   background: var(--color-accent);
   box-shadow: 0 0 0 4px #d6f58b08;
 }
+
 input[type='range']::-moz-range-thumb {
   width: 15px;
   height: 15px;
@@ -181,6 +211,7 @@ input[type='range']::-moz-range-thumb {
   border-radius: 50%;
   background: var(--color-accent);
 }
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

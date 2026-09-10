@@ -21,7 +21,7 @@ export class LightControls {
   protected readonly presets = [
     { label: 'Subtle', stops: 2 },
     { label: 'Standard', stops: 3 },
-    { label: 'Reference', stops: 3.9 },
+    { label: 'Intense', stops: 3.9 },
   ];
   protected readonly modes: { label: string; value: GlowMode; description: string }[] = [
     { label: 'Whites', value: 'whites', description: 'Boost near-neutral whites' },

@@ -1,23 +1,40 @@
 @import './fonts.css';
 
 @theme {
-  --font-sans: 'Montserrat', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
-  'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji',
-  'Segoe UI Symbol', 'Noto Color Emoji';
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-  'Liberation Mono', 'Courier New', monospace;
+  --font-sans:
+    'Montserrat', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-mono:
+    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
 
-  --color-background: #101110;
-  --color-surface: #191b18;
-  --color-panel: #151713;
-  --color-foreground: #f0f1eb;
-  --color-muted: #9b9e96;
-  --color-line: #34382e;
-  --color-accent: #d6f58b;
+  --color-background: light-dark(#f5f5ef, #101110);
+  --color-surface: light-dark(#ffffff, #191b18);
+  --color-panel: light-dark(#eeefe7, #151713);
+  --color-foreground: light-dark(#252b20, #f0f1eb);
+  --color-muted: light-dark(#626958, #9b9e96);
+  --color-line: light-dark(#d7dccf, #34382e);
+  --color-accent: light-dark(#496b1e, #d6f58b);
+  --color-on-accent: light-dark(#ffffff, #101110);
+  --color-accent-hover: light-dark(#3b5817, #e0f9ac);
+  --color-disabled: light-dark(#e2e6d9, #68734f);
+  --color-on-disabled: light-dark(#737b67, #171c10);
+  --color-upload-border: light-dark(#a6b096, #4a4f43);
+  --color-track: light-dark(#dce1d3, #3a3d35);
+  --color-danger: light-dark(#b42332, #fecaca);
+  --color-warning: light-dark(#855407, #fde68a);
 }
 
 @layer base {
   :root {
+    color-scheme: light dark;
+  }
+
+  :root[data-theme='light'] {
+    color-scheme: light;
+  }
+
+  :root[data-theme='dark'] {
     color-scheme: dark;
   }
 
@@ -59,6 +76,18 @@
 }
 
 @layer components {
+  .theme-switcher {
+    @apply inline-flex gap-1 rounded-full border border-line bg-panel/50 p-1;
+  }
+
+  .theme-switcher button {
+    @apply flex size-9 items-center justify-center rounded-full text-muted transition-colors hover:bg-accent/8 hover:text-foreground;
+  }
+
+  .theme-switcher button[aria-pressed='true'] {
+    @apply bg-accent text-on-accent shadow-sm;
+  }
+
   .mono {
     @apply font-mono tabular-nums;
   }
@@ -93,11 +122,11 @@
   }
 
   .primary-button {
-    @apply flex min-h-12 items-center justify-center gap-2 rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-background transition-colors hover:bg-[#e0f9ac] disabled:bg-[#68734f] disabled:text-[#171c10];
+    @apply flex min-h-12 items-center justify-center gap-2 rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-on-accent transition-colors hover:bg-accent-hover disabled:bg-disabled disabled:text-on-disabled;
   }
 
   .download-button {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-3 py-2 text-xs font-medium text-background hover:bg-[#e0f9ac];
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-3 py-2 text-xs font-medium text-on-accent hover:bg-accent-hover;
   }
 
   .upload-zone.dragging {
@@ -105,7 +134,7 @@
   }
 
   .swatch {
-    @apply size-7 rounded-full border border-white/15;
+    @apply size-7 rounded-full border border-foreground/20;
   }
 
   .swatch[aria-pressed='true'] {
@@ -150,7 +179,7 @@
   }
 
   .empty-preview {
-    @apply flex flex-col items-center gap-4 text-[13px] text-muted/85;
+    @apply flex flex-col items-center gap-4 text-[13px] text-[#9b9e96];
   }
 
   .preview-light .empty-preview {
@@ -160,8 +189,8 @@
   .luminance-ruler {
     background: repeating-linear-gradient(
       to right,
-      #494c42 0px,
-      #494c42 1px,
+      var(--color-upload-border) 0px,
+      var(--color-upload-border) 1px,
       transparent 1px,
       transparent 6px
     );
@@ -191,7 +220,11 @@ input[type='range'] {
   margin: 17px 0 10px;
   border-radius: 10px;
   appearance: none;
-  background: linear-gradient(to right, var(--color-accent) var(--fill), #3a3d35 var(--fill));
+  background: linear-gradient(
+    to right,
+    var(--color-accent) var(--fill),
+    var(--color-track) var(--fill)
+  );
   cursor: pointer;
 }
 

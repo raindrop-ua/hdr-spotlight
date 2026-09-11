@@ -7,6 +7,7 @@ import { OutputControls } from './output-controls/output-controls.component';
 
 @Component({
   selector: 'app-light-controls',
+  host: { class: 'block' },
   imports: [Icon, ExposureControls, GlowMaskControls, OutputControls],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './light-controls.component.html',

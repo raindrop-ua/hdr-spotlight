@@ -20,6 +20,17 @@ pnpm build
 pnpm test --watch=false
 ```
 
+## Docker
+
+Build and run the production SSR image locally:
+
+```sh
+docker build -t hdr-spotlight .
+docker run --rm -p 4100:4200 hdr-spotlight
+```
+
+The application listens on port `4200` inside the container and is available at http://localhost:4100 with this mapping. In Dokploy, set the domain's **Container Port** to `4200` so Traefik can route internal traffic to the application. Publishing host port `4100` under **Advanced → Ports** is optional and only needed for direct access outside Traefik.
+
 ## Structure
 
 ```text

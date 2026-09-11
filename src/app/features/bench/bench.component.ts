@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ThemeSwitcher } from '../../shared/ui/theme-switcher/theme-switcher.component';
 import { Icon } from '../../shared/ui/icon/icon.component';
 import { DisplayIndicator } from './components/display-indicator/display-indicator.component';
 import { SourceUpload } from './components/source-upload/source-upload.component';
@@ -10,7 +11,15 @@ import { ImageEncoderService } from './services/image-encoder.service';
 
 @Component({
   selector: 'app-bench',
-  imports: [Icon, DisplayIndicator, SourceUpload, LightControls, ImageComparison, ExportResults],
+  imports: [
+    ThemeSwitcher,
+    Icon,
+    DisplayIndicator,
+    SourceUpload,
+    LightControls,
+    ImageComparison,
+    ExportResults,
+  ],
   providers: [BenchStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './bench.component.html',

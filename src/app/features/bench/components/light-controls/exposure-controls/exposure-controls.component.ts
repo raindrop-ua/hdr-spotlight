@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { pqOETF, stopsToNits } from '../../../engine/color';
+import { pqOETF, stopsToNits } from '@features/bench/engine/color';
 
 @Component({
   selector: 'app-exposure-controls',

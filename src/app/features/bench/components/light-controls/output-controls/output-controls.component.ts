@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { EncodeSettings } from '../../../models/bench.models';
+import { EncodeSettings } from '@features/bench/models/bench.models';
 
 @Component({
   selector: 'app-output-controls',

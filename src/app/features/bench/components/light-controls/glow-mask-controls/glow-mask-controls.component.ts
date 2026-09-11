@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { EncodeSettings, GlowMode } from '../../../models/bench.models';
+import { EncodeSettings, GlowMode } from '@features/bench/models/bench.models';
 
 @Component({
   selector: 'app-glow-mask-controls',

@@ -1,7 +1,7 @@
-import { SourceImage } from '../../models/source-image.model';
+import { SourceImage } from '@features/bench/models/source-image.model';
 import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
-import { Icon } from '../../../../shared/ui/icon/icon.component';
-import { EncodeResult } from '../../models/bench.models';
+import { Icon } from '@shared/ui/icon/icon.component';
+import { EncodeResult } from '@features/bench/models/bench.models';
 
 @Component({
   selector: 'app-image-comparison',

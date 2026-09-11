@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { Icon } from '../../../../shared/ui/icon/icon.component';
-import { EncodeResult } from '../../models/bench.models';
+import { Icon } from '@shared/ui/icon/icon.component';
+import { EncodeResult } from '@features/bench/models/bench.models';
 
 @Component({
   selector: 'app-export-results',

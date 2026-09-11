@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Bench } from './features/bench/bench.component';
+import { Bench } from '@features/bench/bench.component';
 
 @Component({
   selector: 'app-root',

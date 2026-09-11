@@ -18,7 +18,7 @@
  * curves, which is why theirs is ~9 KB and this is ~2.5 KB.
  */
 
-import { pqEOTF } from './color';
+import { pqEOTF } from '@features/bench/engine/color';
 
 const TRC_SAMPLES = 1024;
 

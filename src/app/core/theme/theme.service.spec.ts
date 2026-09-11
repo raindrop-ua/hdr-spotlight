@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { ThemeSwitcher } from '../../shared/ui/theme-switcher/theme-switcher.component';
-import { ThemeService } from './theme.service';
+import { ThemeSwitcher } from '@shared/ui/theme-switcher/theme-switcher.component';
+import { ThemeService } from '@core/theme/theme.service';
 
 describe('Theme preference', () => {
   let media: {

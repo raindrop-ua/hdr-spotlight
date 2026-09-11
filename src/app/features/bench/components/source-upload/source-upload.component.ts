@@ -8,7 +8,7 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { Icon } from '../../../../shared/ui/icon/icon.component';
+import { Icon } from '@shared/ui/icon/icon.component';
 
 @Component({
   selector: 'app-source-upload',

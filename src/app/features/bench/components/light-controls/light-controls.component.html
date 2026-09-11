@@ -5,144 +5,21 @@
   </button>
 </div>
 <div class="space-y-6">
-  <div>
-    <p class="control-label">Preset</p>
-    <div class="segments" role="group" aria-label="Exposure preset">
-      @for (preset of presets; track preset.stops) {
-        <button
-          type="button"
-          [attr.aria-pressed]="settings().stops === preset.stops"
-          (click)="changed.emit({ stops: preset.stops })"
-        >
-          {{ preset.label }}
-        </button>
-      }
-    </div>
-  </div>
-  <div>
-    <label class="control-label" for="boost"
-      >Highlight boost
-      <output class="mono text-foreground"
-        >+{{ settings().stops.toFixed(1) }} <span class="text-muted">stops</span></output
-      ></label
-    >
-    <input
-      id="boost"
-      type="range"
-      min="0"
-      max="4"
-      step="0.1"
-      [value]="settings().stops"
-      [style.--fill]="(settings().stops / 4) * 100 + '%'"
-      (input)="changed.emit({ stops: number($event) })"
-    />
-    <div class="mt-4 text-3xl font-medium tracking-tight">
-      {{ peak() | number }} <span class="text-lg font-normal text-muted">nits</span>
-    </div>
-    <div class="relative mt-4 mb-9 h-3 luminance-ruler" aria-hidden="true">
-      @for (tick of ticks; track tick) {
-        <span class="ruler-label" [style.left.%]="position(tick)">{{
-          tick >= 1000 ? tick / 1000 + 'k' : tick
-        }}</span>
-      }
-      <span class="absolute -top-1 h-5 w-px bg-accent" [style.left.%]="position(peak())"></span>
-    </div>
-  </div>
-  <div>
-    <p class="control-label">What glows</p>
-    <div class="segments" role="group" aria-label="What glows">
-      @for (mode of modes; track mode.value) {
-        <button
-          type="button"
-          [title]="mode.description"
-          [attr.aria-pressed]="settings().mode === mode.value"
-          (click)="changed.emit({ mode: mode.value })"
-        >
-          {{ mode.label }}
-        </button>
-      }
-    </div>
-  </div>
-  @if (settings().mode !== 'all') {
-    <div>
-      <label class="control-label" for="threshold"
-        >Threshold
-        <output class="mono">{{ settings().threshold * 100 | number: '1.0-0' }}%</output></label
-      >
-      <input
-        id="threshold"
-        type="range"
-        min="40"
-        max="100"
-        step="1"
-        [value]="settings().threshold * 100"
-        [style.--fill]="((settings().threshold * 100 - 40) / 60) * 100 + '%'"
-        (input)="changed.emit({ threshold: number($event) / 100 })"
-      />
-    </div>
-  }
-  <div>
-    <div class="control-label">
-      {{ settings().preserveTransparency ? 'JPEG background' : 'Background' }}
-      <span class="mono text-xs text-muted">{{ settings().background.toUpperCase() }}</span>
-    </div>
-    <div class="flex items-center gap-3.5">
-      @for (background of backgrounds; track background.value) {
-        <button
-          class="swatch"
-          type="button"
-          [style.background]="background.value"
-          [attr.aria-label]="background.label + ' background'"
-          [attr.aria-pressed]="settings().background === background.value"
-          (click)="changed.emit({ background: background.value })"
-        ></button>
-      }
-      <div class="mx-1 h-6 w-px bg-line"></div>
-      <label class="flex cursor-pointer items-center gap-2 text-xs text-muted"
-        ><input
-          type="color"
-          class="custom-color"
-          aria-label="Custom background"
-          [value]="settings().background"
-          (input)="changed.emit({ background: value($event) })"
-        />Custom</label
-      >
-    </div>
-    @if (settings().background === '#ffffff') {
-      <p class="mt-3 text-xs text-amber-200/85">White backgrounds can make the whole tile glow.</p>
-    }
-  </div>
-  <label
-    class="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-line px-3 py-3"
-  >
-    <span class="text-xs font-medium"
-      >Preserve transparency<span class="mt-1 block text-xs font-normal text-muted"
-        >PNG only · keeps the original alpha channel</span
-      ></span
-    >
-    <input
-      type="checkbox"
-      role="switch"
-      class="size-4 shrink-0 accent-accent"
-      [checked]="settings().preserveTransparency"
-      (change)="changed.emit({ preserveTransparency: checked($event) })"
-    />
-  </label>
-  <div>
-    <label class="control-label" for="size">Output size</label>
-    <select
-      id="size"
-      class="w-full rounded-lg border border-line bg-surface px-3 py-3 text-xs text-foreground"
-      [value]="settings().size"
-      (change)="changed.emit({ size: number($event) })"
-    >
-      <option value="400">400 × 400</option>
-      <option value="800">800 × 800</option>
-      <option value="1200">1200 × 1200</option>
-      <option value="3840">3840 × 3840 · 4K</option>
-      <option value="0">Original dimensions</option>
-    </select>
-  </div>
+  <app-exposure-controls
+    [stops]="settings().stops"
+    (stopsChanged)="changed.emit({ stops: $event })"
+  />
+  <app-glow-mask-controls
+    [mode]="settings().mode"
+    [threshold]="settings().threshold"
+    (changed)="changed.emit($event)"
+  />
+  <app-output-controls
+    [background]="settings().background"
+    [preserveTransparency]="settings().preserveTransparency"
+    [size]="settings().size"
+    (changed)="changed.emit($event)"
+  />
 </div>
 <button
   class="primary-button mt-4 w-full"

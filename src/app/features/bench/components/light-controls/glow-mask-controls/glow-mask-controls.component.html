@@ -1,0 +1,32 @@
+<div>
+  <p class="control-label">What glows</p>
+  <div class="segments" role="group" aria-label="What glows">
+    @for (option of modes; track option.value) {
+      <button
+        type="button"
+        [title]="option.description"
+        [attr.aria-pressed]="mode() === option.value"
+        (click)="changed.emit({ mode: option.value })"
+      >
+        {{ option.label }}
+      </button>
+    }
+  </div>
+</div>
+@if (mode() !== 'all') {
+  <div>
+    <label class="control-label" for="threshold"
+      >Threshold <output class="mono">{{ threshold() * 100 | number: '1.0-0' }}%</output></label
+    >
+    <input
+      id="threshold"
+      type="range"
+      min="40"
+      max="100"
+      step="1"
+      [value]="threshold() * 100"
+      [style.--fill]="((threshold() * 100 - 40) / 60) * 100 + '%'"
+      (input)="changed.emit({ threshold: number($event) / 100 })"
+    />
+  </div>
+}

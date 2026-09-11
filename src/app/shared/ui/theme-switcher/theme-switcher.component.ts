@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ThemeService } from '@core/theme/theme.service';
 import { Icon } from '@shared/ui/icon/icon.component';
 
@@ -6,7 +6,6 @@ import { Icon } from '@shared/ui/icon/icon.component';
   selector: 'app-theme-switcher',
   imports: [Icon],
   templateUrl: './theme-switcher.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ThemeSwitcher {
   protected readonly theme = inject(ThemeService);

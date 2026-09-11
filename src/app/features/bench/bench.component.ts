@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ThemeSwitcher } from '@shared/ui/theme-switcher/theme-switcher.component';
 import { Icon } from '@shared/ui/icon/icon.component';
 import { DisplayIndicator } from '@features/bench/components/display-indicator/display-indicator.component';
@@ -21,7 +21,6 @@ import { ImageEncoderService } from '@features/bench/services/image-encoder.serv
     ExportResults,
   ],
   providers: [BenchStore],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './bench.component.html',
 })
 export class Bench {

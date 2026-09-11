@@ -2,7 +2,6 @@ import {
   afterNextRender,
   DestroyRef,
   inject,
-  ChangeDetectionStrategy,
   Component,
   input,
   output,
@@ -13,7 +12,6 @@ import { Icon } from '@shared/ui/icon/icon.component';
 @Component({
   selector: 'app-source-upload',
   imports: [Icon],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './source-upload.component.html',
 })
 export class SourceUpload {

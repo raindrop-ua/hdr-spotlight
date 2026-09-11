@@ -1,11 +1,10 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { EncodeSettings, GlowMode } from '@features/bench/models/bench.models';
 
 @Component({
   selector: 'app-glow-mask-controls',
   imports: [DecimalPipe],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block space-y-6' },
   templateUrl: './glow-mask-controls.component.html',
 })

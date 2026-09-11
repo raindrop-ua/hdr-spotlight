@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { Icon } from '@shared/ui/icon/icon.component';
 import { EncodeSettings } from '@features/bench/models/bench.models';
 import { ExposureControls } from '@features/bench/components/light-controls/exposure-controls/exposure-controls.component';
@@ -9,7 +9,6 @@ import { OutputControls } from '@features/bench/components/light-controls/output
   selector: 'app-light-controls',
   host: { class: 'block' },
   imports: [Icon, ExposureControls, GlowMaskControls, OutputControls],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './light-controls.component.html',
 })
 export class LightControls {

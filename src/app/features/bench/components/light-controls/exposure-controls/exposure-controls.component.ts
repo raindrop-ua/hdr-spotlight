@@ -1,11 +1,10 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { pqOETF, stopsToNits } from '@features/bench/engine/color';
 
 @Component({
   selector: 'app-exposure-controls',
   imports: [DecimalPipe],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block space-y-6' },
   templateUrl: './exposure-controls.component.html',
 })

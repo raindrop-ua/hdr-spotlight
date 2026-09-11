@@ -2,6 +2,11 @@ import { SourceImage } from '@features/bench/models/source-image.model';
 import { Service } from '@angular/core';
 import { embedICCProfile, embedPNGCICP } from '@features/bench/engine/container';
 import { encodeToPQ } from '@features/bench/engine/encoder';
+import type {
+  EncodeWorkerRequest,
+  EncodeWorkerResponse,
+  EncodeWorkerResult,
+} from '@features/bench/engine/encoder-worker.models';
 import { buildICCProfile, CICP } from '@features/bench/engine/icc';
 import {
   EncodeResult,
@@ -142,7 +147,7 @@ export class ImageEncoderService {
     image: PixelImage,
     settings: EncodeSettings,
     signal: AbortSignal,
-  ): Promise<{ image: PixelImage; stats: EncodeStats }> {
+  ): Promise<EncodeWorkerResult> {
     signal.throwIfAborted();
     if (typeof Worker !== 'undefined') {
       const worker = new Worker(new URL('../engine/encoder.worker', import.meta.url), {
@@ -158,16 +163,16 @@ export class ImageEncoderService {
           reject(new DOMException('Encoding cancelled', 'AbortError'));
         };
         signal.addEventListener('abort', abort, { once: true });
-        worker.onmessage = ({ data }) => {
+        worker.onmessage = ({ data }: MessageEvent<EncodeWorkerResponse>): void => {
           clean();
-          if (data.error) reject(new Error(data.error));
+          if ('error' in data) reject(new Error(data.error));
           else resolve(data);
         };
         worker.onerror = () => {
           clean();
           reject(new Error('Image worker failed. Reload and try again.'));
         };
-        worker.postMessage({ image, settings }, [image.data.buffer]);
+        worker.postMessage({ image, settings } satisfies EncodeWorkerRequest, [image.data.buffer]);
       });
     }
     // Yield between strips on browsers without workers. Strip height preserves the Bayer phase.

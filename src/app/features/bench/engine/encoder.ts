@@ -1,10 +1,4 @@
-import type { PixelImage, PixelOptions, EncodeStats } from '../models/bench.models';
-
-/**
- * The pixel transform: 8-bit sRGB in, 8-bit PQ-encoded BT.2020 out.
- *
- * Kept free of DOM references so it can be exercised directly under test.
- */
+import type { PixelImage, PixelOptions, EncodeStats, GlowMode } from '../models/bench.models';
 
 import {
   DIFFUSE_WHITE_NITS,
@@ -16,39 +10,30 @@ import {
   smoothstep,
 } from '../engine/color';
 
-/** Which pixels receive the boost. */
 export const GLOW_MODES = Object.freeze({
-  /** Flat lift on every pixel. What the reference logo did — safe on black. */
+  // Apply the same exposure multiplier to every pixel.
   ALL: 'all',
-  /** Weighted by perceptual luma, so any bright hue lifts. */
-  BRIGHT: 'bright',
-  /** Weighted by the minimum channel, so only near-neutral whites lift. */
-  WHITES: 'whites',
-});
 
-/** Ordered dither matrix. 8-bit PQ is coarse in the highlights; this breaks up
- *  the contouring that otherwise shows on gradients and soft edges. */
+  // Select bright colors using weighted sRGB channel values.
+  BRIGHT: 'bright',
+
+  // Require every channel to be bright, favoring near-neutral whites.
+  WHITES: 'whites',
+} as const satisfies Record<'ALL' | 'BRIGHT' | 'WHITES', GlowMode>);
+
+// Repeat a 4x4-ordered dither pattern to reduce banding when quantizing PQ to 8 bits.
 const BAYER_4 = [
   [0, 8, 2, 10],
   [12, 4, 14, 6],
   [3, 11, 1, 9],
   [15, 7, 13, 5],
-];
+] as const;
 
-/** Above this, a pixel counts as "glowing" for the coverage measurement. */
+// Pixels above this luminance contribute to the reported glow coverage.
 export const LIT_THRESHOLD_NITS = 1000;
 
-/**
- * @param {{data: Uint8ClampedArray, width: number, height: number}} image  mutated in place
- * @param {object} options
- * @param {number} options.stops        boost in stops above diffuse white
- * @param {string} options.mode         one of GLOW_MODES
- * @param {number} options.threshold    0..1, where the highlight mask reaches full strength
- * @param {number} [options.feather]    width of the mask ramp below the threshold
- * @param {boolean} [options.dither]    defaults to true
- * @returns {{peakNits: number, litFraction: number, clippedFraction: number}}
- */
-export function encodeToPQ(image: PixelImage, options: PixelOptions): EncodeStats {
+// Mutate packed sRGB RGBA bytes in place into PQ-encoded BT.2020 RGBA.
+export function encodeToPQ(image: PixelImage, options: Readonly<PixelOptions>): EncodeStats {
   const { data, width, height } = image;
   const {
     stops,
@@ -60,6 +45,7 @@ export function encodeToPQ(image: PixelImage, options: PixelOptions): EncodeStat
   } = options;
 
   const gain = Math.pow(2, stops) - 1;
+  // The mask reaches full strength at threshold; feather sets the ramp width below it.
   const edge0 = Math.max(0, threshold - feather);
   const toPQScale = DIFFUSE_WHITE_NITS / PQ_PEAK_NITS;
 
@@ -77,7 +63,8 @@ export function encodeToPQ(image: PixelImage, options: PixelOptions): EncodeStat
       const b = data[i + 2];
       const alpha = preserveTransparency ? data[i + 3] / 255 : 1;
 
-      let weight;
+      // Build the mask in source sRGB; apply the resulting gain in linear light.
+      let weight: number;
       if (mode === GLOW_MODES.ALL) {
         weight = 1;
       } else if (mode === GLOW_MODES.BRIGHT) {
@@ -102,6 +89,7 @@ export function encodeToPQ(image: PixelImage, options: PixelOptions): EncodeStat
       if (alpha > 0 && nits > peak) peak = nits;
       if (R * toPQScale > 1 || G * toPQScale > 1 || B * toPQScale > 1) clipped += alpha;
 
+      // One offset for all channels avoids adding a color tint to neutral pixels.
       const offset = dither ? ditherRow[x & 3] / 16 - 0.5 : 0;
       data[i] = clamp8(255 * pqOETF(clamp01(R * toPQScale)) + offset);
       data[i + 1] = clamp8(255 * pqOETF(clamp01(G * toPQScale)) + offset);
@@ -111,6 +99,7 @@ export function encodeToPQ(image: PixelImage, options: PixelOptions): EncodeStat
     }
   }
 
+  // Fractions use the full image area; transparent pixels contribute zero coverage.
   const pixels = width * height;
   return {
     peakNits: peak,
@@ -119,11 +108,11 @@ export function encodeToPQ(image: PixelImage, options: PixelOptions): EncodeStat
   };
 }
 
-function clamp01(v: number) {
+function clamp01(v: number): number {
   return v < 0 ? 0 : v > 1 ? 1 : v;
 }
 
-function clamp8(v: number) {
+function clamp8(v: number): number {
   const r = Math.round(v);
   return r < 0 ? 0 : r > 255 ? 255 : r;
 }

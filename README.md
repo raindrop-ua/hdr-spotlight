@@ -9,15 +9,15 @@ Website: [hdrspotlight.com](https://hdrspotlight.com/)
 ## Development
 
 ```sh
-npm ci
-npm start
+pnpm install --frozen-lockfile
+pnpm start
 ```
 
 Open http://localhost:4200. Validation:
 
 ```sh
-npm run build
-npm test -- --watch=false
+pnpm build
+pnpm test --watch=false
 ```
 
 ## Structure

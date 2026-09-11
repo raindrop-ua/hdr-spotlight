@@ -12,10 +12,12 @@
     "serve:ssr:hdr-spotlight": "node dist/hdr-spotlight/server/server.mjs",
     "lint": "ng lint",
     "lint:fix": "ng lint --fix",
+    "lint:staged": "lint-staged",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "fix": "pnpm format && pnpm lint:fix",
-    "check": "pnpm format:check && pnpm lint && pnpm test:ci && pnpm build"
+    "check": "pnpm format:check && pnpm lint && pnpm test:ci && pnpm build",
+    "prepare": "husky"
   },
   "private": true,
   "packageManager": "pnpm@12.3.4",
@@ -42,7 +44,9 @@
     "@types/node": "^20.17.19",
     "angular-eslint": "22.5.0",
     "eslint": "^10.9.1",
+    "husky": "^9.1.7",
     "jsdom": "^28.0.0",
+    "lint-staged": "^17.5.1",
     "postcss": "^8.5.3",
     "prettier": "^3.9.6",
     "prettier-plugin-tailwindcss": "^0.8.1",
@@ -50,5 +54,12 @@
     "typescript": "~6.0.2",
     "typescript-eslint": "8.69.0",
     "vitest": "^4.0.8"
+  },
+  "lint-staged": {
+    "*.{ts,html}": [
+      "eslint --fix --max-warnings=0",
+      "prettier --write"
+    ],
+    "*.{css,js,cjs,mjs,json,jsonc,md,yaml,yml}": "prettier --write"
   }
 }

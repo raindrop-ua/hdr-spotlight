@@ -1,14 +1,8 @@
 import type { Cicp } from '../models/bench.models';
 
-/**
- * Container surgery.
- *
- * Canvas gives us pixels in a JPEG or PNG wrapper but no way to choose what
- * metadata rides along, so we rewrite the segment stream by hand.
- */
+// Canvas exports do not expose HDR metadata controls, so metadata is added to the encoded bytes.
 
-/** Concatenate byte arrays without spreading them as function arguments. */
-export function concatBytes(parts: Uint8Array[]) {
+export function concatBytes(parts: readonly Uint8Array[]): Uint8Array<ArrayBuffer> {
   let length = 0;
   for (const p of parts) length += p.length;
   const out = new Uint8Array(length);
@@ -20,14 +14,17 @@ export function concatBytes(parts: Uint8Array[]) {
   return out;
 }
 
-const ICC_MARKER = [0x49, 0x43, 0x43, 0x5f, 0x50, 0x52, 0x4f, 0x46, 0x49, 0x4c, 0x45, 0x00];
+const ICC_MARKER = [
+  0x49, 0x43, 0x43, 0x5f, 0x50, 0x52, 0x4f, 0x46, 0x49, 0x4c, 0x45, 0x00,
+] as const; // Null-terminated ICC_PROFILE signature.
 const MAX_ICC_CHUNK = 65519; // 65533 segment limit minus the 14-byte ICC header
 
-function iccSegments(icc: Uint8Array) {
+function iccSegments(icc: Uint8Array): Uint8Array[] {
   const chunks = Math.ceil(icc.length / MAX_ICC_CHUNK) || 1;
-  const parts = [];
+  const parts: Uint8Array[] = [];
   for (let i = 0; i < chunks; i++) {
     const slice = icc.subarray(i * MAX_ICC_CHUNK, (i + 1) * MAX_ICC_CHUNK);
+    // The length includes its own two bytes and the 14-byte ICC chunk header.
     const length = slice.length + 16;
     parts.push(
       new Uint8Array([0xff, 0xe2, (length >> 8) & 255, length & 255, ...ICC_MARKER, i + 1, chunks]),
@@ -37,25 +34,15 @@ function iccSegments(icc: Uint8Array) {
   return parts;
 }
 
-/**
- * Rewrite a JPEG so it carries exactly one ICC profile and nothing else.
- *
- * EXIF (APP1) and any existing ICC (APP2) are dropped: the reference file we
- * reverse-engineered had a single ICC segment and no XMP at all, and stray
- * metadata only gives a downstream re-encoder more to disagree about.
- *
- * @param {Uint8Array} jpeg
- * @param {Uint8Array} icc
- * @returns {Uint8Array}
- */
-export function embedICCProfile(jpeg: Uint8Array, icc: Uint8Array) {
+// Replace APP1/APP2 metadata with one ICC profile, preserving JFIF and encoded pixels.
+export function embedICCProfile(jpeg: Uint8Array, icc: Uint8Array): Uint8Array<ArrayBuffer> {
   if (jpeg[0] !== 0xff || jpeg[1] !== 0xd8) throw new Error('Not a JPEG stream');
 
   const segments = iccSegments(icc);
   const parts: Uint8Array[] = [new Uint8Array([0xff, 0xd8])];
   let inserted = false;
 
-  const insert = () => {
+  const insert = (): void => {
     if (!inserted) {
       parts.push(...segments);
       inserted = true;
@@ -73,7 +60,7 @@ export function embedICCProfile(jpeg: Uint8Array, icc: Uint8Array) {
       continue;
     }
 
-    // Start of scan: everything from here is entropy-coded data.
+    // Keep the scan header and all remaining bytes intact; marker parsing ends here.
     if (marker === 0xda) {
       insert();
       parts.push(jpeg.subarray(i));
@@ -84,7 +71,7 @@ export function embedICCProfile(jpeg: Uint8Array, icc: Uint8Array) {
     if (marker === 0xe0) {
       parts.push(jpeg.subarray(i, i + 2 + length)); // keep JFIF
     } else if (marker === 0xe1 || marker === 0xe2) {
-      // drop EXIF, XMP and any foreign profile
+      // Omit APP1 (EXIF/XMP) and APP2 (including any existing ICC profile).
     } else {
       insert();
       parts.push(jpeg.subarray(i, i + 2 + length));
@@ -96,7 +83,8 @@ export function embedICCProfile(jpeg: Uint8Array, icc: Uint8Array) {
   return concatBytes(parts);
 }
 
-const CRC_TABLE = (() => {
+// PNG uses reflected CRC-32 over the chunk type and payload, excluding its length.
+const CRC_TABLE: Uint32Array<ArrayBuffer> = ((): Uint32Array<ArrayBuffer> => {
   const table = new Uint32Array(256);
   for (let n = 0; n < 256; n++) {
     let c = n;
@@ -106,26 +94,16 @@ const CRC_TABLE = (() => {
   return table;
 })();
 
-export function crc32(bytes: Uint8Array) {
+export function crc32(bytes: Uint8Array): number {
   let c = 0xffffffff;
   for (const byte of bytes) c = CRC_TABLE[(c ^ byte) & 255] ^ (c >>> 8);
   return (c ^ 0xffffffff) >>> 0;
 }
 
-/**
- * Insert a PNG `cICP` chunk directly after IHDR.
- *
- * PNG Third Edition signals color space with code points rather than a
- * profile, and browsers implement that path more consistently than ICC-in-JPEG.
- * We use it for the control file: same pixels, better odds of rendering, so a
- * flat-looking JPEG can be diagnosed as a viewer limitation rather than a bad
- * encoding.
- *
- * @param {Uint8Array} png
- * @param {{colorPrimaries:number,transferCharacteristics:number,matrixCoefficients:number,videoFullRangeFlag:number}} cicp
- */
-export function embedPNGCICP(png: Uint8Array, cicp: Cicp) {
+// The caller supplies a canvas PNG with IHDR first and no existing cICP chunk.
+export function embedPNGCICP(png: Uint8Array, cicp: Readonly<Cicp>): Uint8Array<ArrayBuffer> {
   const ihdrLength = ((png[8] << 24) | (png[9] << 16) | (png[10] << 8) | png[11]) >>> 0;
+  // Skip the 8-byte signature plus IHDR length, type, payload and CRC.
   const insertAt = 8 + 12 + ihdrLength;
 
   const payload = new Uint8Array([
@@ -148,8 +126,8 @@ export function embedPNGCICP(png: Uint8Array, cicp: Cicp) {
   return concatBytes([png.subarray(0, insertAt), chunk, png.subarray(insertAt)]);
 }
 
-/** Base64 data URL, chunked so large images don't blow the argument limit. */
-export function toDataURL(bytes: Uint8Array, mimeType: string) {
+// Limit each spread to avoid the function argument limit on large images.
+export function toDataURL(bytes: Uint8Array, mimeType: string): string {
   let binary = '';
   const CHUNK = 8192;
   for (let i = 0; i < bytes.length; i += CHUNK) {

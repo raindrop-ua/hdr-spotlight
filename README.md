@@ -21,10 +21,14 @@ npm test -- --watch=false
 ```text
 src/app/
   features/bench/
-    bench.component.*             # Workspace composition and browser events
+    bench.component.*             # Workspace composition and store bindings
     components/
-      source-upload/              # File selection and drag/drop
-      light-controls/             # Exposure, masks, background, output size
+      source-upload/              # File selection, drag/drop and clipboard lifecycle
+      display-indicator/          # HDR capability detection and media-query lifecycle
+      light-controls/             # Settings group composition, reset and encode actions
+        exposure-controls/        # Presets, highlight boost and PQ luminance ruler
+        glow-mask-controls/       # Glow mode and threshold
+        output-controls/          # Background, transparency and dimensions
       image-comparison/           # Original / actual HDR file, preview backdrop
       export-results/             # Downloads and measured luminance statistics
     services/
@@ -40,7 +44,7 @@ src/app/
   shared/ui/icon/                 # Shared SVG icon component
 ```
 
-Presentation components use signal inputs/outputs and OnPush. The workspace provides its own store; browser APIs initialize after rendering, so SSR and hydration work. The store owns and revokes image object URLs, ignores stale uploads and cancels processing on settings changes or destruction. A yielding strip-based fallback is available when workers are not supported.
+Presentation components use signal inputs/outputs and OnPush. Settings groups accept narrow inputs and emit typed changes; only the workspace writes to the store. The workspace provides its own store; browser APIs initialize after rendering, so SSR and hydration work. The store owns and revokes image object URLs, ignores stale uploads and cancels processing on settings changes or destruction. A yielding strip-based fallback is available when workers are not supported.
 
 ## Image behavior
 
@@ -53,4 +57,4 @@ Presentation components use signal inputs/outputs and OnPush. The workspace prov
 - Input colour is normalized through an sRGB canvas. This is not a wide-gamut preservation workflow or a gain-map encoder.
 - HDR appearance depends on the display, browser, colour management and power settings. The preview uses the actual exported file, without simulated CSS brightness. The Light/Dark preview backdrop does not change output pixels.
 
-Unit tests cover PQ values, masks, coverage/clipping, ICC fields, JPEG metadata replacement, PNG CRCs and asynchronous store races. Browser checks cover SVG upload, PNG paste, image encoding, real export metadata, original dimensions and responsive layouts.
+Unit tests cover PQ values, masks, coverage/clipping, ICC fields, JPEG metadata replacement, PNG CRCs asynchronous store races, settings propagation/reset, and browser-listener cleanup. Browser checks cover SVG upload, PNG paste, image encoding, real export metadata, original dimensions and responsive layouts.

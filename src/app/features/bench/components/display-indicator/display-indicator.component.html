@@ -1,0 +1,19 @@
+<span
+  class="flex items-center gap-2 text-[11px] text-muted"
+  [title]="
+    display() === 'sdr'
+      ? 'HDR brightness requires a compatible display and browser. Export still works on SDR.'
+      : 'Reported by your browser'
+  "
+  ><app-icon name="monitor" class="size-3.5" />{{
+    display() === 'unknown'
+      ? 'Checking display'
+      : display() === 'hdr'
+        ? 'HDR display'
+        : 'SDR display'
+  }}<span
+    class="ml-1 size-1.5 rounded-full"
+    [class.bg-accent]="display() === 'hdr'"
+    [class.bg-muted]="display() !== 'hdr'"
+  ></span
+></span>

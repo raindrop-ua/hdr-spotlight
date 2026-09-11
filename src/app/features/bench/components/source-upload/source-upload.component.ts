@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
+import {
+  afterNextRender,
+  DestroyRef,
+  inject,
+  ChangeDetectionStrategy,
+  Component,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { Icon } from '../../../../shared/ui/icon/icon.component';
 
 @Component({
@@ -12,6 +21,28 @@ export class SourceUpload {
   readonly loading = input(false);
   readonly selected = output<File>();
   protected readonly dragging = signal(false);
+
+  private readonly destroyRef = inject(DestroyRef);
+
+  constructor() {
+    afterNextRender(() => {
+      const paste = (event: ClipboardEvent) => {
+        const target = event.target;
+        if (
+          target instanceof HTMLElement &&
+          (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))
+        )
+          return;
+        const file = event.clipboardData?.files[0];
+        if (file) {
+          event.preventDefault();
+          this.selected.emit(file);
+        }
+      };
+      window.addEventListener('paste', paste);
+      this.destroyRef.onDestroy(() => window.removeEventListener('paste', paste));
+    });
+  }
 
   protected choose(event: Event): void {
     const input = event.target as HTMLInputElement;

@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { BenchStore } from './bench-store.service';
-import { ImageEncoderService } from './image-encoder.service';
-import { DEFAULT_SETTINGS, EncodeResult } from '../models/bench.models';
-import { SourceImage } from '../models/source-image.model';
+import { BenchStore } from '@features/bench/services/bench-store.service';
+import { ImageEncoderService } from '@features/bench/services/image-encoder.service';
+import { DEFAULT_SETTINGS, EncodeResult } from '@features/bench/models/bench.models';
+import { SourceImage } from '@features/bench/models/source-image.model';
 
 function deferred<T>() {
   let resolve!: (value: T) => void;

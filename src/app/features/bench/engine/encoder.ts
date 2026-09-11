@@ -14,7 +14,7 @@ import {
   SRGB_TO_LINEAR,
   pqOETF,
   smoothstep,
-} from './color';
+} from '../engine/color';
 
 /** Which pixels receive the boost. */
 export const GLOW_MODES = Object.freeze({

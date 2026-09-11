@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 const PATHS = {
   sun: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM12 2v2m0 16v2M2 12h2m16 0h2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42',
@@ -19,7 +19,6 @@ const PATHS = {
 
 @Component({
   selector: 'app-icon',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'inline-flex shrink-0', 'aria-hidden': 'true' },
   template: `<svg
     viewBox="0 0 24 24"

@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { Bench } from './bench.component';
-import { BenchStore } from './services/bench-store.service';
-import { DEFAULT_SETTINGS } from './models/bench.models';
-import { SourceUpload } from './components/source-upload/source-upload.component';
-import { DisplayIndicator } from './components/display-indicator/display-indicator.component';
+import { Bench } from '@features/bench/bench.component';
+import { BenchStore } from '@features/bench/services/bench-store.service';
+import { DEFAULT_SETTINGS } from '@features/bench/models/bench.models';
+import { SourceUpload } from '@features/bench/components/source-upload/source-upload.component';
+import { DisplayIndicator } from '@features/bench/components/display-indicator/display-indicator.component';
 
 function pasteEvent(file: File): Event {
   const event = new Event('paste', { bubbles: true, cancelable: true });

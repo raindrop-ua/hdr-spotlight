@@ -1,9 +1,8 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { EncodeSettings } from '../../../models/bench.models';
+import { Component, input, output } from '@angular/core';
+import { EncodeSettings } from '@features/bench/models/bench.models';
 
 @Component({
   selector: 'app-output-controls',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block space-y-6' },
   templateUrl: './output-controls.component.html',
 })

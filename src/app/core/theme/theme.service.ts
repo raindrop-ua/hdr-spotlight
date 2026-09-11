@@ -1,10 +1,10 @@
 import { DOCUMENT } from '@angular/common';
-import { afterNextRender, computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { afterNextRender, computed, DestroyRef, inject, Service, signal } from '@angular/core';
 
 export type ThemePreference = 'system' | 'light' | 'dark';
 const STORAGE_KEY = 'spotlight.theme';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ThemeService {
   private readonly document = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);

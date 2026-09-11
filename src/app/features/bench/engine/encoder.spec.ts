@@ -1,7 +1,7 @@
-import { codeToNits, nitsToCode, pqEOTF, pqOETF, stopsToNits } from './color';
-import { encodeToPQ } from './encoder';
-import { embedICCProfile, embedPNGCICP, crc32 } from './container';
-import { buildICCProfile, CICP } from './icc';
+import { codeToNits, nitsToCode, pqEOTF, pqOETF, stopsToNits } from '@features/bench/engine/color';
+import { encodeToPQ } from '@features/bench/engine/encoder';
+import { embedICCProfile, embedPNGCICP, crc32 } from '@features/bench/engine/container';
+import { buildICCProfile, CICP } from '@features/bench/engine/icc';
 
 const text = (bytes: Uint8Array) => Array.from(bytes, (b) => String.fromCharCode(b)).join('');
 

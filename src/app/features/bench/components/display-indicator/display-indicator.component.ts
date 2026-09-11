@@ -1,17 +1,9 @@
-import {
-  afterNextRender,
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  inject,
-  signal,
-} from '@angular/core';
-import { Icon } from '../../../../shared/ui/icon/icon.component';
+import { afterNextRender, Component, DestroyRef, inject, signal } from '@angular/core';
+import { Icon } from '@shared/ui/icon/icon.component';
 
 @Component({
   selector: 'app-display-indicator',
   imports: [Icon],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
   templateUrl: './display-indicator.component.html',
 })

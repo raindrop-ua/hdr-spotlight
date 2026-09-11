@@ -1,7 +1,11 @@
-import { SourceImage } from '../models/source-image.model';
+import { SourceImage } from '@features/bench/models/source-image.model';
 import { computed, inject, Injectable, OnDestroy, signal } from '@angular/core';
-import { DEFAULT_SETTINGS, EncodeResult, EncodeSettings } from '../models/bench.models';
-import { ImageEncoderService } from './image-encoder.service';
+import {
+  DEFAULT_SETTINGS,
+  EncodeResult,
+  EncodeSettings,
+} from '@features/bench/models/bench.models';
+import { ImageEncoderService } from '@features/bench/services/image-encoder.service';
 
 @Injectable()
 export class BenchStore implements OnDestroy {

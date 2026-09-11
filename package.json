@@ -8,8 +8,14 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "test:ci": "ng test --watch=false",
     "serve:ssr:hdr-spotlight": "node dist/hdr-spotlight/server/server.mjs",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "lint:fix": "ng lint --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "fix": "pnpm format && pnpm lint:fix",
+    "check": "pnpm format:check && pnpm lint && pnpm test:ci && pnpm build"
   },
   "private": true,
   "packageManager": "pnpm@12.3.4",
@@ -21,14 +27,14 @@
     "@angular/platform-browser": "^22.0.0",
     "@angular/platform-server": "^22.0.0",
     "@angular/router": "^22.0.0",
-    "@angular/ssr": "^22.0.0",
+    "@angular/ssr": "^22.1.8",
     "express": "^5.1.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "@angular/build": "^22.0.0",
-    "@angular/cli": "^22.0.0",
+    "@angular/build": "^22.1.8",
+    "@angular/cli": "^22.1.8",
     "@angular/compiler-cli": "^22.0.0",
     "@eslint/js": "^10.0.1",
     "@tailwindcss/postcss": "^4.1.12",

@@ -1,13 +1,18 @@
-import { SourceImage } from '../models/source-image.model';
-import { Injectable } from '@angular/core';
-import { embedICCProfile, embedPNGCICP } from '../engine/container';
-import { encodeToPQ } from '../engine/encoder';
-import { buildICCProfile, CICP } from '../engine/icc';
-import { EncodeResult, EncodeSettings, EncodeStats, PixelImage } from '../models/bench.models';
+import { SourceImage } from '@features/bench/models/source-image.model';
+import { Service } from '@angular/core';
+import { embedICCProfile, embedPNGCICP } from '@features/bench/engine/container';
+import { encodeToPQ } from '@features/bench/engine/encoder';
+import { buildICCProfile, CICP } from '@features/bench/engine/icc';
+import {
+  EncodeResult,
+  EncodeSettings,
+  EncodeStats,
+  PixelImage,
+} from '@features/bench/models/bench.models';
 
 const MAX_PIXELS = 16_777_216;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ImageEncoderService {
   private readonly profile = buildICCProfile();
 

@@ -1,55 +1,56 @@
-/**
- * Builds a "Rec2020 Gamut with PQ Transfer" ICC v4.4 display profile.
- *
- * Two things make this work where a plain PQ profile fails:
- *
- *  1. The `cicp` tag (ICC v4.4, ICC.1:2022). Without it, a color manager sees
- *     an ordinary tone curve, applies it, reads ~0.3, and paints mid-grey — the
- *     "dim, badly rendered result" the W3C HDR report describes. With it,
- *     Blink's color library recognizes BT.2020 + ST 2084 and switches the
- *     image to an HDR pipeline.
- *  2. It is an ICC profile at all. LinkedIn's re-encode discards gain maps,
- *     MPF segments, and XMP, but preserves color management — so the HDR has
- *     to travel inside the profile, or it does not travel.
- *
- * Verified byte-for-byte against an Apple-generated profile pulled from a live
- * glowing logo: same description, same CICP values, same colorants to four
- * decimal places. Apple ships an A2B0/B2A0 LUT pipeline where this uses TRC
- * curves, which is why theirs is ~9 KB and this is ~2.5 KB.
- */
-
+// Build a BT.2020/PQ display profile with both sampled tone curves and explicit CICP signaling.
 import { pqEOTF } from '@features/bench/engine/color';
+import type { Cicp } from '../models/bench.models';
+
+type XYZ = readonly [x: number, y: number, z: number];
+type FourBytes = readonly [number, number, number, number];
+type TagSignature =
+  'desc' | 'cicp' | 'wtpt' | 'rXYZ' | 'gXYZ' | 'bXYZ' | 'rTRC' | 'gTRC' | 'bTRC' | 'cprt';
+type ProfileTag = readonly [signature: TagSignature, bytes: readonly number[]];
+type TagLocation = readonly [offset: number, size: number];
 
 const TRC_SAMPLES = 1024;
 
-/** BT.2020 primaries, Bradford-adapted to the D50 profile connection space. */
+// BT.2020 colorants adapted from D65 to the ICC D50 connection space.
 const COLORANTS = {
   rXYZ: [0.673515, 0.279059, -0.001932],
   gXYZ: [0.165697, 0.675318, 0.029978],
   bXYZ: [0.125083, 0.045623, 0.797059],
-};
-const D50 = [0.9642, 1.0, 0.82491];
+} as const satisfies Record<'rXYZ' | 'gXYZ' | 'bXYZ', XYZ>;
+const D50: XYZ = [0.9642, 1.0, 0.82491];
 
-/** CICP code points: BT.2020 primaries / ST 2084 / RGB / full range. */
+// BT.2020 primaries, ST 2084 transfer, RGB matrix and full-range code values.
 export const CICP = Object.freeze({
   colorPrimaries: 9,
   transferCharacteristics: 16,
   matrixCoefficients: 0,
   videoFullRangeFlag: 1,
-});
+} as const satisfies Cicp);
 
 export const PROFILE_DESCRIPTION = 'Rec2020 Gamut with PQ Transfer';
 
-const sig = (s: string) => [s.charCodeAt(0), s.charCodeAt(1), s.charCodeAt(2), s.charCodeAt(3)];
-const u32 = (n: number) => [(n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255];
-const s15Fixed16 = (x: number) => u32(Math.round(x * 65536) >>> 0);
+const sig = (s: string): FourBytes => [
+  s.charCodeAt(0),
+  s.charCodeAt(1),
+  s.charCodeAt(2),
+  s.charCodeAt(3),
+];
+// ICC integers are big-endian; signed fixed-point values retain their two's-complement bits.
+const u32 = (n: number): FourBytes => [
+  (n >>> 24) & 255,
+  (n >>> 16) & 255,
+  (n >>> 8) & 255,
+  n & 255,
+];
+const s15Fixed16 = (x: number): FourBytes => u32(Math.round(x * 65536) >>> 0);
 
-function xyzType([x, y, z]: number[]) {
+function xyzType([x, y, z]: XYZ): number[] {
   return [...sig('XYZ '), 0, 0, 0, 0, ...s15Fixed16(x), ...s15Fixed16(y), ...s15Fixed16(z)];
 }
 
-function mlucType(text: string) {
-  const utf16 = [];
+function mlucType(text: string): number[] {
+  // One en-US record; text starts after the 16-byte header and 12-byte record.
+  const utf16: number[] = [];
   for (const ch of text) {
     const c = ch.charCodeAt(0);
     utf16.push((c >> 8) & 255, c & 255);
@@ -69,7 +70,7 @@ function mlucType(text: string) {
   ];
 }
 
-function curvTypePQ(samples = TRC_SAMPLES) {
+function curvTypePQ(samples: number = TRC_SAMPLES): number[] {
   const out = [...sig('curv'), 0, 0, 0, 0, ...u32(samples)];
   for (let i = 0; i < samples; i++) {
     const y = Math.min(1, Math.max(0, pqEOTF(i / (samples - 1))));
@@ -79,7 +80,7 @@ function curvTypePQ(samples = TRC_SAMPLES) {
   return out;
 }
 
-function cicpType() {
+function cicpType(): number[] {
   return [
     ...sig('cicp'),
     0,
@@ -93,13 +94,10 @@ function cicpType() {
   ];
 }
 
-/**
- * @returns {Uint8Array} a complete ICC profile ready to embed.
- */
-export function buildICCProfile() {
+export function buildICCProfile(): Uint8Array<ArrayBuffer> {
   const trc = curvTypePQ();
 
-  const tags: [string, number[]][] = [
+  const tags: readonly ProfileTag[] = [
     ['desc', mlucType(PROFILE_DESCRIPTION)],
     ['cicp', cicpType()],
     ['wtpt', xyzType(D50)],
@@ -116,17 +114,18 @@ export function buildICCProfile() {
   const headerAndTable = 128 + 4 + count * 12;
   const bodyStart = headerAndTable + ((4 - (headerAndTable % 4)) % 4);
 
-  const table = [];
-  const body = [];
-  const shared = new Map<string, number[]>();
+  const table: number[] = [];
+  const body: number[] = [];
+  const shared = new Map<TagSignature | 'trc', TagLocation>();
 
   for (const [name, data] of tags) {
     // The three TRC tags are identical; the spec lets them share one offset.
-    const key = name.endsWith('TRC') ? 'trc' : name;
+    const key: TagSignature | 'trc' = name.endsWith('TRC') ? 'trc' : name;
     let entry = shared.get(key);
     if (!entry) {
       entry = [bodyStart + body.length, data.length];
       body.push(...data);
+      // Tag sizes exclude padding; the next payload must start on a 4-byte boundary.
       while (body.length % 4) body.push(0);
       shared.set(key, entry);
     }
@@ -134,8 +133,8 @@ export function buildICCProfile() {
   }
 
   const total = bodyStart + body.length;
-  const header = new Array(128).fill(0);
-  const put = (offset: number, bytes: number[]) =>
+  const header = new Array<number>(128).fill(0);
+  const put = (offset: number, bytes: readonly number[]): void =>
     bytes.forEach((b, i) => {
       header[offset + i] = b;
     });
@@ -150,6 +149,6 @@ export function buildICCProfile() {
   put(64, u32(0)); // perceptual rendering intent
   put(68, [...s15Fixed16(D50[0]), ...s15Fixed16(D50[1]), ...s15Fixed16(D50[2])]);
 
-  const pad = new Array(bodyStart - headerAndTable).fill(0);
+  const pad = new Array<number>(bodyStart - headerAndTable).fill(0);
   return new Uint8Array([...header, ...u32(count), ...table, ...pad, ...body]);
 }

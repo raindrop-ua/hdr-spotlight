@@ -3,7 +3,8 @@ import { encodeToPQ } from '@features/bench/engine/encoder';
 import { embedICCProfile, embedPNGCICP, crc32 } from '@features/bench/engine/container';
 import { buildICCProfile, CICP } from '@features/bench/engine/icc';
 
-const text = (bytes: Uint8Array) => Array.from(bytes, (b) => String.fromCharCode(b)).join('');
+const text = (bytes: Uint8Array): string =>
+  Array.from(bytes, (b) => String.fromCharCode(b)).join('');
 
 describe('HDR encoding', () => {
   it('round-trips absolute luminance through ST 2084', () => {
@@ -150,7 +151,7 @@ describe('HDR metadata', () => {
       72,
       68,
       82,
-      ...new Array(17).fill(0),
+      ...new Array<number>(17).fill(0),
       7,
       8,
       9,

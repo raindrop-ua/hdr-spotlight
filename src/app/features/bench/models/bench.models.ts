@@ -16,7 +16,7 @@ export interface EncodeSettings extends PixelOptions {
 }
 
 export const DEFAULT_SETTINGS: Readonly<EncodeSettings> = {
-  stops: 3.9,
+  stops: 3,
   mode: 'whites',
   threshold: 0.85,
   background: '#000000',

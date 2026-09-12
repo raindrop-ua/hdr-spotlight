@@ -13,12 +13,13 @@ pnpm install --frozen-lockfile
 pnpm start
 ```
 
-Open http://localhost:4200. Validation:
+Open http://localhost:4200. Run the full quality check:
 
 ```sh
-pnpm build
-pnpm test --watch=false
+pnpm check
 ```
+
+This checks formatting, runs ESLint and unit tests, and builds the production application. Use `pnpm test:ci` to run the tests separately.
 
 ## Docker
 
@@ -53,11 +54,12 @@ src/
         bench-store.service.ts    # Signals, async lifecycle, cancellation, URL ownership
         image-encoder.service.ts  # Decode, fit/composite, worker and canvas export
       engine/
-        color.ts                  # sRGB / BT.2020 / ST 2084 mathematics
-        encoder.ts                # Pure pixel transformation and statistics
+        color.ts                  # Color mathematics and interpolated PQ lookup
+        encoder.ts                # Input validation, pixel transformation and statistics
         encoder.worker.ts         # Pixel transformation off the UI thread
+        encoder-worker.models.ts  # Shared worker request, result and error contracts
         icc.ts                    # ICC v4.4 profile with CICP
-        container.ts              # JPEG profile and PNG cICP embedding
+        container.ts              # Container validation and HDR metadata replacement
       models/                     # Typed contracts, settings and defaults
     shared/ui/
       icon/                       # Shared SVG icon component
@@ -80,15 +82,24 @@ Presentation components use signal inputs/outputs and OnPush. Settings groups ac
 
 ## Image behavior
 
-- Pipeline: sRGB decode → background compositing → selected highlight boost → linear BT.2020 → absolute luminance anchored at 203 nits → ST 2084 PQ with ordered dithering.
+- Pipeline: sRGB canvas decode/compositing → linear sRGB → selected highlight boost → linear BT.2020 → absolute luminance anchored at 203 nits → 8-bit ST 2084 PQ with ordered dithering.
 - JPEG includes an ICC v4.4 profile with CICP `9 / 16 / 0 / 1`. It uses the browser's highest-quality JPEG encoding; exact chroma subsampling is browser-dependent.
-- PNG carries a `cICP` chunk. Enable **Preserve transparency** to retain the original alpha channel and transparent padding; the preview, primary download and statistics then refer to PNG. JPEG always composites the source onto the selected background before HDR encoding. With the switch off, both outputs are opaque, matching the reference bench. Transparent-image coverage is weighted by opacity; fully invisible pixels do not affect peak luminance.
+- PNG carries a `cICP` chunk. Enable **Preserve transparency** to retain the alpha channel of the rasterized source and transparent padding; the preview, primary download and statistics then refer to PNG. JPEG always composites the source onto the selected background before HDR encoding. With the switch off, both outputs are opaque. Transparent-image coverage is weighted by opacity; fully invisible pixels do not affect peak luminance.
 - Preset sizes fit the artwork inside a square without stretching. Original dimensions preserve width and height.
 - Inputs are limited to 32 MB, 16 megapixels and 16,384 pixels per side. Output presets run through 3840 × 3840.
 - Input color is normalized through an sRGB canvas. This is not a wide-gamut preservation workflow or a gain-map encoder.
 - HDR appearance depends on the display, browser, color management and power settings. The preview uses the actual exported file, without simulated CSS brightness. The Light/Dark preview backdrop does not change output pixels.
 
-Unit tests cover PQ values, masks, coverage/clipping, ICC fields, JPEG metadata replacement, PNG CRCs asynchronous store races, settings propagation/reset, and browser-listener cleanup. Browser checks cover SVG upload, PNG paste, image encoding, real export metadata, original dimensions and responsive layouts.
+## Engine details
+
+- Pixel encoding uses an approximately 64 KiB PQ lookup table with denser samples near black and interpolation between samples. The darkest values use the exact formula. The exact PQ functions remain available for reference calculations. In `whites` mode, all 256 possible mask weights are calculated once per transform.
+- Highlight masks use source sRGB values; exposure is applied in linear light. Zero feather produces a hard threshold, including pixels exactly on the threshold. The 4 × 4 Bayer dither offsets are centered on zero and shared across RGB channels.
+- Before modifying pixels, the engine rejects empty or invalid dimensions, mismatched RGBA buffers, non-finite exposure, threshold/feather outside `0..1`, unknown modes and invalid boolean options. Exposure must also produce a finite luminance.
+- PNG metadata insertion replaces existing `cICP` chunks, so repeated calls do not add duplicates. JPEG replaces APP1/APP2 metadata with the supplied ICC profile and preserves the scan bytes. Container checks validate signatures, segment/chunk boundaries and required end markers; they do not decode compressed pixels or verify CRCs of retained PNG chunks.
+
+Unit tests cover PQ accuracy and monotonicity, hard thresholds, invalid inputs, dither averages, coverage/clipping, ICC fields, JPEG segment splitting, repeated metadata replacement, truncated containers, PNG CRC generation, asynchronous store races, settings propagation/reset, and browser-listener cleanup. PQ lookup tests compare linear and logarithmic samples against the exact formula with an error limit of 0.005 of an 8-bit code value before rounding; values near rounding boundaries can still differ by one output code.
+
+Manual browser checks have also exercised Canvas PNG/JPEG export and decoding, alpha preservation and repeated metadata replacement. Pixel-transform benchmarks exclude Canvas work and file compression; their speedup is not an end-to-end export guarantee.
 
 ## License
 

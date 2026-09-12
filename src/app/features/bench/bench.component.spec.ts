@@ -52,9 +52,11 @@ describe('Workbench component boundaries', () => {
     transparency.click();
     fixture.detectChanges();
     change('#size', '800', 'change');
+    change('#jpeg-quality', '72');
     change('[type="color"]', '#123456');
     expect(store.settings()).toMatchObject({
       preserveTransparency: true,
+      jpegQuality: 72,
       size: 800,
       background: '#123456',
       stops: 3,
@@ -71,6 +73,7 @@ describe('Workbench component boundaries', () => {
     expect((element.querySelector('#threshold') as HTMLInputElement).value).toBe('85');
     expect((element.querySelector('#size') as HTMLSelectElement).value).toBe('400');
     expect(transparency.checked).toBe(false);
+    expect((element.querySelector('#jpeg-quality') as HTMLInputElement).value).toBe('100');
   });
 
   it('owns clipboard selection in the uploader, respects inputs and removes the global listener', async () => {

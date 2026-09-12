@@ -1,6 +1,7 @@
 import { SourceImage } from '@features/bench/models/source-image.model';
 import { computed, inject, Injectable, OnDestroy, signal } from '@angular/core';
 import {
+  JpegExport,
   DEFAULT_SETTINGS,
   EncodeResult,
   EncodeSettings,
@@ -49,6 +50,24 @@ export class BenchStore implements OnDestroy {
     this.settings.update((current) => ({ ...current, ...patch }));
     this.clearResult();
     this.error.set('');
+  }
+
+  applyJpeg(jpeg: JpegExport): void {
+    const current = this.result();
+    if (!current) {
+      URL.revokeObjectURL(jpeg.url);
+      return;
+    }
+    URL.revokeObjectURL(current.jpegUrl);
+    const settings = { ...current.settings, jpegQuality: jpeg.quality };
+    this.settings.set(settings);
+    this.result.set({
+      ...current,
+      settings,
+      jpegUrl: jpeg.url,
+      jpegBytes: jpeg.bytes,
+      bytes: settings.preserveTransparency ? current.bytes : jpeg.bytes,
+    });
   }
 
   reset(): void {

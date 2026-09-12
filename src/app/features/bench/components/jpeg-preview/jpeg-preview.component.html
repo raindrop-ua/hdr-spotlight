@@ -1,0 +1,138 @@
+<button type="button" class="quiet-button min-h-10 text-xs" (click)="open()">Preview JPEG</button>
+<dialog
+  #dialog
+  aria-labelledby="jpeg-preview-title"
+  aria-describedby="jpeg-preview-description"
+  (cancel)="cancel($event)"
+  (close)="cleanup()"
+>
+  @if (opened()) {
+    <header class="flex items-start justify-between gap-4 border-b border-line p-5 sm:px-6">
+      <div>
+        <p class="mono mb-2 text-[10px] tracking-widest text-accent">EXPORT PREVIEW</p>
+        <h2 id="jpeg-preview-title" class="text-lg font-semibold tracking-tight">JPEG preview</h2>
+        <p id="jpeg-preview-description" class="mt-2 text-xs leading-5 text-muted">
+          Fine-tune JPEG quality. See the exact file before you save.
+        </p>
+      </div>
+      <button
+        type="button"
+        class="quiet-button min-h-10 px-2 text-xs"
+        aria-label="Close JPEG preview"
+        (click)="close()"
+      >
+        Close
+      </button>
+    </header>
+    <div class="grid min-w-0 md:grid-cols-[minmax(0,1fr)_260px]">
+      <div class="min-w-0 p-5 sm:p-6">
+        <div class="mb-3 flex items-center justify-between gap-3">
+          <span class="mono text-xs text-muted">{{ result().width }} × {{ result().height }}</span>
+          <div class="segments compact" role="group" aria-label="Preview zoom">
+            <button
+              type="button"
+              [attr.aria-pressed]="!actualSize()"
+              (click)="actualSize.set(false)"
+            >
+              Fit
+            </button>
+            <button type="button" [attr.aria-pressed]="actualSize()" (click)="actualSize.set(true)">
+              100%
+            </button>
+          </div>
+        </div>
+        <div
+          class="jpeg-stage"
+          [class.actual-size]="actualSize()"
+          [attr.aria-busy]="busy()"
+          tabindex="0"
+          role="region"
+          aria-label="JPEG image preview, scroll to inspect at 100 percent"
+        >
+          <img
+            [src]="candidate()?.url ?? result().jpegUrl"
+            alt="JPEG output at the last completed quality setting"
+            [style.width.px]="actualSize() ? result().width : null"
+            [style.height.px]="actualSize() ? result().height : null"
+          />
+        </div>
+        <p class="mt-3 text-xs leading-5 text-muted">
+          {{
+            actualSize()
+              ? 'One image pixel per CSS pixel. Scroll to inspect details.'
+              : 'Switch to 100% to inspect fine detail and compression artifacts.'
+          }}
+        </p>
+      </div>
+      <aside class="border-t border-line bg-panel/40 p-5 sm:p-6 md:border-t-0 md:border-l">
+        <label for="preview-jpeg-quality" class="control-label"
+          >JPEG quality<span class="mono text-accent">{{ quality() }}%</span></label
+        >
+        <input
+          id="preview-jpeg-quality"
+          type="range"
+          min="1"
+          max="100"
+          step="1"
+          [value]="quality()"
+          [style.--fill]="((quality() - 1) / 99) * 100 + '%'"
+          (input)="change($event)"
+          aria-describedby="preview-quality-hint"
+        />
+        <div class="flex justify-between text-xs text-muted">
+          <span>Smaller file</span><span>More detail</span>
+        </div>
+        <p id="preview-quality-hint" class="mt-4 text-xs leading-5 text-muted">
+          Higher quality keeps more detail. Even at 100%, JPEG uses lossy compression.
+        </p>
+        <div
+          class="mt-6 rounded-xl border border-line bg-surface p-4"
+          role="status"
+          aria-live="polite"
+        >
+          <p class="text-xs text-muted">{{ busy() ? 'Updating preview…' : 'JPEG file size' }}</p>
+          <p class="mono mt-2 text-2xl">
+            {{ (candidate()?.bytes ?? result().jpegBytes) / 1024 | number: '1.1-1' }}
+            <span class="text-xs text-muted">KB</span>
+          </p>
+          <p class="mt-2 text-xs text-muted">
+            {{
+              busy()
+                ? 'Showing the previous result'
+                : 'Quality ' + (candidate()?.quality ?? result().settings.jpegQuality) + '%'
+            }}
+          </p>
+        </div>
+        @if (error()) {
+          <p role="alert" class="mt-4 text-xs leading-5 text-danger">{{ error() }}</p>
+        }
+        <p class="mt-4 text-xs leading-5 text-muted">
+          BT.2020 / PQ · HDR profile included.<br />PNG is unchanged.
+        </p>
+        @if (result().settings.preserveTransparency) {
+          <p class="mt-3 text-xs leading-5 text-muted">
+            JPEG uses your selected background. Transparency stays in PNG.
+          </p>
+        }
+      </aside>
+    </div>
+    <footer
+      class="flex flex-wrap items-center justify-between gap-4 border-t border-line p-5 sm:px-6"
+    >
+      <p class="text-xs text-muted">HDR appearance depends on your display and browser.</p>
+      <div class="flex items-center gap-5">
+        <button type="button" class="quiet-button min-h-11 text-xs" (click)="close()">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="primary-button"
+          [disabled]="busy() || !!error()"
+          (click)="apply()"
+        >
+          Apply quality
+        </button>
+      </div>
+    </footer>
+  }
+</dialog>

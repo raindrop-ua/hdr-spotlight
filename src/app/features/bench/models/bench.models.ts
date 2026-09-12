@@ -10,12 +10,14 @@ export interface PixelOptions {
 }
 
 export interface EncodeSettings extends PixelOptions {
+  jpegQuality: number;
   background: string;
   size: number;
   preserveTransparency: boolean;
 }
 
 export const DEFAULT_SETTINGS: Readonly<EncodeSettings> = {
+  jpegQuality: 100,
   stops: 3,
   mode: 'whites',
   threshold: 0.85,
@@ -43,7 +45,14 @@ export interface Cicp {
   videoFullRangeFlag: number;
 }
 
+export interface JpegExport {
+  url: string;
+  bytes: number;
+  quality: number;
+}
+
 export interface EncodeResult {
+  jpegBytes: number;
   jpegUrl: string;
   pngUrl: string;
   name: string;

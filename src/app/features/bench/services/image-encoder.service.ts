@@ -9,6 +9,7 @@ import type {
 } from '@features/bench/engine/encoder-worker.models';
 import { buildICCProfile, CICP } from '@features/bench/engine/icc';
 import {
+  JpegExport,
   EncodeResult,
   EncodeSettings,
   EncodeStats,
@@ -52,6 +53,7 @@ export class ImageEncoderService {
     settings: EncodeSettings,
     signal: AbortSignal,
   ): Promise<EncodeResult> {
+    this.validateQuality(settings.jpegQuality);
     const width = settings.size || source.width;
     const height = settings.size || source.height;
     // Composite JPEG before the color transform; compositing PQ values would darken edges.
@@ -61,7 +63,7 @@ export class ImageEncoderService {
       signal,
     );
     const canvas = jpegRender.canvas;
-    const jpegBlob = await this.blob(canvas, 'image/jpeg');
+    const jpegBlob = await this.blob(canvas, 'image/jpeg', settings.jpegQuality / 100);
     signal.throwIfAborted();
     const jpeg = embedICCProfile(new Uint8Array(await jpegBlob.arrayBuffer()), this.profile);
     const pngRender = settings.preserveTransparency
@@ -77,6 +79,7 @@ export class ImageEncoderService {
         .replace(/[^\p{L}\p{N}_-]/gu, '-')
         .slice(0, 80) || 'image';
     return {
+      jpegBytes: jpeg.length,
       jpegUrl: URL.createObjectURL(new Blob([jpeg], { type: 'image/jpeg' })),
       pngUrl: URL.createObjectURL(new Blob([png], { type: 'image/png' })),
       width,
@@ -86,6 +89,33 @@ export class ImageEncoderService {
       stats: pngRender.stats,
       name: `${name}-hdr-${settings.stops.toFixed(1)}stops`,
     };
+  }
+
+  // Keep the uncompressed PQ canvas for this preview session; never recompress a JPEG.
+  async prepareJpeg(source: SourceImage, settings: EncodeSettings, signal: AbortSignal) {
+    const { canvas } = await this.render(
+      source,
+      { ...settings, preserveTransparency: false },
+      signal,
+    );
+    return async (quality: number, requestSignal: AbortSignal): Promise<JpegExport> => {
+      this.validateQuality(quality);
+      requestSignal.throwIfAborted();
+      const blob = await this.blob(canvas, 'image/jpeg', quality / 100);
+      const jpeg = embedICCProfile(new Uint8Array(await blob.arrayBuffer()), this.profile);
+      requestSignal.throwIfAborted();
+      return {
+        url: URL.createObjectURL(new Blob([jpeg], { type: 'image/jpeg' })),
+        bytes: jpeg.length,
+        quality,
+      };
+    };
+  }
+
+  private validateQuality(quality: number): void {
+    if (!Number.isInteger(quality) || quality < 1 || quality > 100) {
+      throw new RangeError('JPEG quality must be a whole number between 1 and 100.');
+    }
   }
 
   private async render(source: SourceImage, settings: EncodeSettings, signal: AbortSignal) {
@@ -130,7 +160,7 @@ export class ImageEncoderService {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
-  private blob(canvas: HTMLCanvasElement, type: string): Promise<Blob> {
+  private blob(canvas: HTMLCanvasElement, type: string, quality?: number): Promise<Blob> {
     return new Promise((resolve, reject) =>
       canvas.toBlob(
         (blob) => {
@@ -138,7 +168,7 @@ export class ImageEncoderService {
           else reject(new Error('Export failed. Try a smaller output size.'));
         },
         type,
-        1,
+        quality,
       ),
     );
   }

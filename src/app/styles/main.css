@@ -143,13 +143,10 @@
   }
 
   .custom-color {
-    width: 27px;
-    height: 27px;
+    @apply size-7 rounded-full cursor-pointer;
     padding: 0;
     border: 0;
-    border-radius: 50%;
     overflow: hidden;
-    cursor: pointer;
     background: conic-gradient(#fb6570, #f1ed57, #66e298, #68b5fa, #cd85f7, #fb6570);
   }
 

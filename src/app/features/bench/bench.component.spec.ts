@@ -31,6 +31,7 @@ describe('Workbench component boundaries', () => {
       fixture.detectChanges();
     };
 
+    expect(button('Standard').getAttribute('aria-pressed')).toBe('true');
     button('Subtle').click();
     fixture.detectChanges();
     expect(store.settings().stops).toBe(2);
@@ -65,7 +66,8 @@ describe('Workbench component boundaries', () => {
     button('Reset').click();
     fixture.detectChanges();
     expect(store.settings()).toEqual(DEFAULT_SETTINGS);
-    expect((element.querySelector('#boost') as HTMLInputElement).value).toBe('3.9');
+    expect((element.querySelector('#boost') as HTMLInputElement).value).toBe('3');
+    expect(button('Standard').getAttribute('aria-pressed')).toBe('true');
     expect((element.querySelector('#threshold') as HTMLInputElement).value).toBe('85');
     expect((element.querySelector('#size') as HTMLSelectElement).value).toBe('400');
     expect(transparency.checked).toBe(false);

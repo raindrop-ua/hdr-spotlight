@@ -134,28 +134,12 @@ describe('HDR metadata', () => {
   });
 
   it('writes PNG CICP after IHDR with a correct CRC and preserves other bytes', () => {
-    const png = new Uint8Array([
-      137,
-      80,
-      78,
-      71,
-      13,
-      10,
-      26,
-      10,
-      0,
-      0,
-      0,
-      13,
-      73,
-      72,
-      68,
-      82,
-      ...new Array<number>(17).fill(0),
-      7,
-      8,
-      9,
-    ]);
+    const png = Uint8Array.from(
+      atob(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a1ioAAAAASUVORK5CYII=',
+      ),
+      (ch) => ch.charCodeAt(0),
+    );
     const output = embedPNGCICP(png, CICP);
     expect(output.slice(0, 33)).toEqual(png.slice(0, 33));
     expect(text(output.slice(37, 41))).toBe('cICP');

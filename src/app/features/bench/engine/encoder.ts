@@ -6,7 +6,7 @@ import {
   RGB_709_TO_2020,
   LUMA_2020,
   SRGB_TO_LINEAR,
-  pqOETF,
+  pqOETFFast,
   smoothstep,
 } from '../engine/color';
 
@@ -44,10 +44,50 @@ export function encodeToPQ(image: PixelImage, options: Readonly<PixelOptions>): 
     preserveTransparency = false,
   } = options;
 
+  // Validate once before any writes; invalid inputs must not leave a partially encoded image.
+  if (
+    !Number.isSafeInteger(width) ||
+    width <= 0 ||
+    !Number.isSafeInteger(height) ||
+    height <= 0 ||
+    !Number.isSafeInteger(width * height * 4) ||
+    !(data instanceof Uint8ClampedArray) ||
+    data.length !== width * height * 4
+  ) {
+    throw new RangeError('Image dimensions must be positive integers matching the RGBA buffer.');
+  }
+  if (!Number.isFinite(stops) || !Number.isFinite(DIFFUSE_WHITE_NITS * Math.pow(2, stops))) {
+    throw new RangeError('Exposure must produce a finite luminance.');
+  }
+  if (
+    !Number.isFinite(threshold) ||
+    threshold < 0 ||
+    threshold > 1 ||
+    !Number.isFinite(feather) ||
+    feather < 0 ||
+    feather > 1
+  ) {
+    throw new RangeError('Threshold and feather must be finite values between 0 and 1.');
+  }
+  if (mode !== GLOW_MODES.ALL && mode !== GLOW_MODES.BRIGHT && mode !== GLOW_MODES.WHITES) {
+    throw new TypeError('Unknown glow mode.');
+  }
+  if (typeof dither !== 'boolean' || typeof preserveTransparency !== 'boolean') {
+    throw new TypeError('Dither and preserveTransparency must be booleans.');
+  }
+
   const gain = Math.pow(2, stops) - 1;
   // The mask reaches full strength at threshold; feather sets the ramp width below it.
   const edge0 = Math.max(0, threshold - feather);
   const toPQScale = DIFFUSE_WHITE_NITS / PQ_PEAK_NITS;
+
+  // Whites mode depends only on the minimum 8-bit channel: cache all 256 mask weights.
+  const whiteWeights = mode === GLOW_MODES.WHITES ? new Float64Array(256) : null;
+  if (whiteWeights) {
+    for (let value = 0; value < whiteWeights.length; value++) {
+      whiteWeights[value] = smoothstep(edge0, threshold, value / 255);
+    }
+  }
 
   let lit = 0;
   let clipped = 0;
@@ -64,13 +104,11 @@ export function encodeToPQ(image: PixelImage, options: Readonly<PixelOptions>): 
       const alpha = preserveTransparency ? data[i + 3] / 255 : 1;
 
       // Build the mask in source sRGB; apply the resulting gain in linear light.
-      let weight: number;
-      if (mode === GLOW_MODES.ALL) {
-        weight = 1;
-      } else if (mode === GLOW_MODES.BRIGHT) {
+      let weight = 1;
+      if (mode === GLOW_MODES.BRIGHT) {
         weight = smoothstep(edge0, threshold, (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255);
-      } else {
-        weight = smoothstep(edge0, threshold, Math.min(r, g, b) / 255);
+      } else if (whiteWeights) {
+        weight = whiteWeights[Math.min(r, g, b)];
       }
 
       const multiplier = 1 + gain * weight;
@@ -89,11 +127,11 @@ export function encodeToPQ(image: PixelImage, options: Readonly<PixelOptions>): 
       if (alpha > 0 && nits > peak) peak = nits;
       if (R * toPQScale > 1 || G * toPQScale > 1 || B * toPQScale > 1) clipped += alpha;
 
-      // One offset for all channels avoids adding a color tint to neutral pixels.
-      const offset = dither ? ditherRow[x & 3] / 16 - 0.5 : 0;
-      data[i] = clamp8(255 * pqOETF(clamp01(R * toPQScale)) + offset);
-      data[i + 1] = clamp8(255 * pqOETF(clamp01(G * toPQScale)) + offset);
-      data[i + 2] = clamp8(255 * pqOETF(clamp01(B * toPQScale)) + offset);
+      // Center the 16 offsets on zero; share each offset across RGB to keep neutrals neutral.
+      const offset = dither ? (ditherRow[x & 3] + 0.5) / 16 - 0.5 : 0;
+      data[i] = clamp8(255 * pqOETFFast(clamp01(R * toPQScale)) + offset);
+      data[i + 1] = clamp8(255 * pqOETFFast(clamp01(G * toPQScale)) + offset);
+      data[i + 2] = clamp8(255 * pqOETFFast(clamp01(B * toPQScale)) + offset);
       // Alpha is linear opacity, never PQ-encoded.
       if (!preserveTransparency) data[i + 3] = 255;
     }

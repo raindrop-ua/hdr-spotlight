@@ -25,6 +25,31 @@ export function pqOETF(y: number): number {
   return Math.pow((C1 + C2 * p) / (1 + C3 * p), M2);
 }
 
+// Quadratically spaced samples concentrate precision near black, where PQ bends most.
+// 8,193 doubles occupy 64 KiB. The darkest values use the exact curve instead.
+const PQ_LUT_INTERVALS = 8192;
+// Switch at a table node so the exact and interpolated curves meet without a jump.
+const PQ_EXACT_BELOW = (32 / PQ_LUT_INTERVALS) ** 2;
+const PQ_LUT: Float64Array<ArrayBuffer> = ((): Float64Array<ArrayBuffer> => {
+  const table = new Float64Array(PQ_LUT_INTERVALS + 1);
+  for (let i = 0; i <= PQ_LUT_INTERVALS; i++) {
+    const position = i / PQ_LUT_INTERVALS;
+    table[i] = pqOETF(position * position);
+  }
+  return table;
+})();
+
+// Approximate normalized luminance -> PQ for pixel encoding; keep pqOETF as the reference.
+// Interpolate in sqrt(luminance), matching the table spacing, before 8-bit quantization.
+export function pqOETFFast(y: number): number {
+  if (y < PQ_EXACT_BELOW) return pqOETF(y);
+  if (y >= 1) return 1;
+  const position = Math.sqrt(y) * PQ_LUT_INTERVALS;
+  const index = Math.floor(position);
+  const fraction = position - index;
+  return PQ_LUT[index] + (PQ_LUT[index + 1] - PQ_LUT[index]) * fraction;
+}
+
 // Encode absolute luminance as an 8-bit PQ value, capped at the PQ peak.
 export function nitsToCode(nits: number): number {
   return Math.round(255 * pqOETF(Math.min(1, nits / PQ_PEAK_NITS)));
@@ -57,6 +82,8 @@ export const SRGB_TO_LINEAR: Float64Array<ArrayBuffer> = ((): Float64Array<Array
 
 // Fade the highlight mask from zero to one between the two edges.
 export function smoothstep(edge0: number, edge1: number, x: number): number {
+  // Zero feather is a hard threshold, including pixels exactly on the edge.
+  if (edge0 === edge1) return x < edge0 ? 0 : 1;
   const t = Math.min(1, Math.max(0, (x - edge0) / (edge1 - edge0)));
   return t * t * (3 - 2 * t);
 }

@@ -1,4 +1,11 @@
 dialog {
+  opacity: 0;
+  translate: 0 -14px;
+  transition:
+    opacity 220ms ease,
+    translate 220ms ease,
+    display 220ms allow-discrete,
+    overlay 220ms allow-discrete;
   margin: auto;
   width: min(940px, calc(100vw - 32px));
   max-height: calc(100dvh - 32px);
@@ -12,8 +19,39 @@ dialog {
   box-shadow: 0 24px 100px #0005;
 }
 
+dialog[open] {
+  opacity: 1;
+  translate: 0 0;
+}
+
 dialog::backdrop {
+  background: #0000;
+  transition:
+    background-color 220ms ease,
+    display 220ms allow-discrete,
+    overlay 220ms allow-discrete;
+}
+
+dialog[open]::backdrop {
   background: #0009;
+}
+
+@starting-style {
+  dialog[open] {
+    opacity: 0;
+    translate: 0 18px;
+  }
+
+  dialog[open]::backdrop {
+    background: #0000;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog,
+  dialog::backdrop {
+    transition: none;
+  }
 }
 
 .jpeg-stage {

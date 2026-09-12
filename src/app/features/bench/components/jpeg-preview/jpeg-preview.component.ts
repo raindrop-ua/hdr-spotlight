@@ -33,14 +33,13 @@ export class JpegPreview implements OnDestroy {
   protected readonly quality = signal(100);
   protected readonly busy = signal(false);
   protected readonly error = signal('');
-  protected readonly actualSize = signal(false);
-  protected readonly opened = signal(false);
+  protected readonly zoom = signal<0 | 0.5 | 1>(0);
 
   protected open(): void {
     this.quality.set(this.result().settings.jpegQuality);
-    this.actualSize.set(false);
+    this.releaseCandidate();
+    this.zoom.set(0);
     this.error.set('');
-    this.opened.set(true);
     this.session = new AbortController();
     this.dialog().nativeElement.showModal();
   }
@@ -113,9 +112,8 @@ export class JpegPreview implements OnDestroy {
     this.request?.abort();
     this.request = undefined;
     this.prepared = undefined;
-    this.releaseCandidate();
+    // Keep the last preview mounted for the CSS exit transition.
     this.busy.set(false);
-    this.opened.set(false);
   }
 
   private releaseCandidate(): void {
@@ -126,5 +124,6 @@ export class JpegPreview implements OnDestroy {
 
   ngOnDestroy(): void {
     this.cleanup();
+    this.releaseCandidate();
   }
 }

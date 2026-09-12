@@ -77,7 +77,7 @@ describe('JPEG preview lifecycle', () => {
     expect(URL.revokeObjectURL).not.toHaveBeenCalledWith('blob:original');
   });
 
-  it('cancels with Escape and releases only the uncommitted preview', async () => {
+  it('keeps the cancelled preview for CSS exit, then releases it on destruction', async () => {
     const { fixture, dialog, change } = await setup();
     const applied = vi.fn();
     fixture.componentInstance.applied.subscribe(applied);
@@ -86,6 +86,8 @@ describe('JPEG preview lifecycle', () => {
     dialog.dispatchEvent(new Event('cancel', { cancelable: true }));
     expect(dialog.close).toHaveBeenCalled();
     expect(applied).not.toHaveBeenCalled();
+    expect(URL.revokeObjectURL).not.toHaveBeenCalledWith('blob:draft');
+    fixture.destroy();
     expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:draft');
     expect(URL.revokeObjectURL).not.toHaveBeenCalledWith('blob:original');
   });

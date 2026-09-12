@@ -11,7 +11,10 @@
           >{{ file.bytes / 1024 | number: '1.0-0' }} KB</span
         ></span
       >
-      <div class="flex items-center gap-4">
+      <div class="flex flex-wrap items-center gap-4">
+        @if (source(); as image) {
+          <app-jpeg-preview [source]="image" [result]="file" (applied)="jpegApplied.emit($event)" />
+        }
         @if (file.settings.preserveTransparency) {
           <a class="quiet-button text-xs" [href]="file.jpegUrl" [download]="file.name + '.jpg'"
             >JPEG</a

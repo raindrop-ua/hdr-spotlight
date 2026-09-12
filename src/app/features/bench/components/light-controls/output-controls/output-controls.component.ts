@@ -9,9 +9,12 @@ import { EncodeSettings } from '@features/bench/models/bench.models';
 export class OutputControls {
   readonly background = input.required<string>();
   readonly preserveTransparency = input.required<boolean>();
+  readonly jpegQuality = input.required<number>();
   readonly size = input.required<number>();
   readonly changed =
-    output<Partial<Pick<EncodeSettings, 'background' | 'preserveTransparency' | 'size'>>>();
+    output<
+      Partial<Pick<EncodeSettings, 'background' | 'preserveTransparency' | 'size' | 'jpegQuality'>>
+    >();
   protected readonly backgrounds = [
     { value: '#000000', label: 'Black' },
     { value: '#8a8fa8', label: 'Gray' },

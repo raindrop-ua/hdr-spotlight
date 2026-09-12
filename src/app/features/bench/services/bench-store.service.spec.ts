@@ -25,6 +25,7 @@ const result = (): EncodeResult => ({
   width: 400,
   height: 400,
   bytes: 1200,
+  jpegBytes: 1200,
   settings: { ...DEFAULT_SETTINGS },
   stats: { peakNits: 3030, litFraction: 0.08, clippedFraction: 0 },
 });
@@ -88,6 +89,30 @@ describe('BenchStore asynchronous lifecycle', () => {
     expect(store.result()).toBeNull();
     expect(store.encoding()).toBe(false);
   });
+
+  it.each([false, true])(
+    'applies JPEG quality while preserving PNG (transparency: %s)',
+    async (preserveTransparency) => {
+      encoder.load.mockResolvedValue(source('logo'));
+      encoder.encode.mockResolvedValue({
+        ...result(),
+        settings: { ...DEFAULT_SETTINGS, preserveTransparency },
+      });
+      await store.load(new File([], 'logo'));
+      await store.encode();
+      store.applyJpeg({ url: 'blob:compressed', bytes: 600, quality: 75 });
+      expect(store.settings().jpegQuality).toBe(75);
+      expect(store.result()).toMatchObject({
+        jpegUrl: 'blob:compressed',
+        pngUrl: 'blob:png',
+        jpegBytes: 600,
+        bytes: preserveTransparency ? 1200 : 600,
+      });
+      expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:jpeg');
+      expect(URL.revokeObjectURL).not.toHaveBeenCalledWith('blob:png');
+      expect(URL.revokeObjectURL).not.toHaveBeenCalledWith('blob:compressed');
+    },
+  );
 
   it('keeps a usable source on invalid replacement and restores busy state on failure', async () => {
     encoder.load

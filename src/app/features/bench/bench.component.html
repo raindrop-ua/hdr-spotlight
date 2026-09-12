@@ -35,7 +35,11 @@
             [busy]="store.encoding()"
           />
         </div>
-        <app-export-results [result]="store.result()" />
+        <app-export-results
+          [result]="store.result()"
+          [source]="store.source()"
+          (jpegApplied)="store.applyJpeg($event)"
+        />
       </div>
       <aside class="border-t border-line bg-panel/40 p-5 sm:p-7 lg:border-t-0 lg:border-l">
         <app-light-controls

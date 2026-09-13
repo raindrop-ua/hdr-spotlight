@@ -1,47 +1,85 @@
-<section aria-labelledby="faq-title">
-  <div class="faq-heading">
-    <p class="eyebrow">Good to know</p>
-    <h2 id="faq-title">A little context.<br />A better result.</h2>
-    <p>What changes in the file, and what you see on screen.</p>
+<section
+  class="grid grid-cols-1 gap-5 md:grid-cols-[1fr_2fr] md:gap-12"
+  aria-labelledby="faq-title"
+>
+  <div>
+    <p class="mb-3 font-mono text-[10px] tracking-[0.14em] text-accent uppercase">Good to know</p>
+    <h2 class="text-2xl leading-[1.35] font-medium tracking-[-0.04em]" id="faq-title">
+      A little context.<br />A better result.
+    </h2>
+    <p class="mt-4 text-xs leading-[1.9] text-muted md:max-w-68">
+      What changes in the file, and what you see on screen.
+    </p>
   </div>
-  <div class="questions">
-    <details open>
-      <summary>Will this add detail to my image?</summary>
-      <p>
+  <div>
+    <details
+      class="border-b border-line transition-[background-color] duration-180 ease-[ease] first:border-t open:bg-accent/4"
+      open
+    >
+      <summary
+        class="flex cursor-pointer list-none items-center justify-between gap-5 px-4 py-5 text-[13px] leading-[1.6] font-medium hover:text-accent focus-visible:rounded-sm focus-visible:outline-offset-[-3px]"
+      >
+        Will this add detail to my image?
+      </summary>
+      <p class="pr-10 pb-5 pl-4 text-xs leading-[1.9] text-muted">
         No. It increases the brightness of existing pixels. It does not sharpen, reconstruct
         textures, or recover information from blown-out highlights or crushed shadows. A larger
         output size does not create real detail either.
       </p>
     </details>
-    <details>
-      <summary>Why might the result look different on another screen?</summary>
-      <p>
+    <details
+      class="border-b border-line transition-[background-color] duration-180 ease-[ease] first:border-t open:bg-accent/4"
+    >
+      <summary
+        class="flex cursor-pointer list-none items-center justify-between gap-5 px-4 py-5 text-[13px] leading-[1.6] font-medium hover:text-accent focus-visible:rounded-sm focus-visible:outline-offset-[-3px]"
+      >
+        Why might the result look different on another screen?
+      </summary>
+      <p class="pr-10 pb-5 pl-4 text-xs leading-[1.9] text-muted">
         The visible boost depends on the display’s HDR capability, available brightness, system
         settings, and the viewer’s HDR support. An SDR screen cannot show the same peak brightness,
         and the result may be tone-mapped or displayed differently.
       </p>
     </details>
-    <details>
-      <summary>Does more exposure always look better?</summary>
-      <p>
+    <details
+      class="border-b border-line transition-[background-color] duration-180 ease-[ease] first:border-t open:bg-accent/4"
+    >
+      <summary
+        class="flex cursor-pointer list-none items-center justify-between gap-5 px-4 py-5 text-[13px] leading-[1.6] font-medium hover:text-accent focus-visible:rounded-sm focus-visible:outline-offset-[-3px]"
+      >
+        Does more exposure always look better?
+      </summary>
+      <p class="pr-10 pb-5 pl-4 text-xs leading-[1.9] text-muted">
         Not necessarily. Start low and increase it while checking your highlights. The encoder uses
         203 nits as reference white before the boost; encoded values above PQ’s 10,000-nit limit are
         clipped. Those numbers describe the file, not the brightness your screen is guaranteed to
         produce.
       </p>
     </details>
-    <details>
-      <summary>Which format should I download?</summary>
-      <p>
+    <details
+      class="border-b border-line transition-[background-color] duration-180 ease-[ease] first:border-t open:bg-accent/4"
+    >
+      <summary
+        class="flex cursor-pointer list-none items-center justify-between gap-5 px-4 py-5 text-[13px] leading-[1.6] font-medium hover:text-accent focus-visible:rounded-sm focus-visible:outline-offset-[-3px]"
+      >
+        Which format should I download?
+      </summary>
+      <p class="pr-10 pb-5 pl-4 text-xs leading-[1.9] text-muted">
         Use PNG when you need transparency and enable Preserve transparency. JPEG uses the selected
         background instead. Both outputs carry HDR color information, but support varies between
         viewers. Dithering helps reduce banding in the 8-bit PQ output; it does not add image
         detail.
       </p>
     </details>
-    <details>
-      <summary>Where is my image processed?</summary>
-      <p>
+    <details
+      class="border-b border-line transition-[background-color] duration-180 ease-[ease] first:border-t open:bg-accent/4"
+    >
+      <summary
+        class="flex cursor-pointer list-none items-center justify-between gap-5 px-4 py-5 text-[13px] leading-[1.6] font-medium hover:text-accent focus-visible:rounded-sm focus-visible:outline-offset-[-3px]"
+      >
+        Where is my image processed?
+      </summary>
+      <p class="pr-10 pb-5 pl-4 text-xs leading-[1.9] text-muted">
         Processing happens locally in your browser, on your device. Your image is not uploaded to a
         server for encoding.
       </p>

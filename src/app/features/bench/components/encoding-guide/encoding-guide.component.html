@@ -1,0 +1,111 @@
+<section class="scroll-mt-8" id="how-it-works" aria-labelledby="guide-title">
+  <div class="mb-7 block items-end justify-between gap-x-12 gap-y-6 md:flex">
+    <div>
+      <p class="mb-3 font-mono text-[10px] tracking-[0.14em] text-accent uppercase">
+        Behind the brightness
+      </p>
+      <h2
+        class="text-[clamp(1.5rem,3vw,2.125rem)] leading-[1.2] font-medium tracking-[-0.045em]"
+        id="guide-title"
+      >
+        Same image. More light.
+      </h2>
+    </div>
+    <p class="mt-4 max-w-100 text-xs leading-[1.9] text-muted md:mt-0">
+      A brightness transformation of the pixels you already have. No AI, no recovered highlights, no
+      extra detail.
+    </p>
+  </div>
+
+  <ol
+    class="grid list-none grid-cols-1 overflow-hidden rounded-2xl border border-line bg-surface md:grid-cols-3"
+  >
+    <li
+      class="pipeline-step relative flex flex-col border-line p-6 not-first:border-t md:p-7 md:not-first:border-t-0 md:not-first:border-l"
+    >
+      <span class="font-mono text-[10px] text-muted">01 / Decode</span>
+      <h3 class="mt-5 mb-3 text-[15px] font-medium tracking-tight md:mt-7">
+        Start with your pixels
+      </h3>
+      <p class="text-xs leading-[1.9] text-muted">
+        The image is read as sRGB and converted to linear light, where brightness can be scaled
+        consistently.
+      </p>
+      <div class="signal mt-auto flex min-h-12 items-end gap-[5px] pt-7" aria-hidden="true">
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      </div>
+    </li>
+    <li
+      class="pipeline-step relative flex flex-col border-line p-6 not-first:border-t md:p-7 md:not-first:border-t-0 md:not-first:border-l"
+    >
+      <span class="font-mono text-[10px] text-muted">02 / Boost</span>
+      <h3 class="mt-5 mb-3 text-[15px] font-medium tracking-tight md:mt-7">Choose what shines</h3>
+      <p class="text-xs leading-[1.9] text-muted">
+        Increase the light across the image or target bright areas. Each extra exposure stop doubles
+        the luminance of fully selected pixels.
+      </p>
+      <div
+        class="mt-auto flex min-h-12 flex-wrap items-center gap-3 pt-7 font-mono text-[11px] text-muted"
+        aria-label="Plus one stop means twice the luminance"
+      >
+        <span>+1 stop</span><span aria-hidden="true">→</span
+        ><strong class="font-normal text-accent">2× light</strong>
+      </div>
+    </li>
+    <li
+      class="pipeline-step relative flex flex-col border-line p-6 not-first:border-t md:p-7 md:not-first:border-t-0 md:not-first:border-l"
+    >
+      <span class="font-mono text-[10px] text-muted">03 / Encode</span>
+      <h3 class="mt-5 mb-3 text-[15px] font-medium tracking-tight md:mt-7">
+        Package the light for HDR
+      </h3>
+      <p class="text-xs leading-[1.9] text-muted">
+        The boosted pixels are converted to BT.2020 and PQ, with HDR color metadata so compatible
+        viewers can interpret the result.
+      </p>
+      <div
+        class="mt-auto flex min-h-12 flex-wrap items-center gap-3 pt-7 font-mono text-[11px]"
+        aria-label="Output color encoding"
+      >
+        <span class="rounded-md border border-line px-[0.6rem] py-[0.4rem] text-accent"
+          >BT.2020</span
+        ><span class="rounded-md border border-line px-[0.6rem] py-[0.4rem] text-accent"
+          >PQ / ST 2084</span
+        >
+      </div>
+    </li>
+  </ol>
+
+  <div
+    class="mt-8 grid grid-cols-1 gap-6 border-b border-line py-8 md:grid-cols-[1fr_2fr] md:gap-12"
+  >
+    <div>
+      <p class="mb-3 font-mono text-[10px] tracking-[0.14em] text-accent uppercase">What glows</p>
+      <h3 class="mb-3 text-[15px] font-medium tracking-tight">Direct the brightness.</h3>
+      <p class="text-xs leading-[1.9] text-muted">
+        Threshold sets where the full boost begins in Whites and Bright modes, with a soft
+        transition below it.
+      </p>
+    </div>
+    <dl>
+      <div class="grid grid-cols-[5rem_1fr] gap-4 border-line py-3.5 first:pt-0 not-first:border-t">
+        <dt class="font-mono text-[11px] leading-[2] text-accent">Whites</dt>
+        <dd class="text-xs leading-[1.9] text-muted">
+          Favors near-white pixels where all three color channels are bright.
+        </dd>
+      </div>
+      <div class="grid grid-cols-[5rem_1fr] gap-4 border-line py-3.5 first:pt-0 not-first:border-t">
+        <dt class="font-mono text-[11px] leading-[2] text-accent">Bright</dt>
+        <dd class="text-xs leading-[1.9] text-muted">
+          Selects bright areas by weighted sRGB brightness, including bright colors.
+        </dd>
+      </div>
+      <div class="grid grid-cols-[5rem_1fr] gap-4 border-line py-3.5 first:pt-0 not-first:border-t">
+        <dt class="font-mono text-[11px] leading-[2] text-accent">All</dt>
+        <dd class="text-xs leading-[1.9] text-muted">
+          Applies the same exposure multiplier to every pixel. No threshold needed.
+        </dd>
+      </div>
+    </dl>
+  </div>
+</section>

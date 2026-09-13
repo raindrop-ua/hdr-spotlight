@@ -27,6 +27,7 @@
 
 @layer base {
   :root {
+    scroll-behavior: smooth;
     color-scheme: light dark;
   }
 
@@ -243,6 +244,10 @@ input[type='range']::-moz-range-thumb {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  :root {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {

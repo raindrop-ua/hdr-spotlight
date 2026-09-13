@@ -9,9 +9,16 @@ import { ExportResults } from '@features/bench/components/export-results/export-
 import { BenchStore } from '@features/bench/services/bench-store.service';
 import { ImageEncoderService } from '@features/bench/services/image-encoder.service';
 
+import { BenchIntro } from './components/bench-intro/bench-intro.component';
+import { EncodingGuide } from './components/encoding-guide/encoding-guide.component';
+import { EncodingFaq } from './components/encoding-faq/encoding-faq.component';
+
 @Component({
   selector: 'app-bench',
   imports: [
+    BenchIntro,
+    EncodingGuide,
+    EncodingFaq,
     ThemeSwitcher,
     Icon,
     DisplayIndicator,

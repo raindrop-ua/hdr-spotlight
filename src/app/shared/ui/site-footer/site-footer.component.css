@@ -1,0 +1,11 @@
+.footer-rule::before,
+.footer-rule::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-line);
+}
+
+.footer-spark {
+  text-shadow: 0 0 18px color-mix(in srgb, var(--color-accent) 30%, transparent);
+}

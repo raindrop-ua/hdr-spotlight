@@ -1,0 +1,13 @@
+summary::-webkit-details-marker {
+  display: none;
+}
+summary::after {
+  content: '+';
+  flex-shrink: 0;
+  color: var(--color-accent);
+  font-family: var(--font-mono), monospace;
+  font-size: 1rem;
+}
+details[open] summary::after {
+  content: '−';
+}

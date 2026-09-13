@@ -1,0 +1,58 @@
+:host {
+  display: block;
+}
+
+footer {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 1.25rem 2.5rem;
+  text-align: center;
+}
+
+.footer-rule {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  color: var(--color-accent);
+}
+
+.footer-rule::before,
+.footer-rule::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-line);
+}
+
+.footer-rule span {
+  font-size: 1.25rem;
+  text-shadow: 0 0 18px color-mix(in srgb, var(--color-accent) 30%, transparent);
+}
+
+p {
+  margin: 1.25rem 0 0;
+  color: var(--color-muted);
+  font-size: 0.6875rem;
+  line-height: 1.9;
+  letter-spacing: 0.025em;
+}
+
+.love {
+  color: var(--color-accent);
+}
+
+.phrase {
+  display: inline-block;
+}
+
+@media (min-width: 640px) {
+  footer {
+    padding-inline: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  footer {
+    padding-inline: 2.5rem;
+  }
+}

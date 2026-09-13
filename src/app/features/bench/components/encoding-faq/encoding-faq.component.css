@@ -10,7 +10,7 @@ section {
 .eyebrow {
   margin: 0 0 0.75rem;
   color: var(--color-accent);
-  font-family: var(--font-mono);
+  font-family: var(--font-mono), monospace;
   font-size: 0.625rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -58,7 +58,7 @@ summary::after {
   content: '+';
   flex-shrink: 0;
   color: var(--color-accent);
-  font-family: var(--font-mono);
+  font-family: var(--font-mono), monospace;
   font-size: 1rem;
 }
 details[open] summary::after {

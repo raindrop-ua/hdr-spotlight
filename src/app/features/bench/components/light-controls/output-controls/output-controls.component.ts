@@ -1,8 +1,10 @@
+import { OutputSizeControls } from './output-size-controls/output-size-controls.component';
 import { Component, input, output } from '@angular/core';
-import { EncodeSettings } from '@features/bench/models/bench.models';
+import { EncodeSettings, OutputSizeSettings } from '@features/bench/models/bench.models';
 
 @Component({
   selector: 'app-output-controls',
+  imports: [OutputSizeControls],
   host: { class: 'block space-y-6' },
   templateUrl: './output-controls.component.html',
 })
@@ -10,10 +12,13 @@ export class OutputControls {
   readonly background = input.required<string>();
   readonly preserveTransparency = input.required<boolean>();
   readonly jpegQuality = input.required<number>();
-  readonly size = input.required<number>();
+  readonly sizeSettings = input.required<OutputSizeSettings>();
   readonly changed =
     output<
-      Partial<Pick<EncodeSettings, 'background' | 'preserveTransparency' | 'size' | 'jpegQuality'>>
+      Partial<
+        Pick<EncodeSettings, 'background' | 'preserveTransparency' | 'jpegQuality'> &
+          OutputSizeSettings
+      >
     >();
   protected readonly backgrounds = [
     { value: '#000000', label: 'Black' },

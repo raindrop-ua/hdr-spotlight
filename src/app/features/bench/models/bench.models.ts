@@ -9,10 +9,16 @@ export interface PixelOptions {
   preserveTransparency?: boolean;
 }
 
-export interface EncodeSettings extends PixelOptions {
+export interface OutputSizeSettings {
+  size: number | 'custom';
+  customWidth: number | null;
+  customHeight: number | null;
+  preserveAspectRatio: boolean;
+}
+
+export interface EncodeSettings extends PixelOptions, OutputSizeSettings {
   jpegQuality: number;
   background: string;
-  size: number;
   preserveTransparency: boolean;
 }
 
@@ -23,6 +29,9 @@ export const DEFAULT_SETTINGS: Readonly<EncodeSettings> = {
   threshold: 0.85,
   background: '#000000',
   size: 400,
+  customWidth: 400,
+  customHeight: 400,
+  preserveAspectRatio: true,
   preserveTransparency: false,
 };
 

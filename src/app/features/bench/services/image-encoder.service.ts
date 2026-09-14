@@ -1,3 +1,4 @@
+import { outputDimensions, imagePlacement } from '@features/bench/models/output-size';
 import { SourceImage } from '@features/bench/models/source-image.model';
 import { Service } from '@angular/core';
 import { embedICCProfile, embedPNGCICP } from '@features/bench/engine/container';
@@ -54,8 +55,7 @@ export class ImageEncoderService {
     signal: AbortSignal,
   ): Promise<EncodeResult> {
     this.validateQuality(settings.jpegQuality);
-    const width = settings.size || source.width;
-    const height = settings.size || source.height;
+    const { width, height } = outputDimensions(source, settings);
     // Composite JPEG before the color transform; compositing PQ values would darken edges.
     const jpegRender = await this.render(
       source,
@@ -120,8 +120,7 @@ export class ImageEncoderService {
 
   private async render(source: SourceImage, settings: EncodeSettings, signal: AbortSignal) {
     signal.throwIfAborted();
-    const width = settings.size || source.width;
-    const height = settings.size || source.height;
+    const { width, height } = outputDimensions(source, settings);
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
@@ -131,10 +130,8 @@ export class ImageEncoderService {
       ctx.fillStyle = settings.background;
       ctx.fillRect(0, 0, width, height);
     }
-    const scale = Math.min(width / source.width, height / source.height);
-    const dw = source.width * scale;
-    const dh = source.height * scale;
-    ctx.drawImage(source.image, (width - dw) / 2, (height - dh) / 2, dw, dh);
+    const placement = imagePlacement(source, { width, height }, settings.preserveAspectRatio);
+    ctx.drawImage(source.image, placement.x, placement.y, placement.width, placement.height);
     const transformed = await this.transform(
       ctx.getImageData(0, 0, width, height),
       settings,

@@ -17,7 +17,7 @@
   <app-output-controls
     [background]="settings().background"
     [preserveTransparency]="settings().preserveTransparency"
-    [size]="settings().size"
+    [sizeSettings]="settings()"
     [jpegQuality]="settings().jpegQuality"
     (changed)="changed.emit($event)"
   />
@@ -25,7 +25,7 @@
 <button
   class="primary-button mt-4 w-full"
   type="button"
-  [disabled]="!ready() || busy()"
+  [disabled]="!ready() || busy() || !!sizeError()"
   (click)="encode.emit()"
 >
   <app-icon name="sparkle" class="size-5" />{{ busy() ? 'Encoding…' : 'Encode image' }}

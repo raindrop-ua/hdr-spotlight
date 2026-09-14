@@ -1,0 +1,89 @@
+<div class="overflow-hidden rounded-lg border border-line bg-surface">
+  <div class="p-3">
+    <label class="control-label" for="size"
+      >Output size<span class="mono text-xs text-muted">PX</span></label
+    >
+    <select
+      id="size"
+      class="w-full rounded-lg border border-line bg-surface px-3 py-3 text-xs text-foreground"
+      [value]="settings().size"
+      (change)="selectSize($event)"
+    >
+      <option value="400">400 × 400</option>
+      <option value="800">800 × 800</option>
+      <option value="1200">1200 × 1200</option>
+      <option value="3840">3840 × 3840 · 4K</option>
+      <option value="0">Original dimensions</option>
+      <option value="custom">Custom dimensions</option>
+    </select>
+    @if (settings().size === 'custom') {
+      <div class="mt-4 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-end gap-2">
+        <div>
+          <label for="output-width" class="mb-2 block text-xs text-muted">Width</label>
+          <input
+            id="output-width"
+            type="number"
+            min="1"
+            [max]="maxSide"
+            step="1"
+            required
+            class="mono w-full min-w-0 rounded-lg border border-line bg-surface px-3 py-2.5 text-sm text-foreground"
+            [value]="settings().customWidth"
+            [attr.aria-invalid]="error() ? 'true' : null"
+            aria-describedby="output-size-hint"
+            (input)="dimension($event, 'customWidth')"
+          />
+        </div>
+        <span class="pb-3 text-xs text-muted" aria-hidden="true">×</span>
+        <div>
+          <label for="output-height" class="mb-2 block text-xs text-muted">Height</label>
+          <input
+            id="output-height"
+            type="number"
+            min="1"
+            [max]="maxSide"
+            step="1"
+            required
+            class="mono w-full min-w-0 rounded-lg border border-line bg-surface px-3 py-2.5 text-sm text-foreground"
+            [value]="settings().customHeight"
+            [attr.aria-invalid]="error() ? 'true' : null"
+            aria-describedby="output-size-hint"
+            (input)="dimension($event, 'customHeight')"
+          />
+        </div>
+      </div>
+      <p
+        id="output-size-hint"
+        class="mt-3 text-xs leading-5"
+        [class.text-warning]="error()"
+        [class.text-muted]="!error()"
+        aria-live="polite"
+      >
+        {{ error() || 'Canvas dimensions in pixels · up to 16 MP' }}
+      </p>
+    }
+  </div>
+  @if (settings().size !== 0) {
+    <label class="flex cursor-pointer items-start gap-3 border-t border-line p-3">
+      <input
+        id="preserve-aspect-ratio"
+        type="checkbox"
+        class="mt-0.5 size-4 shrink-0 accent-accent"
+        [checked]="settings().preserveAspectRatio"
+        (change)="toggleAspectRatio($event)"
+        aria-describedby="aspect-ratio-hint"
+      />
+      <span class="text-xs font-medium"
+        >Keep aspect ratio<span
+          id="aspect-ratio-hint"
+          class="mt-1 block text-xs font-normal leading-5 text-muted"
+          >{{
+            settings().preserveAspectRatio
+              ? 'Fit inside the canvas. May add padding.'
+              : 'Stretch to fill the canvas. No padding.'
+          }}</span
+        ></span
+      >
+    </label>
+  }
+</div>

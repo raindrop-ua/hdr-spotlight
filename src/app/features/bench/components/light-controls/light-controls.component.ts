@@ -1,4 +1,5 @@
-import { Component, input, output } from '@angular/core';
+import { outputSizeError } from '@features/bench/models/output-size';
+import { Component, computed, input, output } from '@angular/core';
 import { Icon } from '@shared/ui/icon/icon.component';
 import { EncodeSettings } from '@features/bench/models/bench.models';
 import { ExposureControls } from '@features/bench/components/light-controls/exposure-controls/exposure-controls.component';
@@ -13,6 +14,7 @@ import { OutputControls } from '@features/bench/components/light-controls/output
 })
 export class LightControls {
   readonly settings = input.required<EncodeSettings>();
+  protected readonly sizeError = computed(() => outputSizeError(this.settings()));
   readonly ready = input(false);
   readonly busy = input(false);
   readonly changed = output<Partial<EncodeSettings>>();

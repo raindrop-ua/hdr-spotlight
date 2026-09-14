@@ -76,6 +76,59 @@ describe('Workbench component boundaries', () => {
     expect((element.querySelector('#jpeg-quality') as HTMLInputElement).value).toBe('100');
   });
 
+  it('edits custom dimensions, blocks invalid output and restores defaults', async () => {
+    const fixture = TestBed.createComponent(Bench);
+    await fixture.whenStable();
+    const store = fixture.debugElement.injector.get(BenchStore);
+    store.source.set({
+      width: 600,
+      height: 300,
+      name: 'test',
+      url: 'blob:test',
+      image: {} as HTMLImageElement,
+    });
+    fixture.detectChanges();
+    const element = fixture.nativeElement as HTMLElement;
+    const change = (selector: string, value: string, type = 'input') => {
+      const input = element.querySelector(selector) as HTMLInputElement;
+      input.value = value;
+      input.dispatchEvent(new Event(type, { bubbles: true }));
+      fixture.detectChanges();
+    };
+    const encode = [...element.querySelectorAll('button')].find((button) =>
+      button.textContent?.includes('Encode image'),
+    )!;
+    change('#size', 'custom', 'change');
+    change('#output-width', '960');
+    change('#output-height', '540');
+    (element.querySelector('#preserve-aspect-ratio') as HTMLInputElement).click();
+    fixture.detectChanges();
+    expect(store.settings()).toMatchObject({
+      size: 'custom',
+      customWidth: 960,
+      customHeight: 540,
+      preserveAspectRatio: false,
+    });
+    expect(encode.disabled).toBe(false);
+    change('#output-width', '');
+    expect(encode.disabled).toBe(true);
+    expect(element.querySelector('#output-size-hint')?.textContent).toContain('whole number');
+    change('#size', '800', 'change');
+    expect(encode.disabled).toBe(false);
+    change('#size', 'custom', 'change');
+    expect((element.querySelector('#output-height') as HTMLInputElement).value).toBe('540');
+    [...element.querySelectorAll('button')]
+      .find((button) => button.textContent?.trim() === 'Reset')!
+      .click();
+    fixture.detectChanges();
+    expect(store.settings()).toEqual(DEFAULT_SETTINGS);
+    expect(element.querySelector('#output-width')).toBeNull();
+    expect((element.querySelector('#preserve-aspect-ratio') as HTMLInputElement).checked).toBe(
+      true,
+    );
+    store.source.set(null);
+  });
+
   it('owns clipboard selection in the uploader, respects inputs and removes the global listener', async () => {
     const fixture = TestBed.createComponent(SourceUpload);
     const selected = vi.fn();

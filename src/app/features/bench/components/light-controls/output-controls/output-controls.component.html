@@ -45,21 +45,7 @@
     (change)="changed.emit({ preserveTransparency: checked($event) })"
   />
 </label>
-<div>
-  <label class="control-label" for="size">Output size</label>
-  <select
-    id="size"
-    class="w-full rounded-lg border border-line bg-surface px-3 py-3 text-xs text-foreground"
-    [value]="size()"
-    (change)="changed.emit({ size: number($event) })"
-  >
-    <option value="400">400 × 400</option>
-    <option value="800">800 × 800</option>
-    <option value="1200">1200 × 1200</option>
-    <option value="3840">3840 × 3840 · 4K</option>
-    <option value="0">Original dimensions</option>
-  </select>
-</div>
+<app-output-size-controls [settings]="sizeSettings()" (changed)="changed.emit($event)" />
 <div>
   <label class="control-label" for="jpeg-quality"
     >JPEG quality<span class="mono text-xs text-accent">{{ jpegQuality() }}%</span></label

@@ -1,6 +1,6 @@
 {
-  "name": "hdr-spotlight",
-  "short_name": "hdr-spotlight",
+  "name": "HDR-Spotlight",
+  "short_name": "HDR-Spotlight",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",

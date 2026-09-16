@@ -1,10 +1,10 @@
 import { SiteFooter } from '@shared/ui/site-footer/site-footer.component';
 import { Component } from '@angular/core';
-import { Bench } from '@features/bench/bench.component';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [Bench, SiteFooter],
+  imports: [RouterOutlet, SiteFooter],
   templateUrl: './app.component.html',
 })
 export class App {}

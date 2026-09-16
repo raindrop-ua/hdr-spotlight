@@ -1,0 +1,176 @@
+<main class="mx-auto max-w-3xl px-5 py-8 sm:px-8 sm:py-12">
+  <header class="mb-12 flex flex-wrap items-center justify-between gap-5">
+    <a
+      routerLink="/"
+      class="flex items-center gap-3 text-lg font-medium tracking-tight no-underline"
+      aria-label="HDR Spotlight home"
+    >
+      <app-icon name="logo1" class="size-8 text-accent" />HDR Spotlight
+    </a>
+    <app-theme-switcher />
+  </header>
+  <a routerLink="/" class="text-xs text-muted underline-offset-4 hover:text-accent hover:underline"
+    >← Back to the studio</a
+  >
+  <article
+    class="mt-8 mb-12 text-sm leading-7 text-muted [&_h2]:mt-9 [&_h2]:mb-3 [&_h2]:text-base [&_h2]:font-medium [&_h2]:text-foreground [&_p]:mt-3 [&_a]:text-accent [&_a]:underline [&_a]:underline-offset-4"
+  >
+    <p class="font-mono text-[10px] tracking-[0.18em] uppercase">The small print, kept simple</p>
+    <h1 class="mt-3 text-3xl font-medium tracking-tight text-foreground sm:text-4xl">
+      {{ data()['document'] === 'privacy' ? 'Privacy Policy' : 'Terms of Use' }}
+    </h1>
+    <p class="text-xs">Last updated: September 16, 2026</p>
+    @if (data()['document'] === 'privacy') {
+      <p class="mt-6! text-base leading-8 text-foreground">
+        Your images stay on your device. HDR Spotlight processes them in your browser, without
+        uploading them to a server.
+      </p>
+      <h2>Who runs Spotlight</h2>
+      <p>
+        HDR Spotlight at hdrspotlight.com is a free image tool operated by Anton Sizov. This policy
+        explains how information is handled when you use the website.
+      </p>
+      <h2>Your images and exports</h2>
+      <p>
+        Images you select, drop, or paste are decoded and processed locally in your browser. We do
+        not receive or store your source images or generated exports, and do not use them to train
+        AI models. The app does not keep your editing session in persistent storage. Downloads you
+        save remain on your device until you delete them.
+      </p>
+      <h2>Cookies and analytics</h2>
+      <p>
+        The application does not set cookies or use analytics, advertising trackers, tracking
+        pixels, or fingerprinting. There are no accounts or advertising profiles, and we do not sell
+        your personal information.
+      </p>
+      <h2>Storage on your device</h2>
+      <p>
+        When you choose a light or dark theme, the app saves that preference in your browser’s local
+        storage under <code>spotlight.theme</code>. Choosing the system theme removes that saved
+        preference. This setting is not sent to us.
+      </p>
+      <p>
+        A service worker may cache the application’s code, fonts, and other static assets so the app
+        can load again and support offline use. It does not cache your selected images or exports.
+        You can remove the saved preference and cached files through your browser’s site-data
+        settings.
+      </p>
+      <h2>Hosting and Cloudflare</h2>
+      <p>
+        The website runs on a VPS managed by Anton Sizov and uses Cloudflare for website delivery
+        and protection. Requests pass through this infrastructure, which processes technical
+        information such as IP addresses, requested URLs, request times, and browser details.
+        Operational and security logs may be kept to maintain the service, diagnose problems, and
+        prevent abuse. Your selected images and exports are not included in these requests.
+      </p>
+      <p>
+        Depending on the protection features in use, Cloudflare may set necessary security cookies,
+        such as a cookie recording that a security challenge was passed. These are separate from the
+        application, which sets no cookies of its own. See
+        <a
+          href="https://developers.cloudflare.com/fundamentals/reference/policies-compliances/cloudflare-cookies/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Cloudflare’s cookie documentation</a
+        >
+        and
+        <a
+          href="https://www.cloudflare.com/privacypolicy/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Privacy Policy</a
+        >
+        for its handling of technical data, retention, and international transfers. Cloudflare may
+        process data outside your country.
+      </p>
+      <h2>Purposes and retention</h2>
+      <p>
+        Where data protection law requires a legal basis, technical information is processed for our
+        legitimate interests in delivering and securing the website. Information you send by email
+        is used to respond to your inquiry, resolve issues, and handle requests. We retain
+        correspondence only as long as needed for those purposes or to meet applicable legal
+        obligations. Technical-log retention depends on the server and Cloudflare service settings;
+        contact us for details about information relevant to your request.
+      </p>
+      <h2>Questions and your choices</h2>
+      <p>
+        You control the images and downloads on your device and can clear this website’s local data
+        in your browser. If you contact us, we receive the contact details and information you
+        choose to include and use them to respond to your request. Please do not send sensitive
+        images with a privacy inquiry.
+      </p>
+      <p>
+        Depending on the law that applies to you, you may have rights to access, correct, delete, or
+        restrict the use of personal information, to object to processing, or to complain to your
+        local data protection authority. We cannot retrieve your locally processed images because
+        they are not sent to us.
+      </p>
+      <h2>Changes to this policy</h2>
+      <p>
+        If the way the app handles information changes, this page will be updated with a new
+        revision date.
+      </p>
+    } @else {
+      <p class="mt-6! text-base leading-8 text-foreground">
+        HDR Spotlight is a free tool for creating HDR images in your browser. These terms cover your
+        use of the website operated by Anton Sizov.
+      </p>
+      <h2>Using the service</h2>
+      <p>
+        By using HDR Spotlight, you agree to these terms. If you do not agree, please stop using the
+        service. You may use the tool for personal or commercial work, subject to applicable law and
+        the rights in the images you process.
+      </p>
+      <h2>Your images belong to you</h2>
+      <p>
+        You retain your rights in your source images and exports. We claim no ownership of them. You
+        are responsible for having the rights and permissions needed to process and use your images,
+        including any copyright, privacy, or other third-party rights.
+      </p>
+      <h2>Use the tool responsibly</h2>
+      <p>
+        Do not use the service unlawfully, interfere with its availability, or attempt to compromise
+        the website or its infrastructure.
+      </p>
+      <h2>Check your results</h2>
+      <p>
+        HDR appearance depends on your display, browser, operating system, and color-management
+        support. Results can look different on other devices. Keep your original files and check
+        exported images before publishing or relying on them. The service does not provide storage
+        or backups for your work.
+      </p>
+      <h2>Availability and warranties</h2>
+      <p>
+        The service is provided “as is” and “as available”. To the extent permitted by applicable
+        law, we make no warranties about uninterrupted availability, accuracy, compatibility, or
+        suitability for a particular purpose. Features may change, and the service may be suspended
+        or discontinued.
+      </p>
+      <h2>Limits of liability</h2>
+      <p>
+        To the extent permitted by applicable law, Anton Sizov is not liable for losses or damages
+        arising from your use of, or inability to use, the service, including lost work, data, or
+        profits. Nothing in these terms excludes liability that cannot legally be excluded or limits
+        your mandatory consumer rights.
+      </p>
+      <h2>Privacy and source code</h2>
+      <p>
+        Read the <a routerLink="/privacy">Privacy Policy</a> for details about local processing and
+        browser storage. The project’s source code is licensed under the MIT License; third-party
+        components retain their own licenses. These website terms do not replace or restrict rights
+        granted by those licenses.
+      </p>
+      <h2>Changes to these terms</h2>
+      <p>
+        Changes will be published here with an updated revision date and apply to use of the service
+        after that date. Check this page when you return to the service.
+      </p>
+    }
+    <h2>Contact</h2>
+    <p>
+      For questions about
+      {{ data()['document'] === 'privacy' ? 'privacy or your information' : 'these terms' }}, email
+      Anton Sizov at <a href="mailto:contact@antonsizov.com">contact&#64;antonsizov.com</a>.
+    </p>
+  </article>
+</main>

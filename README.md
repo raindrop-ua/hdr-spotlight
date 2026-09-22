@@ -21,6 +21,21 @@ pnpm check
 
 This checks formatting, runs ESLint and unit tests, and builds the production application. Use `pnpm test:ci` to run the tests separately.
 
+## Image converter
+
+The `/convert` route exports PNG, JPEG, WebP, BMP and ICO locally. JPEG and WebP
+have adjustable quality; other outputs are lossless or uncompressed. Optional resizing
+supports linked dimensions. ICO exports one size (16–256 px) with transparent padding.
+JPEG and BMP composite transparency onto a selectable background.
+
+Inputs include PNG, JPEG, WebP, GIF, BMP, ICO, AVIF and SVG, subject to browser decoding
+support. Limits are 32 MB, 16 megapixels and 16,384 px per side. Output is static SDR;
+animation, source metadata and HDR profiles are not retained. SVG is rasterized.
+
+Native canvas encoding is used when available. WebP falls back to the lazily loaded
+`@jsquash/webp` encoder; its WASM assets are served locally from `/assets/codecs/`
+and cached on demand by the service worker. No third-party image service is used.
+
 ## Docker
 
 Build and run the production SSR image locally:
@@ -61,6 +76,7 @@ src/
         icc.ts                    # ICC v4.4 profile with CICP
         container.ts              # Container validation and HDR metadata replacement
       models/                     # Typed contracts, settings and defaults
+    features/convert/             # Converter page, state, codecs and container tests
     shared/ui/
       icon/                       # Shared SVG icon component
       theme-switcher/             # System, light and dark theme control

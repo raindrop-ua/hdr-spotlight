@@ -17,6 +17,20 @@
       <app-theme-switcher />
     </div>
   </header>
+  <a
+    routerLink="/convert"
+    class="mb-7 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 rounded-xl border border-accent/25 bg-accent/5 px-5 py-4 transition-colors hover:bg-accent/10 sm:px-6"
+  >
+    <span class="flex min-w-0 items-center gap-3"
+      ><app-icon name="image" class="size-5 text-accent" /><span class="text-sm"
+        ><span class="font-medium">Need a different format?</span
+        ><span class="ml-2 hidden text-muted sm:inline"
+          >Convert, compress &amp; resize your images.</span
+        ></span
+      ></span
+    >
+    <span class="shrink-0 text-xs font-medium text-accent">Open image converter →</span>
+  </a>
   <app-bench-intro />
   <section
     class="overflow-hidden rounded-2xl border border-line bg-surface shadow-2xl shadow-black/15"

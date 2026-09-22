@@ -53,6 +53,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "webp_enc*.wasm",
+                "input": "node_modules/@jsquash/webp/codec/enc",
+                "output": "assets/codecs"
               }
             ],
             "styles": ["src/styles.css"],

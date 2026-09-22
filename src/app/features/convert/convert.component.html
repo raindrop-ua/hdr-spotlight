@@ -1,0 +1,267 @@
+<main class="mx-auto min-w-0 max-w-7xl px-5 py-8 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
+  <header class="mb-9 flex flex-wrap items-center justify-between gap-5">
+    <a routerLink="/" class="flex items-center gap-3 text-xl font-medium tracking-tight">
+      <app-icon name="logo1" class="size-8 text-accent" />HDR Spotlight
+    </a>
+    <div class="flex items-center gap-5">
+      <a routerLink="/" class="quiet-button text-xs">← HDR studio</a>
+      <app-theme-switcher />
+    </div>
+  </header>
+  <div class="mb-8 max-w-2xl">
+    <p class="mono mb-3 text-xs tracking-widest text-accent uppercase">Image converter</p>
+    <h1 class="text-3xl leading-tight font-medium tracking-tight sm:text-4xl">
+      A new format. The same image.
+    </h1>
+    <p class="mt-4 text-sm leading-7 text-muted">
+      Convert, compress and resize your images in a few clicks. From everyday photos to tiny icons —
+      all processed on your device.
+    </p>
+  </div>
+  <section
+    class="overflow-hidden rounded-2xl border border-line bg-surface shadow-2xl shadow-black/15"
+    aria-label="Image conversion workspace"
+  >
+    <div class="grid lg:grid-cols-[minmax(0,1fr)_400px]">
+      <div class="min-w-0 p-5 sm:p-7">
+        <app-source-upload
+          [filename]="store.source()?.name ?? ''"
+          [loading]="store.loading()"
+          accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,image/x-icon,image/vnd.microsoft.icon,image/avif,image/svg+xml,.ico,.bmp"
+          formats="PNG, JPEG, WebP, GIF, BMP, ICO, AVIF or SVG"
+          (selected)="store.load($event)"
+        />
+        <div class="preview-tile mt-6 aspect-auto! min-h-64 sm:min-h-80">
+          @if (store.result(); as result) {
+            <img
+              [src]="result.url"
+              alt="Converted image preview"
+              class="max-h-80 max-w-full object-contain"
+            />
+          } @else if (store.source(); as source) {
+            <img
+              [src]="source.url"
+              alt="Source image preview"
+              class="max-h-80 max-w-full object-contain"
+            />
+          } @else {
+            <div class="empty-preview">
+              <app-icon name="image" class="size-10" /><span
+                >Your image, ready for a new format</span
+              >
+            </div>
+          }
+        </div>
+        @if (store.source(); as source) {
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs text-muted">
+            <span class="min-w-0 truncate">{{ source.name }}</span>
+            <span class="mono shrink-0"
+              >{{ source.width }} × {{ source.height }} · {{ bytes(source.bytes) }}</span
+            >
+          </div>
+        }
+        @if (store.result(); as result) {
+          <div
+            role="status"
+            class="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-accent/25 bg-accent/5 p-4"
+          >
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-accent">Ready to download</p>
+              <p class="mono mt-2 text-xs text-muted">
+                {{ result.width }} × {{ result.height }} · {{ bytes(result.bytes) }}
+              </p>
+              <p class="mt-1 text-xs text-muted">Original: {{ bytes(store.source()!.bytes) }}</p>
+            </div>
+            <a [href]="result.url" [download]="result.name" class="download-button"
+              ><app-icon name="download" class="size-4" />Download
+              {{ store.settings().format.toUpperCase() }}</a
+            >
+          </div>
+        }
+      </div>
+      <aside class="border-t border-line bg-panel/40 p-5 sm:p-7 lg:border-t-0 lg:border-l">
+        <h2 class="mb-6 text-base font-medium">Export settings</h2>
+        <fieldset
+          [disabled]="store.loading() || store.converting()"
+          class="min-w-0 space-y-6 disabled:opacity-60"
+        >
+          <div>
+            <label for="convert-format" class="control-label">Output format</label>
+            <select
+              id="convert-format"
+              class="w-full rounded-lg border border-line bg-surface px-3 py-3 text-sm"
+              [value]="store.settings().format"
+              (change)="setFormat($any($event.target).value)"
+            >
+              @for (format of formats; track format.id) {
+                <option [value]="format.id">{{ format.label }}</option>
+              }
+            </select>
+          </div>
+          <div>
+            @if (store.lossy()) {
+              <label for="convert-quality" class="control-label"
+                >Image quality
+                <span class="mono text-xs text-accent">{{ store.settings().quality }}%</span></label
+              >
+              <input
+                id="convert-quality"
+                type="range"
+                min="1"
+                max="100"
+                [value]="store.settings().quality"
+                [style.--fill]="store.settings().quality + '%'"
+                (input)="store.update({ quality: +$any($event.target).value })"
+              />
+              <div class="flex justify-between text-[11px] text-muted">
+                <span>Smaller file</span><span>Higher quality</span>
+              </div>
+            } @else {
+              <p class="text-xs leading-6 text-muted">
+                {{
+                  store.settings().format === 'bmp'
+                    ? 'BMP stores uncompressed pixels. Files can be much larger than other formats.'
+                    : 'Lossless output. Image quality is preserved; a quality slider does not apply to this format.'
+                }}
+              </p>
+            }
+          </div>
+          @if (store.settings().format === 'ico') {
+            <div>
+              <label for="icon-size" class="control-label">Icon size</label>
+              <select
+                id="icon-size"
+                class="w-full rounded-lg border border-line bg-surface px-3 py-3 text-sm"
+                [value]="store.settings().iconSize"
+                (change)="store.update({ iconSize: +$any($event.target).value })"
+              >
+                @for (size of iconSizes; track size) {
+                  <option [value]="size">{{ size }} × {{ size }} px</option>
+                }
+              </select>
+              <p class="mt-3 text-xs leading-6 text-muted">
+                One size per ICO file. Your image fits inside the square with transparent padding,
+                without cropping.
+              </p>
+            </div>
+          } @else {
+            <div class="border-t border-line pt-5">
+              <label class="flex items-center justify-between gap-3 text-sm" for="convert-resize"
+                >Resize image
+                <input
+                  id="convert-resize"
+                  type="checkbox"
+                  class="size-4 accent-accent"
+                  [checked]="store.settings().resize"
+                  (change)="store.update({ resize: $any($event.target).checked })"
+                />
+              </label>
+              @if (store.settings().resize) {
+                <div class="mt-5 grid grid-cols-2 gap-3">
+                  <div>
+                    <label for="convert-width" class="mb-2 block text-xs text-muted"
+                      >Width (px)</label
+                    ><input
+                      id="convert-width"
+                      type="number"
+                      min="1"
+                      max="16384"
+                      step="1"
+                      class="w-full min-w-0 rounded-lg border border-line bg-surface px-3 py-2.5 text-sm"
+                      [value]="store.settings().width"
+                      (input)="store.dimension('width', +$any($event.target).value)"
+                      aria-describedby="convert-size-hint"
+                    />
+                  </div>
+                  <div>
+                    <label for="convert-height" class="mb-2 block text-xs text-muted"
+                      >Height (px)</label
+                    ><input
+                      id="convert-height"
+                      type="number"
+                      min="1"
+                      max="16384"
+                      step="1"
+                      class="w-full min-w-0 rounded-lg border border-line bg-surface px-3 py-2.5 text-sm"
+                      [value]="store.settings().height"
+                      (input)="store.dimension('height', +$any($event.target).value)"
+                      aria-describedby="convert-size-hint"
+                    />
+                  </div>
+                </div>
+                <label for="convert-lock" class="mt-4 flex items-center gap-2 text-xs text-muted"
+                  ><input
+                    id="convert-lock"
+                    type="checkbox"
+                    class="size-4 accent-accent"
+                    [checked]="store.settings().locked"
+                    (change)="store.lock($any($event.target).checked)"
+                  />Keep aspect ratio</label
+                >
+              }
+            </div>
+          }
+          @if (store.settings().format === 'jpeg' || store.settings().format === 'bmp') {
+            <div class="flex items-center justify-between gap-3">
+              <label for="convert-background" class="text-sm">Transparency background</label>
+              <input
+                id="convert-background"
+                type="color"
+                class="h-8 w-10 cursor-pointer rounded border border-line"
+                [value]="store.settings().background"
+                (input)="store.update({ background: $any($event.target).value })"
+              />
+            </div>
+          }
+        </fieldset>
+        <p
+          id="convert-size-hint"
+          class="mt-5 text-xs leading-6"
+          [class.text-danger]="!!store.sizeError()"
+          [class.text-muted]="!store.sizeError()"
+        >
+          {{
+            store.sizeError() ||
+              (store.source()
+                ? 'Output: ' + store.dimensions().width + ' × ' + store.dimensions().height + ' px'
+                : 'Choose an image to get started.')
+          }}
+        </p>
+        <button
+          type="button"
+          class="primary-button mt-5 w-full"
+          [disabled]="
+            !store.source() || store.loading() || store.converting() || !!store.sizeError()
+          "
+          (click)="store.convert()"
+        >
+          <app-icon name="sparkle" class="size-4" />{{
+            store.converting() ? 'Converting…' : 'Convert image'
+          }}
+        </button>
+        <p role="status" class="sr-only">{{ store.converting() ? 'Converting image' : '' }}</p>
+        @if (store.error()) {
+          <p
+            role="alert"
+            class="mt-4 rounded-lg border border-red-400/20 bg-red-400/5 p-3 text-xs leading-5 text-danger"
+          >
+            {{ store.error() }}
+          </p>
+        }
+      </aside>
+    </div>
+    <footer
+      class="flex flex-wrap items-center justify-between gap-3 border-t border-line px-5 py-4 text-xs text-muted sm:px-7"
+    >
+      <span>Up to 32 MB · 16 megapixels</span
+      ><span class="flex items-center gap-2"
+        ><app-icon name="chip" class="size-3.5" />Processed on your device</span
+      >
+    </footer>
+  </section>
+  <p class="mx-auto mt-6 max-w-3xl text-center text-xs leading-6 text-muted">
+    Standard SDR output. Animation and source metadata are not preserved. SVG is rasterized; input
+    support depends on your browser. For HDR output, use the
+    <a routerLink="/" class="text-accent underline underline-offset-4">HDR studio</a>.
+  </p>
+</main>

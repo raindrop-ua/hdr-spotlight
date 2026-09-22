@@ -29,6 +29,6 @@ USER node
 EXPOSE 4200
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD node -e "fetch('http://localhost:4200/').then(response => { if (!response.ok) process.exit(1) }).catch(() => process.exit(1))"
+  CMD node -e "fetch('http://127.0.0.1:' + (process.env.PORT || 4200) + '/', { signal: AbortSignal.timeout(4000) }).then(response => { if (!response.ok) console.error('Healthcheck HTTP ' + response.status); process.exit(response.ok ? 0 : 1); }).catch(error => { console.error('Healthcheck failed:', error.message); process.exit(1); })"
 
 CMD ["node", "dist/hdr-spotlight/server/server.mjs"]

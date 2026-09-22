@@ -16,8 +16,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "fix": "pnpm format && pnpm lint:fix",
-    "check": "pnpm format:check && pnpm lint && pnpm test:ci && pnpm build",
-    "prepare": "husky"
+    "check": "pnpm format:check && pnpm lint && pnpm test:architecture && pnpm test:ci && pnpm build",
+    "prepare": "husky",
+    "test:architecture": "node --test tooling/eslint/architecture.test.cjs"
   },
   "private": true,
   "packageManager": "pnpm@12.4.2",

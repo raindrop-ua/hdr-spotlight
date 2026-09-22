@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { Bench } from '@features/bench/bench.component';
+import { Bench } from '@features/hdr/pages/bench/bench.component';
 
 export const routes: Routes = [
   {
@@ -14,7 +14,8 @@ export const routes: Routes = [
   },
   {
     path: 'convert',
-    loadComponent: () => import('@features/convert/convert.component').then((m) => m.Convert),
+    loadComponent: () =>
+      import('@features/converter/pages/convert/convert.component').then((m) => m.Convert),
     title: 'Image Converter — HDR Spotlight',
     data: {
       description:
@@ -23,7 +24,8 @@ export const routes: Routes = [
   },
   {
     path: 'privacy',
-    loadComponent: () => import('@features/legal/legal-page.component').then((m) => m.LegalPage),
+    loadComponent: () =>
+      import('@features/legal/pages/legal/legal-page.component').then((m) => m.LegalPage),
     title: 'Privacy Policy — HDR Spotlight',
     data: {
       document: 'privacy',
@@ -33,7 +35,8 @@ export const routes: Routes = [
   },
   {
     path: 'terms',
-    loadComponent: () => import('@features/legal/legal-page.component').then((m) => m.LegalPage),
+    loadComponent: () =>
+      import('@features/legal/pages/legal/legal-page.component').then((m) => m.LegalPage),
     title: 'Terms of Use — HDR Spotlight',
     data: {
       document: 'terms',

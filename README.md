@@ -47,54 +47,18 @@ docker run --rm -p 4200:4200 hdr-spotlight
 
 ## Structure
 
-```text
-src/
-  app/
-    app.component.*               # Root application shell
-    app.config*.ts                # Browser hydration and server rendering providers
-    app.routes*.ts                # Browser and prerender route configuration
-    core/theme/                   # Theme preference, persistence and system sync
-    features/bench/
-      bench.component.*           # Workspace composition and store bindings
-      components/
-        source-upload/            # File selection, drag/drop and clipboard lifecycle
-        display-indicator/        # HDR capability detection and media-query lifecycle
-        light-controls/           # Settings group composition, reset and encode actions
-          exposure-controls/      # Presets, highlight boost and PQ luminance ruler
-          glow-mask-controls/     # Glow mode and threshold
-          output-controls/        # Background, transparency and dimensions
-        image-comparison/         # Original / actual HDR file and preview backdrop
-        export-results/           # Downloads and measured luminance statistics
-      services/
-        bench-store.service.ts    # Signals, async lifecycle, cancellation, URL ownership
-        image-encoder.service.ts  # Decode, fit/composite, worker and canvas export
-      engine/
-        color.ts                  # Color mathematics and interpolated PQ lookup
-        encoder.ts                # Input validation, pixel transformation and statistics
-        encoder.worker.ts         # Pixel transformation off the UI thread
-        encoder-worker.models.ts  # Shared worker request, result and error contracts
-        icc.ts                    # ICC v4.4 profile with CICP
-        container.ts              # Container validation and HDR metadata replacement
-      models/                     # Typed contracts, settings and defaults
-    features/convert/             # Converter page, state, codecs and container tests
-    shared/ui/
-      icon/                       # Shared SVG icon component
-      theme-switcher/             # System, light and dark theme control
-    styles/                       # Fonts and shared design-system styles
-  assets/fonts/                   # Self-hosted fonts with their OFL 1.1 licenses
-  index.html                      # Document metadata and pre-hydration theme bootstrap
-  main*.ts                        # Browser and server application entry points
-  server.ts                       # Express SSR server
-  styles.css                      # Tailwind entry point and design tokens
-public/
-  Rec2020-PQ.icc                  # Downloadable BT.2020 PQ color profile
-  favicon.*                       # Browser icons
-  robots.txt                      # Crawler rules and sitemap location
-  sitemap.xml                     # Public route index
-LICENSE                           # MIT license for the project source code
-```
+The application uses feature-based boundaries:
 
-Presentation components use signal inputs/outputs and OnPush. Settings groups accept narrow inputs and emit typed changes; only the workspace writes to the store. The workspace provides its own store, while the root theme service owns appearance preference and browser synchronization. Browser APIs initialize after rendering, so SSR and hydration work. The store owns and revokes image object URLs, ignores stale uploads and cancels processing on settings changes or destruction. A yielding strip-based fallback is available when workers are not supported.
+- `src/app/core/`: application shell, SEO and theme state.
+- `src/app/features/hdr/`: HDR pages, components, state, services and pixel engine.
+- `src/app/features/converter/`: conversion page, state, services and settings.
+- `src/app/features/legal/`: privacy and terms pages.
+- `src/app/shared/`: reusable UI and image models, geometry, limits and codecs.
+- `src/styles/`: global styles and fonts.
+
+Tests live next to their implementation. ESLint prevents dependencies between features
+and dependencies from shared code back into application or feature code.
+See [Architecture](docs/architecture.md) for the folder tree, ownership rules and validation.
 
 ## Image behavior
 

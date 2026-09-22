@@ -1,0 +1,31 @@
+<input
+  #fileInput
+  type="file"
+  [accept]="accept()"
+  class="hidden"
+  (change)="choose($event)"
+  aria-label="Source image"
+/>
+<button
+  type="button"
+  class="upload-zone group flex min-h-40 w-full flex-col items-center justify-center rounded-xl border border-dashed border-upload-border px-5 py-6 text-center transition-colors hover:border-accent/60 hover:bg-accent/3"
+  [class.dragging]="dragging()"
+  [attr.aria-busy]="loading()"
+  (click)="fileInput.click()"
+  (dragover)="drag($event)"
+  (dragleave)="dragging.set(false)"
+  (drop)="drop($event)"
+>
+  <app-icon
+    name="upload"
+    class="mb-4 size-8 text-muted transition-colors group-hover:text-accent"
+  />
+  <span class="max-w-full truncate text-sm font-medium text-foreground">{{
+    loading() ? 'Reading image…' : filename() || 'Drop your image here'
+  }}</span>
+  <span class="mt-2 text-xs leading-6 text-muted"
+    >{{ formats() }} <span class="mx-1">·</span>
+    <span class="text-accent">{{ filename() ? 'Replace image' : 'Browse files' }}</span></span
+  >
+  <span class="mt-1 text-xs text-muted">or paste from clipboard</span>
+</button>

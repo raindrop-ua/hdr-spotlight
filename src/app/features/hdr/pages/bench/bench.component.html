@@ -1,0 +1,93 @@
+<main id="bench" class="mx-auto min-w-0 max-w-7xl px-5 py-8 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
+  <header class="mb-9 flex flex-wrap items-center justify-between gap-5">
+    <div class="flex items-center gap-3">
+      <app-icon name="logo1" class="size-8 text-accent" />
+      <h1 class="text-2xl font-medium tracking-tight">
+        HDR Spotlight<span class="sr-only"> HDR image encoder</span>
+      </h1>
+      <span class="ml-2 hidden border-l border-line pl-4 text-s text-muted sm:block"
+        >HDR image studio</span
+      >
+    </div>
+    <div class="flex flex-wrap items-center gap-4">
+      <app-display-indicator />
+      <button type="button" class="quiet-button text-[11px]" (click)="encoder.downloadProfile()">
+        <app-icon name="download" class="size-3.5" /><span>ICC profile</span>
+      </button>
+      <app-theme-switcher />
+    </div>
+  </header>
+  <a
+    routerLink="/convert"
+    class="mb-7 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 rounded-xl border border-accent/25 bg-accent/5 px-5 py-4 transition-colors hover:bg-accent/10 sm:px-6"
+  >
+    <span class="flex min-w-0 items-center gap-3"
+      ><app-icon name="image" class="size-5 text-accent" /><span class="text-sm"
+        ><span class="font-medium">Need a different format?</span
+        ><span class="ml-2 hidden text-muted sm:inline"
+          >Convert, compress &amp; resize your images.</span
+        ></span
+      ></span
+    >
+    <span class="shrink-0 text-xs font-medium text-accent">Open image converter →</span>
+  </a>
+  <app-bench-intro />
+  <section
+    class="overflow-hidden rounded-2xl border border-line bg-surface shadow-2xl shadow-black/15"
+    aria-label="HDR encoding workspace"
+  >
+    <div class="grid lg:grid-cols-[minmax(0,1fr)_400px]">
+      <div class="min-w-0 p-5 sm:p-7">
+        <app-source-upload
+          [filename]="store.source()?.name ?? ''"
+          [loading]="store.loading()"
+          (selected)="store.load($event)"
+        />
+        <div class="mt-7">
+          <app-image-comparison
+            [source]="store.source()"
+            [result]="store.result()"
+            [busy]="store.encoding()"
+          />
+        </div>
+        <app-export-results
+          [result]="store.result()"
+          [source]="store.source()"
+          (jpegApplied)="store.applyJpeg($event)"
+        />
+      </div>
+      <aside class="border-t border-line bg-panel/40 p-5 sm:p-7 lg:border-t-0 lg:border-l">
+        <app-light-controls
+          [settings]="store.settings()"
+          [ready]="!!store.source() && !store.loading()"
+          [busy]="store.encoding()"
+          (changed)="store.update($event)"
+          (resetRequested)="store.reset()"
+          (encode)="store.encode()"
+        />
+        @if (store.error()) {
+          <p
+            role="alert"
+            class="mt-4 rounded-lg border border-red-400/20 bg-red-400/5 p-3 text-xs leading-5 text-danger"
+          >
+            {{ store.error() }}
+          </p>
+        }
+      </aside>
+    </div>
+    <footer
+      class="flex flex-wrap items-center justify-between gap-3 border-t border-line px-5 py-4 text-xs text-muted sm:px-7"
+    >
+      <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
+        <span class="mono">BT.2020</span><span class="h-3 w-px bg-line"></span
+        ><span class="mono">PQ / ST 2084</span><span class="hidden h-3 w-px bg-line sm:block"></span
+        ><span class="hidden sm:block">203 nits diffuse white</span>
+      </div>
+      <span class="flex items-center gap-2"
+        ><app-icon name="chip" class="size-3.5" />Processed on your device</span
+      >
+    </footer>
+  </section>
+  <app-encoding-guide />
+  <app-encoding-faq />
+</main>

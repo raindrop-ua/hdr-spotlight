@@ -3,6 +3,7 @@ const eslint = require('@eslint/js');
 const { defineConfig } = require('eslint/config');
 const tseslint = require('typescript-eslint');
 const angular = require('angular-eslint');
+const architecture = require('./tooling/eslint/architecture.cjs');
 
 module.exports = defineConfig([
   {
@@ -14,7 +15,9 @@ module.exports = defineConfig([
       angular.configs.tsRecommended,
     ],
     processor: angular.processInlineTemplates,
+    plugins: { architecture },
     rules: {
+      'architecture/boundaries': 'error',
       '@angular-eslint/directive-selector': [
         'error',
         {

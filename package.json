@@ -16,8 +16,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "fix": "pnpm format && pnpm lint:fix",
-    "check": "pnpm format:check && pnpm lint && pnpm test:ci && pnpm build",
-    "prepare": "husky"
+    "check": "pnpm format:check && pnpm lint && pnpm test:architecture && pnpm test:ci && pnpm build",
+    "prepare": "husky",
+    "test:architecture": "node --test tooling/eslint/architecture.test.cjs"
   },
   "private": true,
   "packageManager": "pnpm@12.4.2",
@@ -31,6 +32,7 @@
     "@angular/router": "^22.1.7",
     "@angular/service-worker": "^22.1.7",
     "@angular/ssr": "^22.1.8",
+    "@jsquash/webp": "^1.5.0",
     "express": "^5.1.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"

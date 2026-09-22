@@ -1,4 +1,4 @@
-import { SiteFooter } from '@shared/ui/site-footer/site-footer.component';
+import { SiteFooter } from '@core/layout/site-footer/site-footer.component';
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 

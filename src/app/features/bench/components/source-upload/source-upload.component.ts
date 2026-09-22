@@ -16,6 +16,8 @@ import { Icon } from '@shared/ui/icon/icon.component';
 })
 export class SourceUpload {
   readonly filename = input('');
+  readonly accept = input('image/png,image/jpeg,image/webp,image/svg+xml');
+  readonly formats = input('PNG, JPEG, WebP or SVG');
   readonly loading = input(false);
   readonly selected = output<File>();
   protected readonly dragging = signal(false);

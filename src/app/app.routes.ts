@@ -13,6 +13,15 @@ export const routes: Routes = [
     },
   },
   {
+    path: 'convert',
+    loadComponent: () => import('@features/convert/convert.component').then((m) => m.Convert),
+    title: 'Image Converter — HDR Spotlight',
+    data: {
+      description:
+        'Convert images to PNG, JPEG, WebP, BMP and ICO. Adjust quality and resize locally in your browser, without uploading your files.',
+    },
+  },
+  {
     path: 'privacy',
     loadComponent: () => import('@features/legal/legal-page.component').then((m) => m.LegalPage),
     title: 'Privacy Policy — HDR Spotlight',

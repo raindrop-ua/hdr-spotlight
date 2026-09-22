@@ -1,3 +1,4 @@
+import { RouterLink } from '@angular/router';
 import { Component, inject } from '@angular/core';
 import { ThemeSwitcher } from '@shared/ui/theme-switcher/theme-switcher.component';
 import { Icon } from '@shared/ui/icon/icon.component';
@@ -16,6 +17,7 @@ import { EncodingFaq } from './components/encoding-faq/encoding-faq.component';
 @Component({
   selector: 'app-bench',
   imports: [
+    RouterLink,
     BenchIntro,
     EncodingGuide,
     EncodingFaq,

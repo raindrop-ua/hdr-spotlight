@@ -1,3 +1,4 @@
+import { provideRouter } from '@angular/router';
 import { TestBed } from '@angular/core/testing';
 import { Bench } from '@features/bench/bench.component';
 import { BenchStore } from '@features/bench/services/bench-store.service';
@@ -12,6 +13,7 @@ function pasteEvent(file: File): Event {
 }
 
 describe('Workbench component boundaries', () => {
+  beforeEach(() => TestBed.configureTestingModule({ providers: [provideRouter([])] }));
   afterEach(() => {
     TestBed.resetTestingModule();
     vi.unstubAllGlobals();

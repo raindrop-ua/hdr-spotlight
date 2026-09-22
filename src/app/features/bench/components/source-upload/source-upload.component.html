@@ -1,7 +1,7 @@
 <input
   #fileInput
   type="file"
-  accept="image/png,image/jpeg,image/webp,image/svg+xml"
+  [accept]="accept()"
   class="hidden"
   (change)="choose($event)"
   aria-label="Source image"
@@ -24,7 +24,7 @@
     loading() ? 'Reading image…' : filename() || 'Drop your image here'
   }}</span>
   <span class="mt-2 text-xs leading-6 text-muted"
-    >PNG, JPEG, WebP or SVG <span class="mx-1">·</span>
+    >{{ formats() }} <span class="mx-1">·</span>
     <span class="text-accent">{{ filename() ? 'Replace image' : 'Browse files' }}</span></span
   >
   <span class="mt-1 text-xs text-muted">or paste from clipboard</span>

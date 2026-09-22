@@ -10,6 +10,7 @@ src/
     core/
       layout/site-footer/         # Site-wide shell UI
       seo/                        # Route metadata and canonical URLs
+      pwa/                        # Service-worker updates and the global update banner
       theme/                      # Application theme state and its switcher
     features/
       hdr/

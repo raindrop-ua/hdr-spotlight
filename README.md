@@ -36,6 +36,24 @@ Native canvas encoding is used when available. WebP falls back to the lazily loa
 `@jsquash/webp` encoder; its WASM assets are served locally from `/assets/codecs/`
 and cached on demand by the service worker. No third-party image service is used.
 
+## PWA updates
+
+The global update banner appears after Angular's service worker has downloaded a new
+version (`VERSION_READY`). **Update now** reloads the current page; **Later** hides the
+notification for that version for the current app session. A newer version can show it
+again. Reloading clears the in-memory image and settings, so the banner asks users to
+download their results first. The app never reloads automatically.
+
+Update checks run after the app becomes stable, every 15 minutes while visible, when
+returning to the tab (throttled to once a minute), and when the network reconnects.
+Offline failures are retried on subsequent checks. An unrecoverable service-worker
+state shows a recovery message with the same explicit reload action. This behavior is
+disabled during SSR and when service workers are unavailable or disabled.
+
+The banner can only appear in clients that have already loaded a release containing
+this feature. It does not replace deploying the latest build or correcting server/CDN
+cache headers.
+
 ## Docker
 
 Build and run the production SSR image locally:

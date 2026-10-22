@@ -73,6 +73,16 @@ use application-wide theme state, while basic UI in `shared` stays independent.
 Create only the folders a feature needs. Do not add generic repositories, facades or
 base services without a real responsibility. Tests stay alongside the code they verify.
 
+## Component files
+
+Always create new Angular components as three neighboring files with the same base
+name: `example.component.ts`, `example.component.html` and `example.component.css`.
+Keep logic and metadata in TypeScript, templates in HTML and component styles in CSS.
+Use `templateUrl` and `styleUrl` to reference those files; never use inline `template`
+or `styles` in a component's TypeScript file, even for small components. Keep the CSS
+file even when it is initially empty. Apply the same structure when extracting or
+substantially rewriting a component.
+
 ## Validation
 
 Run `CI=1 pnpm check` for formatting, boundary linting, unit tests and production

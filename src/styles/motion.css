@@ -1,0 +1,217 @@
+@layer base {
+  :root {
+    --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+@layer components {
+  .motion-page > app-bench-intro {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @layer base {
+    body {
+      transition:
+        background-color 240ms ease,
+        color 240ms ease;
+    }
+
+    a,
+    select,
+    input[type='number'],
+    fieldset {
+      transition:
+        background-color 200ms ease,
+        border-color 200ms ease,
+        color 200ms ease,
+        opacity 200ms ease;
+    }
+  }
+
+  @layer components {
+    .motion-page > :is(header, a, app-bench-intro, .motion-intro, section, article) {
+      animation: motion-rise 440ms var(--motion-ease) both;
+    }
+
+    .motion-page > :nth-child(2) {
+      animation-delay: 40ms;
+    }
+
+    .motion-page > :nth-child(3) {
+      animation-delay: 80ms;
+    }
+
+    .motion-page > :nth-child(4) {
+      animation-delay: 120ms;
+    }
+
+    .motion-enter {
+      animation: motion-rise 280ms var(--motion-ease) both;
+    }
+
+    .motion-image-enter {
+      animation: motion-fade 320ms ease-out both;
+    }
+
+    .theme-switcher,
+    .motion-page > section,
+    .motion-page aside,
+    .preview-tile {
+      transition:
+        background-color 240ms ease,
+        border-color 240ms ease;
+    }
+
+    .primary-button,
+    .download-button,
+    .quiet-button,
+    .segments button,
+    .theme-switcher button,
+    .swatch,
+    .custom-color {
+      transition:
+        background-color 200ms ease,
+        border-color 200ms ease,
+        color 200ms ease,
+        box-shadow 200ms ease,
+        translate 200ms var(--motion-ease),
+        scale 200ms var(--motion-ease);
+    }
+
+    :is(.primary-button, .download-button, .quiet-button):not(:disabled):active {
+      translate: 0 1px;
+      scale: 0.98;
+    }
+
+    :is(.segments, .theme-switcher) button:active {
+      scale: 0.96;
+    }
+
+    .theme-switcher app-icon {
+      transition: transform 280ms var(--motion-ease);
+    }
+
+    .theme-switcher button[aria-pressed='true'] app-icon {
+      transform: rotate(-8deg) scale(1.08);
+    }
+
+    .upload-zone {
+      transition:
+        background-color 220ms ease,
+        border-color 220ms ease,
+        box-shadow 220ms ease;
+    }
+
+    .upload-zone app-icon {
+      transition:
+        color 220ms ease,
+        translate 260ms var(--motion-ease);
+    }
+
+    .upload-zone.dragging {
+      box-shadow: inset 0 0 0 1px var(--color-accent);
+    }
+
+    .upload-zone.dragging app-icon {
+      translate: 0 -4px;
+    }
+
+    .upload-zone[aria-busy='true'] app-icon {
+      animation: motion-breathe 1200ms ease-in-out infinite;
+    }
+
+    .luminance-marker {
+      transition: left 140ms ease-out;
+    }
+
+    input[type='range']::-webkit-slider-thumb {
+      transition:
+        scale 180ms var(--motion-ease),
+        box-shadow 180ms ease;
+    }
+
+    input[type='range']::-moz-range-thumb {
+      transition:
+        scale 180ms var(--motion-ease),
+        box-shadow 180ms ease;
+    }
+
+    input[type='range']:is(:focus-visible, :active)::-webkit-slider-thumb {
+      scale: 1.15;
+      box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-accent) 15%, transparent);
+    }
+
+    input[type='range']:is(:focus-visible, :active)::-moz-range-thumb {
+      scale: 1.15;
+      box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-accent) 15%, transparent);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      :is(.primary-button, .download-button):not(:disabled):hover {
+        translate: 0 -2px;
+        box-shadow: 0 5px 14px color-mix(in srgb, var(--color-accent) 16%, transparent);
+      }
+
+      :is(.primary-button, .download-button):not(:disabled):active {
+        translate: 0 0;
+      }
+
+      .upload-zone:hover app-icon {
+        translate: 0 -4px;
+      }
+
+      :is(.swatch, .custom-color):hover {
+        scale: 1.12;
+      }
+
+      .converter-link {
+        transition:
+          background-color 220ms ease,
+          border-color 220ms ease,
+          translate 220ms var(--motion-ease);
+      }
+
+      .converter-link:hover {
+        translate: 0 -2px;
+      }
+
+      .converter-link > span:last-child {
+        transition: translate 220ms var(--motion-ease);
+      }
+
+      .converter-link:hover > span:last-child {
+        translate: 3px 0;
+      }
+    }
+  }
+
+  @keyframes motion-rise {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes motion-fade {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes motion-breathe {
+    50% {
+      opacity: 0.45;
+    }
+  }
+}

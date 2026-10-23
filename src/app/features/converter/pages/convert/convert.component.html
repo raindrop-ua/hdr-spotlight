@@ -1,4 +1,4 @@
-<main class="mx-auto min-w-0 max-w-7xl px-5 py-8 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
+<main class="motion-page mx-auto min-w-0 max-w-7xl px-5 py-8 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
   <header class="mb-9 flex flex-wrap items-center justify-between gap-5">
     <a routerLink="/" class="flex items-center gap-3 text-xl font-medium tracking-tight">
       <app-icon name="logo1" class="size-8 text-accent" />HDR Spotlight
@@ -8,7 +8,7 @@
       <app-theme-switcher />
     </div>
   </header>
-  <div class="mb-8 max-w-2xl">
+  <div class="motion-intro mb-8 max-w-2xl">
     <p class="mono mb-3 text-xs tracking-widest text-accent uppercase">Image converter</p>
     <h1 class="text-3xl leading-tight font-medium tracking-tight sm:text-4xl">
       A new format. The same image.
@@ -34,12 +34,14 @@
         <div class="preview-tile mt-6 aspect-auto! min-h-64 sm:min-h-80">
           @if (store.result(); as result) {
             <img
+              animate.enter="motion-image-enter"
               [src]="result.url"
               alt="Converted image preview"
               class="max-h-80 max-w-full object-contain"
             />
           } @else if (store.source(); as source) {
             <img
+              animate.enter="motion-image-enter"
               [src]="source.url"
               alt="Source image preview"
               class="max-h-80 max-w-full object-contain"
@@ -53,7 +55,10 @@
           }
         </div>
         @if (store.source(); as source) {
-          <div class="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs text-muted">
+          <div
+            animate.enter="motion-enter"
+            class="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs text-muted"
+          >
             <span class="min-w-0 truncate">{{ source.name }}</span>
             <span class="mono shrink-0"
               >{{ source.width }} × {{ source.height }} · {{ bytes(source.bytes) }}</span
@@ -63,6 +68,7 @@
         @if (store.result(); as result) {
           <div
             role="status"
+            animate.enter="motion-enter"
             class="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-accent/25 bg-accent/5 p-4"
           >
             <div class="min-w-0">
@@ -127,7 +133,7 @@
             }
           </div>
           @if (store.settings().format === 'ico') {
-            <div>
+            <div animate.enter="motion-enter">
               <label for="icon-size" class="control-label">Icon size</label>
               <select
                 id="icon-size"
@@ -157,7 +163,7 @@
                 />
               </label>
               @if (store.settings().resize) {
-                <div class="mt-5 grid grid-cols-2 gap-3">
+                <div animate.enter="motion-enter" class="mt-5 grid grid-cols-2 gap-3">
                   <div>
                     <label for="convert-width" class="mb-2 block text-xs text-muted"
                       >Width (px)</label
@@ -189,7 +195,10 @@
                     />
                   </div>
                 </div>
-                <label for="convert-lock" class="mt-4 flex items-center gap-2 text-xs text-muted"
+                <label
+                  animate.enter="motion-enter"
+                  for="convert-lock"
+                  class="mt-4 flex items-center gap-2 text-xs text-muted"
                   ><input
                     id="convert-lock"
                     type="checkbox"
@@ -202,7 +211,7 @@
             </div>
           }
           @if (store.settings().format === 'jpeg' || store.settings().format === 'bmp') {
-            <div class="flex items-center justify-between gap-3">
+            <div animate.enter="motion-enter" class="flex items-center justify-between gap-3">
               <label for="convert-background" class="text-sm">Transparency background</label>
               <input
                 id="convert-background"
@@ -243,6 +252,7 @@
         @if (store.error()) {
           <p
             role="alert"
+            animate.enter="motion-enter"
             class="mt-4 rounded-lg border border-red-400/20 bg-red-400/5 p-3 text-xs leading-5 text-danger"
           >
             {{ store.error() }}

@@ -8,7 +8,12 @@
   <figure class="min-w-0">
     <div class="preview-tile" [class.preview-light]="light()">
       @if (source(); as image) {
-        <img [src]="image.url" alt="Original source image" class="h-full w-full object-contain" />
+        <img
+          animate.enter="motion-image-enter"
+          [src]="image.url"
+          alt="Original source image"
+          class="h-full w-full object-contain"
+        />
       } @else {
         <div class="empty-preview">
           <app-icon name="image" class="size-12" /><span class="text-center">Original image</span>
@@ -23,6 +28,7 @@
     <div class="preview-tile" [class.preview-light]="light()" [attr.aria-busy]="busy()">
       @if (result(); as output) {
         <img
+          animate.enter="motion-image-enter"
           [src]="output.settings.preserveTransparency ? output.pngUrl : output.jpegUrl"
           alt="Actual HDR encoded output"
           class="h-full w-full object-contain"

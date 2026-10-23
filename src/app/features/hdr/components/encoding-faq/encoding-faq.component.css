@@ -11,3 +11,51 @@ summary::after {
 details[open] summary::after {
   content: '−';
 }
+
+@media (prefers-reduced-motion: no-preference) {
+  summary {
+    transition: color 180ms ease;
+  }
+
+  summary::after {
+    transition: transform 260ms var(--motion-ease);
+  }
+
+  details[open] summary::after {
+    transform: rotate(180deg);
+  }
+
+  details[open] > p {
+    animation: faq-reveal 260ms var(--motion-ease) both;
+  }
+
+  @supports (interpolate-size: allow-keywords) {
+    details {
+      interpolate-size: allow-keywords;
+    }
+
+    details::details-content {
+      block-size: 0;
+      overflow: clip;
+      transition:
+        block-size 280ms var(--motion-ease),
+        content-visibility 280ms allow-discrete;
+    }
+
+    details[open]::details-content {
+      block-size: auto;
+    }
+  }
+
+  @keyframes faq-reveal {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}

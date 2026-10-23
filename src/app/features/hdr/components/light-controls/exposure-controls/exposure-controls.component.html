@@ -38,6 +38,9 @@
         tick >= 1000 ? tick / 1000 + 'k' : tick
       }}</span>
     }
-    <span class="absolute -top-1 h-5 w-px bg-accent" [style.left.%]="position(peak())"></span>
+    <span
+      class="luminance-marker absolute -top-1 h-5 w-px bg-accent"
+      [style.left.%]="position(peak())"
+    ></span>
   </div>
 </div>

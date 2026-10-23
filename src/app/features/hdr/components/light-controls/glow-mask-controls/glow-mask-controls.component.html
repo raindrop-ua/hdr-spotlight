@@ -14,7 +14,7 @@
   </div>
 </div>
 @if (mode() !== 'all') {
-  <div>
+  <div animate.enter="motion-enter">
     <label class="control-label" for="threshold"
       >Threshold <output class="mono">{{ threshold() * 100 | number: '1.0-0' }}%</output></label
     >

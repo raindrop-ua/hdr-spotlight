@@ -31,7 +31,7 @@
   }
 
   @layer components {
-    .motion-page > :is(header, a, app-bench-intro, .motion-intro, section, article) {
+    .motion-page > :is(header, nav, a, app-bench-intro, .motion-intro, section, article) {
       animation: motion-rise 440ms var(--motion-ease) both;
     }
 
@@ -164,25 +164,6 @@
 
       :is(.swatch, .custom-color):hover {
         scale: 1.12;
-      }
-
-      .converter-link {
-        transition:
-          background-color 220ms ease,
-          border-color 220ms ease,
-          translate 220ms var(--motion-ease);
-      }
-
-      .converter-link:hover {
-        translate: 0 -2px;
-      }
-
-      .converter-link > span:last-child {
-        transition: translate 220ms var(--motion-ease);
-      }
-
-      .converter-link:hover > span:last-child {
-        translate: 3px 0;
       }
     }
   }

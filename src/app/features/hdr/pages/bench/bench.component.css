@@ -1,0 +1,93 @@
+.tool-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--color-line);
+  border-radius: 14px;
+  background: var(--color-surface);
+}
+
+.tool-card:hover,
+.tool-card:focus-visible {
+  border-color: var(--color-accent);
+}
+
+.tool-card-icon {
+  display: grid;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--color-accent) 9%, var(--color-surface));
+  color: var(--color-accent);
+}
+
+.tool-card-lut .tool-card-icon {
+  border-color: transparent;
+  background: linear-gradient(135deg, #63a0a6, #e7b47e);
+  color: #193a3d;
+}
+
+.tool-card-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.tool-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.tool-card-description {
+  margin-top: 4px;
+  color: var(--color-muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.tool-card-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  color: var(--color-accent);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tool-card {
+    transition:
+      border-color 180ms ease,
+      background-color 240ms ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .tool-card {
+      transition:
+        border-color 180ms ease,
+        background-color 240ms ease,
+        translate 180ms ease;
+    }
+
+    .tool-card:hover {
+      translate: 0 -2px;
+    }
+
+    .tool-card-action > span {
+      transition: translate 180ms ease;
+    }
+
+    .tool-card:hover .tool-card-action > span {
+      translate: 3px 0;
+    }
+  }
+}

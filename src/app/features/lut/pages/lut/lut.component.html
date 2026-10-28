@@ -181,6 +181,15 @@
             <p class="mono mt-1 text-[10px] text-muted">
               {{ lut.size }} × {{ lut.size }} × {{ lut.size }} · 3D LUT
             </p>
+            @if (downloadableLut(); as url) {
+              <a
+                [href]="url"
+                download="Hollywood-Teal-Orange.cube"
+                class="quiet-button mt-3 text-xs text-accent"
+              >
+                <app-icon name="download" class="size-3.5" />Download LUT .cube
+              </a>
+            }
           </div>
         }
 

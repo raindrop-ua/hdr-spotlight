@@ -1,6 +1,6 @@
 {
   "name": "hdr-spotlight",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -18,7 +18,8 @@
     "fix": "pnpm format && pnpm lint:fix",
     "check": "pnpm format:check && pnpm lint && pnpm test:architecture && pnpm test:ci && pnpm build",
     "prepare": "husky",
-    "test:architecture": "node --test tooling/eslint/architecture.test.cjs"
+    "test:architecture": "node --test tooling/eslint/architecture.test.cjs",
+    "generate:lut": "node tooling/luts/generate-teal-orange.mjs"
   },
   "private": true,
   "packageManager": "pnpm@12.4.2",

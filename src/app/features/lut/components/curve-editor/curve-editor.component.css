@@ -1,0 +1,124 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.curve-heading,
+.curve-output-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.curve-heading h3 {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.curve-heading button {
+  font-size: 11px;
+}
+
+.curve-channels {
+  margin-top: 16px;
+}
+
+.curve-channels button {
+  padding: 8px 4px;
+  font-size: 11px;
+}
+
+.curve-chart {
+  --curve-color: var(--color-accent);
+  margin-top: 14px;
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background: var(--color-surface);
+}
+
+.curve-chart[data-channel='red'] {
+  --curve-color: #e56d6d;
+}
+
+.curve-chart[data-channel='green'] {
+  --curve-color: #61a872;
+}
+
+.curve-chart[data-channel='blue'] {
+  --curve-color: #719fe1;
+}
+
+.curve-graph {
+  display: block;
+  width: 100%;
+  height: auto;
+  touch-action: none;
+  user-select: none;
+}
+
+.curve-grid {
+  stroke: var(--color-line);
+  stroke-width: 0.7px;
+}
+
+.curve-reference {
+  stroke: var(--color-muted);
+  stroke-width: 1px;
+  stroke-dasharray: 3 4;
+  opacity: 0.6;
+}
+
+.curve-line {
+  fill: none;
+  stroke: var(--curve-color);
+  stroke-width: 2.2px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.curve-target {
+  fill: transparent;
+  stroke: none;
+  cursor: ns-resize;
+}
+
+.curve-target:focus-visible {
+  fill: color-mix(in srgb, var(--curve-color) 15%, transparent);
+  outline: none;
+  stroke: var(--curve-color);
+  stroke-width: 1px;
+}
+
+.curve-point {
+  fill: var(--color-surface);
+  stroke: var(--curve-color);
+  stroke-width: 1.8px;
+  pointer-events: none;
+}
+
+.curve-point-selected {
+  fill: var(--curve-color);
+}
+
+.curve-axis {
+  fill: var(--color-muted);
+  font-size: 9px;
+}
+
+.curve-output-label {
+  margin-top: 15px;
+  font-size: 11px;
+}
+
+.curve-output-label span {
+  color: var(--color-accent);
+}
+
+.curve-hint {
+  margin-top: 10px;
+  color: var(--color-muted);
+  font-size: 10px;
+  line-height: 1.6;
+}

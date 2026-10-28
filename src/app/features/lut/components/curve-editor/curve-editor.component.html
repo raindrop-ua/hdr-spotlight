@@ -1,0 +1,83 @@
+<div class="curve-heading">
+  <h3>Curves</h3>
+  <button type="button" class="quiet-button" (click)="reset()">Reset channel</button>
+</div>
+<div class="segments curve-channels" role="group" aria-label="Curve channel">
+  @for (option of channels; track option.id) {
+    <button
+      type="button"
+      [attr.aria-pressed]="channel() === option.id"
+      (click)="chooseChannel(option.id)"
+    >
+      {{ option.label }}
+    </button>
+  }
+</div>
+<div class="curve-chart" [attr.data-channel]="channel()">
+  <svg
+    #graph
+    viewBox="0 0 300 220"
+    class="curve-graph"
+    role="group"
+    [attr.aria-label]="channelLabel() + ' curve editor'"
+    (pointermove)="drag($event, graph)"
+    (pointerup)="endDrag($event, graph)"
+    (pointercancel)="endDrag($event, graph)"
+    (lostpointercapture)="endDrag($event, graph)"
+  >
+    @for (position of grid; track position) {
+      <line class="curve-grid" [attr.x1]="x(position)" y1="14" [attr.x2]="x(position)" y2="198" />
+      <line class="curve-grid" x1="24" [attr.y1]="y(position)" x2="284" [attr.y2]="y(position)" />
+    }
+    <line class="curve-reference" x1="24" y1="198" x2="284" y2="14" />
+    <path class="curve-line" [attr.d]="curvePath()" />
+    @for (point of points(); track $index; let index = $index) {
+      <circle
+        class="curve-target"
+        [attr.cx]="x(index / 4)"
+        [attr.cy]="y(point)"
+        r="13"
+        role="slider"
+        tabindex="0"
+        aria-orientation="vertical"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        [attr.aria-label]="pointLabel(index)"
+        [attr.aria-valuenow]="percentage(point)"
+        [attr.aria-valuetext]="percentage(point) + '% output'"
+        (focus)="selectPoint(index)"
+        (pointerdown)="startDrag($event, index, graph)"
+        (keydown)="keyDown($event, index)"
+        (keyup)="keyUp($event)"
+      />
+      <circle
+        class="curve-point"
+        [class.curve-point-selected]="selectedPoint() === index"
+        [attr.cx]="x(index / 4)"
+        [attr.cy]="y(point)"
+        r="4.5"
+        aria-hidden="true"
+      />
+    }
+    <text class="curve-axis" x="154" y="215" text-anchor="middle">Input</text>
+    <text class="curve-axis" x="10" y="106" text-anchor="middle" transform="rotate(-90 10 106)">
+      Output
+    </text>
+  </svg>
+</div>
+<div class="curve-output-label">
+  <label for="lut-editor-curve-output">Point {{ selectedPoint() + 1 }} output</label>
+  <span class="mono">{{ valueLabel() }}</span>
+</div>
+<input
+  id="lut-editor-curve-output"
+  type="range"
+  min="0"
+  max="100"
+  step="0.1"
+  [value]="selectedValue()"
+  [style.--fill]="selectedValue() + '%'"
+  (input)="changeOutput($event)"
+  (change)="committed.emit()"
+/>
+<p class="curve-hint">Drag a point or use arrow keys.</p>

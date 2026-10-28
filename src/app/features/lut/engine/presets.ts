@@ -21,49 +21,49 @@ export interface LutPresetDefinition {
 
 export const LUT_PRESETS: readonly LutPresetDefinition[] = [
   { id: 'original', name: 'Original', description: 'A clean starting point' },
-  { id: 'warm', name: 'Warm daylight', description: 'A little golden warmth' },
-  { id: 'cool', name: 'Cool shade', description: 'Fresh, quieter tones' },
-  { id: 'soft', name: 'Soft matte', description: 'Gentle contrast, lifted shadows' },
+  { id: 'warm', name: 'Warm Daylight', description: 'A little golden warmth' },
+  { id: 'cool', name: 'Cool Shade', description: 'Fresh, quieter tones' },
+  { id: 'soft', name: 'Soft Matte', description: 'Gentle contrast, lifted shadows' },
   {
     id: 'hollywood-teal-orange',
-    name: 'Hollywood teal & orange',
+    name: 'Teal & Orange',
     description: 'Teal shadows, warm cinematic color',
     asset: '/luts/hollywood-teal-orange.cube',
     downloadable: true,
   },
   {
     id: 'silver-mist',
-    name: 'Silver mist',
+    name: 'Silver Mist',
     description: 'Cool midtones, faded blacks',
     asset: '/luts/silver-mist.cube',
   },
   {
     id: 'amber-glow',
-    name: 'Amber glow',
+    name: 'Amber Glow',
     description: 'Cool tones, warm highlights',
     asset: '/luts/amber-glow.cube',
   },
   {
     id: 'copper-trail',
-    name: 'Copper trail',
+    name: 'Copper Trail',
     description: 'Rich warmth, muted blues',
     asset: '/luts/copper-trail.cube',
   },
   {
     id: 'alpine-film',
-    name: 'Alpine film',
+    name: 'Alpine Film',
     description: 'Cool shadows, rosy midtones',
     asset: '/luts/alpine-film.cube',
   },
   {
     id: 'desert-bloom',
-    name: 'Desert bloom',
+    name: 'Desert Bloom',
     description: 'Warm highlights, teal blues',
     asset: '/luts/desert-bloom.cube',
   },
 ];
 
-const titles = { warm: 'Warm daylight', cool: 'Cool shade', soft: 'Soft matte' } as const;
+const titles = { warm: 'Warm Daylight', cool: 'Cool Shade', soft: 'Soft Matte' } as const;
 const clamp = (value: number): number => Math.max(0, Math.min(1, value));
 
 /** Small, generated sRGB looks let the sample image work without downloading a LUT. */

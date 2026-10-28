@@ -210,11 +210,11 @@ describe('LUT workspace lifecycle', () => {
 
   it('keeps the newest preset when an older fetch finishes last', async () => {
     const older = deferred<Lut3D>();
-    const newer = { ...lut, title: 'Desert bloom' };
+    const newer = { ...lut, title: 'Desert Bloom' };
     service.loadPreset.mockReturnValueOnce(older.promise).mockResolvedValueOnce(newer);
     const pending = store.selectPreset('silver-mist');
     await store.selectPreset('desert-bloom');
-    older.resolve({ ...lut, title: 'Silver mist' });
+    older.resolve({ ...lut, title: 'Silver Mist' });
     await pending;
     expect(store.preset()).toBe('desert-bloom');
     expect(store.lut()).toBe(newer);

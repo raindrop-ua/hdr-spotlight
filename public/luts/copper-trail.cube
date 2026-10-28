@@ -2,10 +2,7 @@
 # Website: https://hdrspotlight.com/
 TITLE "Copper Trail"
 
-#LUT size
 LUT_3D_SIZE 33
-
-#LUT data points
 0.0000000 0.0000000 0.0000000
 0.0000000 0.0000000 0.0000000
 0.0017301 0.0000191 0.0000191

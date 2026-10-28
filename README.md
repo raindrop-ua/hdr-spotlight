@@ -44,9 +44,9 @@ WebP image. A before/after split and intensity control update a reduced-size pre
 PNG, JPEG and WebP exports retain the source dimensions. PNG and WebP retain alpha;
 JPEG composites onto the selected background after the LUT transform.
 
-Alongside the generated Warm daylight, Cool shade and Soft matte looks, the studio
-includes five bundled creative tables: Silver mist, Amber glow, Copper trail,
-Alpine film and Desert bloom. Each `.cube` file loads only when selected and is
+Alongside the generated Warm Daylight, Cool Shade and Soft Matte looks, the studio
+includes five bundled creative tables: Silver Mist, Amber Glow, Copper Trail,
+Alpine Film and Desert Bloom. Each `.cube` file loads only when selected and is
 cached after successful parsing. The service worker caches these assets on demand.
 Selecting another look cancels the pending request; a failed download keeps the
 previous look available and can be retried.
@@ -56,7 +56,7 @@ and are applied directly to encoded sRGB channels as creative looks. The workspa
 not infer a source transfer function or reproduce a color-managed video-editor
 pipeline. Display names are supplied by the preset catalogue rather than file titles.
 
-Hollywood teal & orange is an original 33³ sRGB look with teal shadows, warm color
+Teal & Orange is an original 33³ sRGB look with teal shadows, warm color
 and gentle film contrast, with output saturation increased to 110% of the base recipe.
 Its smooth color masks soften the cyan shift for orange
 hues and preserve black and white endpoints; this is a color transform rather than

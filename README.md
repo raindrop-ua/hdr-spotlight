@@ -36,6 +36,30 @@ Native canvas encoding is used when available. WebP falls back to the lazily loa
 `@jsquash/webp` encoder; its WASM assets are served locally from `/assets/codecs/`
 and cached on demand by the service worker. No third-party image service is used.
 
+## SDR LUT studio
+
+The `/lut` route applies creative 3D `.cube` LUTs to sRGB SDR images locally. Try the
+built-in looks on an AI-generated still life before uploading your own PNG, JPEG or
+WebP image. A before/after split and intensity control update a reduced-size preview;
+PNG, JPEG and WebP exports retain the source dimensions. PNG and WebP retain alpha;
+JPEG composites onto the selected background after the LUT transform.
+
+The parser accepts 2–65 points per channel, `TITLE`, `DOMAIN_MIN`, `DOMAIN_MAX` and
+comments, with a 16 MiB LUT file limit. It validates table length, finite values and
+input domains. Processing uses tetrahedral interpolation in a cancellable worker,
+with a yielding fallback when workers are unavailable. The same transform is used
+for preview and export. Image limits match the other workspaces: 32 MiB, 16 megapixels
+and 16,384 pixels per side.
+
+This first version expects LUTs designed for encoded sRGB input and output. It does
+not infer a LUT's color space or convert camera Log/HDR LUTs. 1D LUTs, combined
+shaper/3D tables and alternate input-range directives are rejected. Input images are
+normalized through an sRGB canvas; source metadata is not retained. WebP uses the
+shared local WASM fallback if native canvas encoding is unavailable.
+
+The demo asset is `public/images/lut-demo.jpg`; its generation prompt and provenance
+are documented in [Demo image](docs/lut-demo.md).
+
 ## PWA updates
 
 The global update banner appears after Angular's service worker has downloaded a new

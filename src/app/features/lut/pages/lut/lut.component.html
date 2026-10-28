@@ -1,0 +1,282 @@
+<main class="motion-page mx-auto min-w-0 max-w-7xl px-5 py-8 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
+  <header class="mb-9 flex flex-wrap items-center justify-between gap-5">
+    <a routerLink="/" class="flex items-center gap-3 text-xl font-medium tracking-tight">
+      <app-icon name="logo1" class="size-8 text-accent" />HDR Spotlight
+    </a>
+    <div class="flex flex-wrap items-center gap-5">
+      <nav aria-label="Image tools" class="flex gap-5 text-xs">
+        <a routerLink="/" class="quiet-button">HDR studio</a>
+        <a routerLink="/convert" class="quiet-button">Converter</a>
+      </nav>
+      <app-theme-switcher />
+    </div>
+  </header>
+
+  <div class="motion-intro mb-8 max-w-2xl">
+    <p class="mono mb-3 text-xs tracking-widest text-accent uppercase">LUT studio · SDR</p>
+    <h1 class="text-3xl leading-tight font-medium tracking-tight sm:text-4xl">
+      A different mood. Still your image.
+    </h1>
+    <p class="mt-4 text-sm leading-7 text-muted">
+      Give your photos a new look with a color LUT. Try a look on our sample, or bring your own
+      image and .cube file. Everything happens on your device.
+    </p>
+  </div>
+
+  <section
+    class="overflow-hidden rounded-2xl border border-line bg-surface shadow-2xl shadow-black/15"
+    aria-label="SDR LUT workspace"
+  >
+    <div class="grid lg:grid-cols-[minmax(0,1fr)_340px]">
+      <div class="min-w-0 p-5 sm:p-7">
+        <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <h2 class="text-base font-medium">Your preview</h2>
+          <span class="mono text-[10px] tracking-wide text-muted">
+            {{ store.source()?.demo !== false ? 'SAMPLE IMAGE' : 'YOUR IMAGE' }} · sRGB
+          </span>
+        </div>
+        <div
+          class="lut-comparison"
+          [style.aspect-ratio]="
+            store.source() ? store.source()!.width + ' / ' + store.source()!.height : '3 / 2'
+          "
+          [attr.aria-busy]="store.previewing() || store.loading()"
+          aria-label="Before and after image comparison"
+          (pointerdown)="startCompare($event)"
+          (pointermove)="moveCompare($event)"
+          (pointerup)="endCompare($event)"
+          (pointercancel)="endCompare($event)"
+        >
+          <img
+            class="lut-photo"
+            [src]="store.originalPreviewUrl() || '/images/lut-demo.jpg'"
+            alt="Original image before applying a LUT"
+            draggable="false"
+          />
+          <div class="lut-after" [style.clip-path]="'inset(0 0 0 ' + split() + '%)'">
+            <img
+              class="lut-photo"
+              [src]="store.previewUrl() || store.originalPreviewUrl() || '/images/lut-demo.jpg'"
+              alt="Image with the selected LUT and intensity applied"
+              draggable="false"
+            />
+          </div>
+          <span class="lut-preview-label lut-label-before">Before</span>
+          <span class="lut-preview-label lut-label-after">After</span>
+          <div class="lut-divider" [style.left.%]="split()" aria-hidden="true">
+            <span>↔</span>
+          </div>
+          @if (store.previewing() || store.loading()) {
+            <span class="lut-busy" role="status">Updating preview…</span>
+          }
+        </div>
+        <div class="mt-4">
+          <label for="lut-compare" class="sr-only">Before / after split</label>
+          <input
+            id="lut-compare"
+            type="range"
+            min="0"
+            max="100"
+            [value]="split()"
+            [style.--fill]="split() + '%'"
+            [attr.aria-valuetext]="split() + '% original image'"
+            (input)="split.set(+$any($event.target).value)"
+          />
+          <div class="flex justify-between gap-3 text-[11px] text-muted">
+            <span>Slide to compare</span>
+            @if (store.source(); as source) {
+              <span class="mono">{{ source.width }} × {{ source.height }} px</span>
+            }
+          </div>
+        </div>
+
+        <div class="mt-6 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <p class="min-w-0 truncate text-muted">
+            {{
+              store.source()?.demo !== false
+                ? 'A little still life to try things out.'
+                : store.source()?.name
+            }}
+          </p>
+          @if (store.source()?.demo === false) {
+            <button type="button" class="quiet-button text-accent" (click)="store.useDemo()">
+              <app-icon name="reset" class="size-3.5" />Use sample image
+            </button>
+          } @else {
+            <span class="text-[11px] text-muted">AI-generated sample</span>
+          }
+        </div>
+        <div class="mt-4">
+          <app-source-upload
+            [filename]="store.source()?.demo === false ? store.source()!.name : ''"
+            [loading]="store.loading()"
+            accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp"
+            formats="PNG, JPEG or WebP · up to 32 MB"
+            (selected)="store.loadImage($event)"
+          />
+        </div>
+
+        @if (store.result(); as result) {
+          <div
+            role="status"
+            animate.enter="motion-enter"
+            class="mt-5 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-accent/25 bg-accent/5 p-4"
+          >
+            <div>
+              <p class="text-sm font-medium text-accent">Your look is ready</p>
+              <p class="mono mt-2 text-[11px] text-muted">
+                {{ result.width }} × {{ result.height }} · {{ bytes(result.bytes) }} · SDR
+              </p>
+            </div>
+            <a [href]="result.url" [download]="result.name" class="download-button">
+              <app-icon name="download" class="size-4" />Download {{ result.format.toUpperCase() }}
+            </a>
+          </div>
+        }
+      </div>
+
+      <aside class="min-w-0 border-t border-line bg-panel/40 p-5 sm:p-7 lg:border-t-0 lg:border-l">
+        <h2 class="text-base font-medium">Find your look</h2>
+        <p class="mt-2 text-xs leading-6 text-muted">Start with a look, or load your own LUT.</p>
+        <div class="mt-5 grid grid-cols-2 gap-2" role="group" aria-label="Built-in looks">
+          @for (preset of presets; track preset.id) {
+            <button
+              type="button"
+              class="lut-preset"
+              [attr.aria-pressed]="store.preset() === preset.id"
+              (click)="store.selectPreset(preset.id)"
+            >
+              <span
+                class="lut-preset-swatch"
+                [class]="'lut-preset-swatch lut-swatch-' + preset.id"
+                aria-hidden="true"
+              ></span>
+              <span class="block text-xs font-medium">{{ preset.name }}</span>
+              <span class="mt-1 block text-[10px] leading-4 text-muted">{{
+                preset.description
+              }}</span>
+            </button>
+          }
+        </div>
+        <input #cubeInput type="file" accept=".cube" class="hidden" (change)="loadLut($event)" />
+        <button
+          type="button"
+          class="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-upload-border px-3 py-3 text-xs font-medium hover:border-accent hover:text-accent disabled:opacity-60"
+          [disabled]="store.lutLoading()"
+          (click)="cubeInput.click()"
+        >
+          <app-icon name="upload" class="size-4" />
+          {{ store.lutLoading() ? 'Reading LUT…' : 'Upload .cube LUT' }}
+        </button>
+        @if (store.lut(); as lut) {
+          <div class="mt-3 min-w-0 rounded-lg border border-line bg-surface/70 px-3 py-2.5">
+            <p class="truncate text-xs font-medium" [title]="lut.title">{{ lut.title }}</p>
+            <p class="mono mt-1 text-[10px] text-muted">
+              {{ lut.size }} × {{ lut.size }} × {{ lut.size }} · 3D LUT
+            </p>
+          </div>
+        }
+
+        <div class="mt-6 border-t border-line pt-5">
+          <label for="lut-intensity" class="control-label">
+            Intensity<span class="mono text-xs text-accent">{{ store.settings().intensity }}%</span>
+          </label>
+          <input
+            id="lut-intensity"
+            type="range"
+            min="0"
+            max="100"
+            [value]="store.settings().intensity"
+            [style.--fill]="store.settings().intensity + '%'"
+            [disabled]="!store.lut()"
+            (input)="store.update({ intensity: +$any($event.target).value })"
+          />
+          <div class="flex justify-between text-[11px] text-muted">
+            <span>Original</span><span>Full look</span>
+          </div>
+        </div>
+
+        <div class="mt-6 border-t border-line pt-5">
+          <h3 class="mb-4 text-sm font-medium">Save your image</h3>
+          <label for="lut-format" class="mb-2 block text-xs text-muted">Output format</label>
+          <select
+            id="lut-format"
+            class="w-full rounded-lg border border-line bg-surface px-3 py-2.5 text-sm"
+            [value]="store.settings().format"
+            (change)="setFormat($any($event.target).value)"
+          >
+            <option value="png">PNG · lossless</option>
+            <option value="jpeg">JPEG</option>
+            <option value="webp">WebP</option>
+          </select>
+          @if (store.settings().format !== 'png') {
+            <div class="mt-5" animate.enter="motion-enter">
+              <label for="lut-quality" class="control-label"
+                >Quality<span class="mono text-xs text-accent"
+                  >{{ store.settings().quality }}%</span
+                ></label
+              >
+              <input
+                id="lut-quality"
+                type="range"
+                min="1"
+                max="100"
+                [value]="store.settings().quality"
+                [style.--fill]="store.settings().quality + '%'"
+                (input)="store.update({ quality: +$any($event.target).value })"
+              />
+            </div>
+          }
+          @if (store.settings().format === 'jpeg') {
+            <div class="mt-4 flex items-center justify-between gap-3" animate.enter="motion-enter">
+              <label for="lut-background" class="text-xs text-muted">Transparency background</label>
+              <input
+                id="lut-background"
+                type="color"
+                class="h-8 w-10 cursor-pointer rounded border border-line"
+                [value]="store.settings().background"
+                (input)="store.update({ background: $any($event.target).value })"
+              />
+            </div>
+          }
+          <button
+            type="button"
+            class="primary-button mt-5 w-full"
+            [disabled]="
+              !store.source() || store.loading() || store.lutLoading() || store.exporting()
+            "
+            (click)="store.export()"
+          >
+            <app-icon name="download" class="size-4" />
+            {{ store.exporting() ? 'Preparing image…' : 'Prepare download' }}
+          </button>
+          <p class="mt-3 text-center text-[11px] leading-5 text-muted">
+            Original dimensions · sRGB SDR
+          </p>
+        </div>
+        @if (store.error()) {
+          <p
+            role="alert"
+            animate.enter="motion-enter"
+            class="mt-4 rounded-lg border border-red-400/20 bg-red-400/5 p-3 text-xs leading-5 text-danger"
+          >
+            {{ store.error() }}
+          </p>
+        }
+      </aside>
+    </div>
+    <footer
+      class="flex flex-wrap items-center justify-between gap-3 border-t border-line px-5 py-4 text-[11px] text-muted sm:px-7"
+    >
+      <span>3D .cube · 2–65 points per channel · images up to 16 megapixels</span>
+      <span class="flex items-center gap-2"
+        ><app-icon name="chip" class="size-3.5" />Processed on your device</span
+      >
+    </footer>
+  </section>
+  <p class="mx-auto mt-6 max-w-3xl text-center text-xs leading-6 text-muted">
+    Designed for creative LUTs that use sRGB input and output. Camera Log, HDR and 1D LUTs are
+    outside this first version. Images are normalized to sRGB; source metadata is removed. PNG and
+    WebP keep transparency.
+  </p>
+</main>

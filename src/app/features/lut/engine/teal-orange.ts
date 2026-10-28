@@ -93,7 +93,7 @@ export function createTealOrangeLut(saturation = 1.1): Lut3D {
   }
   return adjustLutSaturation(
     {
-      title: 'Hollywood teal & orange',
+      title: 'Teal & Orange',
       size,
       domainMin: [0, 0, 0],
       domainMax: [1, 1, 1],

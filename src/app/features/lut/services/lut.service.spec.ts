@@ -151,10 +151,10 @@ describe('SDR LUT browser export', () => {
     const fetchPreset = vi.fn().mockResolvedValue({ ok: true, text: async () => identityCube });
     vi.stubGlobal('fetch', fetchPreset);
     const signal = new AbortController().signal;
-    expect((await service.loadPreset('warm', signal)).title).toBe('Warm daylight');
+    expect((await service.loadPreset('warm', signal)).title).toBe('Warm Daylight');
     expect(fetchPreset).not.toHaveBeenCalled();
     const lut = await service.loadPreset('silver-mist', signal);
-    expect(lut.title).toBe('Silver mist');
+    expect(lut.title).toBe('Silver Mist');
     expect(fetchPreset).toHaveBeenCalledExactlyOnceWith('/luts/silver-mist.cube', { signal });
     expect(await service.loadPreset('silver-mist', new AbortController().signal)).toBe(lut);
     expect(fetchPreset).toHaveBeenCalledOnce();
@@ -172,10 +172,10 @@ describe('SDR LUT browser export', () => {
       .mockResolvedValue({ ok: true, text: async () => identityCube });
     vi.stubGlobal('fetch', fetchPreset);
     await expect(service.loadPreset('amber-glow', new AbortController().signal)).rejects.toThrow(
-      'Could not load Amber glow',
+      'Could not load Amber Glow',
     );
     const lut = await service.loadPreset('amber-glow', new AbortController().signal);
-    expect(lut.title).toBe('Amber glow');
+    expect(lut.title).toBe('Amber Glow');
     expect(await service.loadPreset('amber-glow', new AbortController().signal)).toBe(lut);
     expect(fetchPreset).toHaveBeenCalledTimes(2);
   });
@@ -193,7 +193,7 @@ describe('SDR LUT browser export', () => {
     finishBody(identityCube);
     await expect(pending).rejects.toMatchObject({ name: 'AbortError' });
     const lut = await service.loadPreset('copper-trail', new AbortController().signal);
-    expect(lut.title).toBe('Copper trail');
+    expect(lut.title).toBe('Copper Trail');
     expect(fetchPreset).toHaveBeenCalledTimes(2);
   });
 });

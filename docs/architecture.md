@@ -1,7 +1,7 @@
 # Project architecture
 
-The application is organized by product feature. Route paths remain `/`, `/convert`,
-`/privacy` and `/terms`; folder names describe ownership rather than public URLs.
+The application is organized by product feature. Route paths are `/`, `/convert`,
+`/lut`, `/privacy` and `/terms`; folder names describe ownership rather than public URLs.
 
 ```text
 src/
@@ -27,6 +27,12 @@ src/
         services/                 # Input policy and conversion orchestration
         models/                   # Formats, settings, defaults and result contracts
         utils/                    # Converter-specific output-size selection
+      lut/
+        pages/lut/                # Routed SDR LUT workspace
+        state/                    # Source/LUT selection, preview and export lifecycle
+        services/                 # sRGB decode, preview and full-size export orchestration
+        models/                   # LUT tables, image buffers and workspace contracts
+        engine/                   # .cube parsing, tetrahedral interpolation and worker
       legal/pages/legal/          # Privacy and terms route view
     shared/
       ui/                         # Feature-independent icon and upload components
@@ -69,6 +75,11 @@ The HDR algorithm, ICC profile and encoding guide remain in the HDR feature. Dec
 policies stay in feature services: HDR and conversion intentionally accept different
 formats and use different decoding paths. Theme controls live in `core` because they
 use application-wide theme state, while basic UI in `shared` stays independent.
+
+The SDR LUT feature owns its `.cube` parser, presets and pixel transform. It does not
+depend on the HDR or converter features. LUT values operate on encoded sRGB channels;
+preview and full-resolution export share the same interpolation. Camera Log, HDR,
+1D tables and combined shaper/3D LUTs are outside this feature's initial contract.
 
 Create only the folders a feature needs. Do not add generic repositories, facades or
 base services without a real responsibility. Tests stay alongside the code they verify.

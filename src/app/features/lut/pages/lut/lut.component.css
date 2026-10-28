@@ -1,0 +1,129 @@
+.lut-comparison {
+  position: relative;
+  overflow: hidden;
+  max-height: 560px;
+  border: 1px solid var(--color-line);
+  border-radius: 10px;
+  background-color: #e4e4de;
+  background-image: repeating-conic-gradient(#d4d4cd 0% 25%, transparent 0% 50%);
+  background-size: 20px 20px;
+  cursor: ew-resize;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.lut-photo,
+.lut-after {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.lut-photo {
+  object-fit: contain;
+}
+
+.lut-preview-label,
+.lut-busy {
+  position: absolute;
+  z-index: 2;
+  padding: 6px 10px;
+  border-radius: 5px;
+  background: rgb(15 18 14 / 72%);
+  color: #fff;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.lut-label-before {
+  top: 12px;
+  left: 12px;
+}
+
+.lut-label-after {
+  top: 12px;
+  right: 12px;
+}
+
+.lut-busy {
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.lut-divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  transform: translateX(-50%);
+  background: #fff;
+  box-shadow: 0 0 5px #0004;
+  pointer-events: none;
+}
+
+.lut-divider span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  border: 1px solid #fff;
+  border-radius: 50%;
+  background: #fff;
+  color: #252b20;
+  font-size: 16px;
+  box-shadow: 0 1px 6px #0002;
+}
+
+.lut-preset {
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background: var(--color-surface);
+  text-align: left;
+  transition: border-color 150ms;
+}
+
+.lut-preset:hover,
+.lut-preset[aria-pressed='true'] {
+  border-color: var(--color-accent);
+}
+
+.lut-preset[aria-pressed='true'] {
+  box-shadow: inset 0 0 0 1px var(--color-accent);
+}
+
+.lut-preset-swatch {
+  display: block;
+  height: 25px;
+  margin-bottom: 9px;
+  border-radius: 4px;
+}
+
+.lut-swatch-original {
+  background: linear-gradient(110deg, #c5c4b6, #ddd9c9 45%, #7b927b);
+}
+
+.lut-swatch-warm {
+  background: linear-gradient(110deg, #a37957, #e8c899 45%, #93947a);
+}
+
+.lut-swatch-cool {
+  background: linear-gradient(110deg, #758d99, #c7d4d5 45%, #829789);
+}
+
+.lut-swatch-soft {
+  background: linear-gradient(110deg, #a49a95, #d9c9b8 45%, #b2b49b);
+}
+
+input:disabled {
+  cursor: default;
+  opacity: 0.45;
+}

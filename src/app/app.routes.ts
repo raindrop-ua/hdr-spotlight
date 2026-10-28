@@ -23,6 +23,15 @@ export const routes: Routes = [
     },
   },
   {
+    path: 'lut',
+    loadComponent: () => import('@features/lut/pages/lut/lut.component').then((m) => m.Lut),
+    title: 'LUT Studio — HDR Spotlight',
+    data: {
+      description:
+        'Apply 3D .cube LUTs to SDR photos in your browser. Try sample looks, compare before and after, and export PNG, JPEG or WebP locally.',
+    },
+  },
+  {
     path: 'privacy',
     loadComponent: () =>
       import('@features/legal/pages/legal/legal-page.component').then((m) => m.LegalPage),

@@ -85,6 +85,27 @@ shared local WASM fallback if native canvas encoding is unavailable.
 The demo asset is `public/images/lut-demo.jpg`; its generation prompt and provenance
 are documented in [Demo image](docs/lut-demo.md).
 
+## SDR LUT editor
+
+Open `/lut/editor` from the LUT Studio to create a color look from Original, a bundled
+preset or an imported 3D `.cube`. Adjust exposure, contrast, saturation, temperature,
+tint and separate shadow/midtone/highlight toning. Master and RGB curves have five
+fixed input positions, adjustable with dragging, keyboard arrows or the output
+slider. Each adjustment and curve can be reset. Undo/redo groups each slider or curve
+gesture into one history step; the editor retains up to 40 undo steps.
+
+The editor bakes a 33³ or 65³ floating-point color table before applying it to the
+preview. **Download LUT .cube** exports that same table. **Download PNG** applies it
+at the preview image's original dimensions and preserves transparency. The output
+is sRGB SDR. Color operations are global; camera Log/HDR conversions and spatial
+effects such as sharpening or grain are outside this first version.
+
+**Save Project** writes versioned JSON with the settings and embedded base LUT.
+**Open Project** validates and restores that document; it does not replace your
+preview image. Project inputs are limited to 32 MiB. An imported `.cube` provides a
+base color transform, not recoverable original editing controls. All decoding,
+baking, processing and downloads happen on your device.
+
 ## PWA updates
 
 The global update banner appears after Angular's service worker has downloaded a new

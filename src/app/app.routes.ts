@@ -23,6 +23,16 @@ export const routes: Routes = [
     },
   },
   {
+    path: 'lut/editor',
+    loadComponent: () =>
+      import('@features/lut/pages/editor/lut-editor.component').then((m) => m.LutEditor),
+    title: 'LUT Editor — HDR Spotlight',
+    data: {
+      description:
+        'Create and edit SDR color LUTs with curves, toning and live previews. Export .cube LUTs or save editable projects locally in your browser.',
+    },
+  },
+  {
     path: 'lut',
     loadComponent: () => import('@features/lut/pages/lut/lut.component').then((m) => m.Lut),
     title: 'LUT Studio — HDR Spotlight',

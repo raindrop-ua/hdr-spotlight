@@ -1,7 +1,7 @@
 # Project architecture
 
 The application is organized by product feature. Route paths are `/`, `/convert`,
-`/lut`, `/privacy` and `/terms`; folder names describe ownership rather than public URLs.
+`/lut`, `/lut/editor`, `/privacy` and `/terms`; folder names describe ownership rather than public URLs.
 
 ```text
 src/
@@ -29,6 +29,8 @@ src/
         utils/                    # Converter-specific output-size selection
       lut/
         pages/lut/                # Routed SDR LUT workspace
+        pages/editor/             # Editable SDR LUT project workspace
+        components/curve-editor/  # Pointer and keyboard curve controls
         state/                    # Source/LUT selection, preview and export lifecycle
         services/                 # sRGB decode, preview and full-size export orchestration
         models/                   # LUT tables, image buffers and workspace contracts
@@ -84,6 +86,15 @@ The preset catalogue describes generated and bundled looks. Browser loading and
 successful-table caching belong to the LUT service; the store owns selection
 revisions and cancellation. Bundled `.cube` assets live in `public/luts/` and are
 cached on demand by the service worker, independently of the initial route bundle.
+
+The LUT editor keeps a versioned document with immutable base data, editable settings
+and five fixed input positions for each Master/RGB curve. Its store owns bounded
+undo/redo history and request revisions. The editor service coordinates worker baking
+and reuses LUT image services for sRGB previews and image exports. Pure editor math
+samples the base in floating point, applies the ordered adjustments and bakes one
+33³ or 65³ table; it never chains quantized image passes. Preview and exported `.cube`
+both use this exact table. JSON projects embed the base table so they can be reopened
+without the original file; preview images are not embedded.
 
 Create only the folders a feature needs. Do not add generic repositories, facades or
 base services without a real responsibility. Tests stay alongside the code they verify.

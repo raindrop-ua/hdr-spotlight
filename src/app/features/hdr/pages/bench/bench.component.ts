@@ -31,6 +31,7 @@ import { EncodingFaq } from '@features/hdr/components/encoding-faq/encoding-faq.
   ],
   providers: [BenchStore],
   templateUrl: './bench.component.html',
+  styleUrl: './bench.component.css',
 })
 export class Bench {
   protected readonly store = inject(BenchStore);

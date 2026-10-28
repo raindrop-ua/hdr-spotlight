@@ -1,0 +1,435 @@
+<main class="motion-page mx-auto min-w-0 max-w-7xl px-5 py-8 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
+  <header class="mb-9 flex flex-wrap items-center justify-between gap-5">
+    <a routerLink="/" class="flex items-center gap-3 text-xl font-medium tracking-tight">
+      <app-icon name="logo1" class="size-8 text-accent" />HDR Spotlight
+    </a>
+    <div class="flex flex-wrap items-center gap-5">
+      <a routerLink="/lut" class="quiet-button text-xs">← LUT Studio</a>
+      <app-theme-switcher />
+    </div>
+  </header>
+  <div class="motion-intro mb-8 max-w-2xl">
+    <p class="mono mb-3 text-xs tracking-widest text-accent uppercase">LUT Editor · SDR</p>
+    <h1 class="text-3xl leading-tight font-medium tracking-tight sm:text-4xl">
+      Make the look your own.
+    </h1>
+    <p class="mt-4 text-sm leading-7 text-muted">
+      Shape color, light and curves. Start fresh or build on a LUT, then save your look to use
+      again. Your images and projects stay on your device.
+    </p>
+  </div>
+
+  <section
+    class="editor-workspace overflow-clip rounded-2xl border border-line bg-surface shadow-2xl shadow-black/15"
+    aria-label="SDR LUT editor"
+  >
+    <div
+      class="flex flex-wrap items-center justify-between gap-4 border-b border-line px-5 py-4 sm:px-7"
+    >
+      <div class="min-w-0 flex-1 basis-48">
+        <label
+          for="editor-name"
+          class="mono mb-1 block text-[10px] tracking-wide text-muted uppercase"
+          >Look name</label
+        >
+        <input
+          id="editor-name"
+          type="text"
+          maxlength="80"
+          class="editor-name w-full min-w-0 bg-transparent text-base font-medium"
+          [value]="store.document().name"
+          (change)="store.rename($any($event.target).value)"
+        />
+      </div>
+      <div class="flex flex-wrap items-center gap-4 text-xs">
+        <div class="flex gap-3" role="group" aria-label="Edit history">
+          <button
+            type="button"
+            class="quiet-button disabled:opacity-35"
+            [disabled]="!store.canUndo()"
+            (click)="store.undo()"
+            title="Undo (Ctrl / ⌘ Z)"
+          >
+            <span aria-hidden="true">↶</span>Undo
+          </button>
+          <button
+            type="button"
+            class="quiet-button disabled:opacity-35"
+            [disabled]="!store.canRedo()"
+            (click)="store.redo()"
+            title="Redo (Ctrl / ⌘ Shift Z)"
+          >
+            <span aria-hidden="true">↷</span>Redo
+          </button>
+        </div>
+        <button type="button" class="quiet-button" (click)="store.resetSettings()">
+          <app-icon name="reset" class="size-3.5" />Reset adjustments
+        </button>
+      </div>
+    </div>
+
+    <div class="grid lg:grid-cols-[minmax(0,1fr)_380px]">
+      <div class="min-w-0 p-5 sm:p-7">
+        <div class="editor-preview">
+          <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
+            <h2 class="text-sm font-medium">Preview</h2>
+            <span class="mono text-[10px] text-muted">sRGB · {{ store.document().size }}³ LUT</span>
+          </div>
+          <div
+            class="editor-comparison"
+            [style.aspect-ratio]="
+              store.source() ? store.source()!.width + ' / ' + store.source()!.height : '3 / 2'
+            "
+            [attr.aria-busy]="store.baking() || store.previewing() || store.loading()"
+            aria-label="Editor before and after comparison"
+            (pointerdown)="startCompare($event)"
+            (pointermove)="moveCompare($event)"
+            (pointerup)="endCompare($event)"
+            (pointercancel)="endCompare($event)"
+          >
+            <img
+              class="editor-photo"
+              [src]="store.originalPreviewUrl() || '/images/lut-demo.jpg'"
+              alt="Original preview image"
+              draggable="false"
+            />
+            <div class="editor-after" [style.clip-path]="'inset(0 0 0 ' + split() + '%)'">
+              <img
+                class="editor-photo"
+                [src]="store.previewUrl() || store.originalPreviewUrl() || '/images/lut-demo.jpg'"
+                alt="Preview with the edited LUT applied"
+                draggable="false"
+              />
+            </div>
+            <span class="editor-label editor-before-label">Before</span
+            ><span class="editor-label editor-after-label">After</span>
+            <div class="editor-divider" [style.left.%]="split()" aria-hidden="true">
+              <span>↔</span>
+            </div>
+            @if (store.baking() || store.previewing() || store.loading()) {
+              <span class="editor-status" role="status">Updating preview…</span>
+            }
+          </div>
+          <label for="editor-split" class="sr-only">Before / after split</label>
+          <input
+            id="editor-split"
+            type="range"
+            min="0"
+            max="100"
+            [value]="split()"
+            [style.--fill]="split() + '%'"
+            [attr.aria-valuetext]="split() + '% original image'"
+            (input)="split.set(+$any($event.target).value)"
+          />
+          <div class="mt-2 flex flex-wrap justify-between gap-2 text-[11px] text-muted">
+            <span>Slide to compare</span>
+            @if (store.source(); as source) {
+              <span class="mono">{{ source.width }} × {{ source.height }} px</span>
+            }
+          </div>
+
+          <details class="mt-5 rounded-xl border border-line px-4 py-3">
+            <summary class="cursor-pointer text-xs font-medium">
+              {{ store.source()?.demo === false ? 'Change preview image' : 'Try your own image' }}
+            </summary>
+            <div class="mt-4">
+              <app-source-upload
+                [filename]="store.source()?.demo === false ? store.source()!.name : ''"
+                [loading]="store.loading()"
+                accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp"
+                formats="PNG, JPEG or WebP · up to 32 MB"
+                (selected)="store.loadImage($event)"
+              />
+              @if (store.source()?.demo === false) {
+                <button type="button" class="quiet-button mt-3 text-xs" (click)="store.useDemo()">
+                  Use sample image
+                </button>
+              }
+            </div>
+          </details>
+
+          @if (store.error()) {
+            <p
+              role="alert"
+              class="mt-4 rounded-lg border border-red-400/20 bg-red-400/5 p-3 text-xs leading-5 text-danger"
+            >
+              {{ store.error() }}
+            </p>
+          }
+          <a
+            [routerLink]="[]"
+            fragment="editor-export"
+            class="quiet-button mt-4 text-xs text-accent"
+            >Export options ↓</a
+          >
+          <p class="mt-4 text-[10px] leading-5 text-muted">
+            The preview uses your exported LUT. Sample photo is AI-generated.
+          </p>
+        </div>
+      </div>
+
+      <aside
+        class="min-w-0 border-t border-line bg-panel/35 lg:border-t-0 lg:border-l"
+        aria-label="LUT adjustments"
+      >
+        <section class="editor-section">
+          <h2 class="mb-4 text-sm font-medium">Base look</h2>
+          <label for="editor-base" class="sr-only">Base look</label>
+          <select
+            id="editor-base"
+            class="w-full rounded-lg border border-line bg-surface px-3 py-2.5 text-xs"
+            [value]="store.basePreset()"
+            (change)="setBase($any($event.target).value)"
+          >
+            @for (preset of presets; track preset.id) {
+              <option [value]="preset.id">{{ preset.name }}</option>
+            }
+            <option value="custom" [disabled]="store.basePreset() !== 'custom'">
+              {{ store.basePreset() === 'custom' ? store.document().base?.title : 'Imported LUT' }}
+            </option>
+          </select>
+          <input
+            #baseInput
+            id="editor-base-file"
+            type="file"
+            accept=".cube"
+            class="hidden"
+            (change)="readFile($event, 'base')"
+          />
+          <button type="button" class="quiet-button mt-3 text-xs" (click)="baseInput.click()">
+            <app-icon name="upload" class="size-3.5" />Import .cube
+          </button>
+          @if (store.baseLoading()) {
+            <p role="status" class="mt-3 text-xs text-muted">Loading base look…</p>
+          }
+          @if (store.document().base) {
+            <div class="mt-4">
+              <label for="editor-base-strength" class="control-label text-xs!"
+                >Base intensity<span class="mono text-accent"
+                  >{{ store.document().settings.baseIntensity }}%</span
+                ></label
+              >
+              <input
+                id="editor-base-strength"
+                type="range"
+                min="0"
+                max="100"
+                [value]="store.document().settings.baseIntensity"
+                [style.--fill]="store.document().settings.baseIntensity + '%'"
+                (input)="store.update({ baseIntensity: +$any($event.target).value })"
+                (change)="store.commit()"
+              />
+            </div>
+          }
+          <p class="mt-3 text-[11px] leading-5 text-muted">
+            Your adjustments are applied after this look. Choose Original for a fresh start.
+          </p>
+        </section>
+
+        <section class="editor-section border-t border-line">
+          <h2 class="mb-5 text-sm font-medium">Light &amp; color</h2>
+          <div class="space-y-5">
+            @for (control of controls; track control.key) {
+              <div>
+                <div class="flex items-center justify-between gap-2">
+                  <label [for]="'editor-' + control.key" class="text-xs font-medium">{{
+                    control.label
+                  }}</label>
+                  <div class="flex items-center gap-2">
+                    <span class="mono text-[11px] text-accent">{{
+                      formatValue(control.key, store.document().settings[control.key])
+                    }}</span
+                    ><button
+                      type="button"
+                      class="quiet-button"
+                      [attr.aria-label]="'Reset ' + control.label"
+                      (click)="resetValue(control.key)"
+                    >
+                      <app-icon name="reset" class="size-3" />
+                    </button>
+                  </div>
+                </div>
+                <input
+                  [id]="'editor-' + control.key"
+                  type="range"
+                  [min]="control.min"
+                  [max]="control.max"
+                  [step]="control.step"
+                  [value]="store.document().settings[control.key]"
+                  [style.--fill]="
+                    ((store.document().settings[control.key] - control.min) /
+                      (control.max - control.min)) *
+                      100 +
+                    '%'
+                  "
+                  (input)="setValue(control.key, +$any($event.target).value)"
+                  (change)="store.commit()"
+                />
+                <div class="flex justify-between text-[10px] text-muted">
+                  <span>{{ control.low }}</span
+                  ><span>{{ control.high }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+
+        <section class="editor-section border-t border-line">
+          <h2 class="text-sm font-medium">Color toning</h2>
+          <p class="mt-2 text-[11px] leading-5 text-muted">
+            Add a color to the shadows, midtones or light.
+          </p>
+          <div class="mt-5 space-y-6">
+            @for (tone of tones; track tone.key) {
+              <div>
+                <div class="flex items-center justify-between gap-2">
+                  <h3 class="flex items-center gap-2 text-xs font-medium">
+                    <span
+                      class="size-3 rounded-full"
+                      [style.background]="
+                        'hsl(' + store.document().settings[tone.key].hue + ' 65% 55%)'
+                      "
+                      aria-hidden="true"
+                    ></span
+                    >{{ tone.label }}
+                  </h3>
+                  <button
+                    type="button"
+                    class="quiet-button"
+                    [attr.aria-label]="'Reset ' + tone.label"
+                    (click)="resetTone(tone.key)"
+                  >
+                    <app-icon name="reset" class="size-3" />
+                  </button>
+                </div>
+                <label
+                  [for]="'editor-' + tone.key + '-hue'"
+                  class="mt-4 flex justify-between text-[10px] text-muted"
+                  >Hue<span class="mono"
+                    >{{ store.document().settings[tone.key].hue }}°</span
+                  ></label
+                >
+                <input
+                  [id]="'editor-' + tone.key + '-hue'"
+                  type="range"
+                  min="0"
+                  max="360"
+                  class="tone-hue"
+                  [attr.aria-label]="tone.label + ' hue'"
+                  [value]="store.document().settings[tone.key].hue"
+                  (input)="setTone(tone.key, 'hue', +$any($event.target).value)"
+                  (change)="store.commit()"
+                />
+                <label
+                  [for]="'editor-' + tone.key + '-amount'"
+                  class="mt-4 flex justify-between text-[10px] text-muted"
+                  >Amount<span class="mono"
+                    >{{ store.document().settings[tone.key].saturation }}%</span
+                  ></label
+                >
+                <input
+                  [id]="'editor-' + tone.key + '-amount'"
+                  type="range"
+                  min="0"
+                  max="100"
+                  [attr.aria-label]="tone.label + ' amount'"
+                  [value]="store.document().settings[tone.key].saturation"
+                  [style.--fill]="store.document().settings[tone.key].saturation + '%'"
+                  (input)="setTone(tone.key, 'saturation', +$any($event.target).value)"
+                  (change)="store.commit()"
+                />
+              </div>
+            }
+          </div>
+        </section>
+        <section class="editor-section border-t border-line">
+          <app-curve-editor
+            [curves]="store.document().settings.curves"
+            (changed)="store.updateCurve($event.channel, $event.points)"
+            (committed)="store.commit()"
+            (resetRequested)="store.resetCurve($event)"
+          />
+        </section>
+        <div id="editor-export" class="editor-section border-t border-line">
+          <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h2 class="text-sm font-medium">Take your look with you</h2>
+            <label for="editor-size" class="sr-only">LUT size</label>
+            <select
+              id="editor-size"
+              class="rounded-lg border border-line bg-surface px-3 py-2 text-xs"
+              [value]="store.document().size"
+              (change)="setSize($any($event.target).value)"
+            >
+              <option value="33">33 × 33 × 33</option>
+              <option value="65">65 × 65 × 65</option>
+            </select>
+          </div>
+          <button
+            type="button"
+            class="primary-button w-full"
+            [disabled]="
+              store.baking() || store.baseLoading() || store.exporting() || !store.bakedLut()
+            "
+            (click)="save('cube')"
+          >
+            <app-icon name="download" class="size-4" />{{
+              store.exporting() ? 'Preparing download…' : 'Download LUT .cube'
+            }}
+          </button>
+          <div class="mt-3 grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              class="editor-secondary"
+              [disabled]="store.exporting() || store.baseLoading()"
+              (click)="save('project')"
+            >
+              Save Project
+            </button>
+            <button
+              type="button"
+              class="editor-secondary"
+              [disabled]="
+                store.baking() ||
+                store.baseLoading() ||
+                store.loading() ||
+                store.exporting() ||
+                !store.bakedLut() ||
+                !store.source()
+              "
+              (click)="save('image')"
+            >
+              Download PNG
+            </button>
+          </div>
+          <input
+            #projectInput
+            id="editor-project-file"
+            type="file"
+            accept=".json,application/json"
+            class="hidden"
+            (change)="readFile($event, 'project')"
+          />
+          <button type="button" class="quiet-button mt-4 text-xs" (click)="projectInput.click()">
+            <app-icon name="upload" class="size-3.5" />Open Project
+          </button>
+          <p class="mt-3 text-[11px] leading-5 text-muted">
+            Save a project to keep your editable settings. A .cube file contains the finished color
+            look.
+          </p>
+        </div>
+      </aside>
+    </div>
+    <footer
+      class="flex flex-wrap items-center justify-between gap-3 border-t border-line px-5 py-4 text-[11px] text-muted sm:px-7"
+    >
+      <span>sRGB SDR · 33³ / 65³ .cube · editable projects</span
+      ><span class="flex items-center gap-2"
+        ><app-icon name="chip" class="size-3.5" />Processed on your device</span
+      >
+    </footer>
+  </section>
+  <p class="mx-auto mt-6 max-w-3xl text-center text-xs leading-6 text-muted">
+    Designed for sRGB SDR creative looks. Imported LUTs become a base layer; their original editing
+    controls cannot be recovered. Camera Log and HDR workflows are outside this first version.
+  </p>
+</main>

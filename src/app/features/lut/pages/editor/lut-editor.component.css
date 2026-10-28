@@ -1,0 +1,115 @@
+.editor-name {
+  border: 0;
+  border-radius: 3px;
+  padding: 3px 0;
+}
+.editor-section {
+  padding: 24px;
+}
+.editor-secondary {
+  min-height: 42px;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background: var(--color-surface);
+  padding: 10px 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.editor-secondary:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+.editor-secondary:disabled {
+  opacity: 0.45;
+}
+.editor-comparison {
+  position: relative;
+  overflow: hidden;
+  max-height: 490px;
+  border: 1px solid var(--color-line);
+  border-radius: 10px;
+  background-color: #e4e4de;
+  background-image: repeating-conic-gradient(#d4d4cd 0% 25%, transparent 0% 50%);
+  background-size: 20px 20px;
+  cursor: ew-resize;
+  touch-action: pan-y;
+  user-select: none;
+}
+.editor-photo,
+.editor-after {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.editor-photo {
+  object-fit: contain;
+}
+.editor-label,
+.editor-status {
+  position: absolute;
+  z-index: 2;
+  padding: 6px 10px;
+  border-radius: 5px;
+  background: rgb(15 18 14 / 72%);
+  color: #fff;
+  font-size: 10px;
+  line-height: 1.4;
+}
+.editor-before-label {
+  top: 12px;
+  left: 12px;
+}
+.editor-after-label {
+  top: 12px;
+  right: 12px;
+}
+.editor-status {
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+.editor-divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  transform: translateX(-50%);
+  background: #fff;
+  box-shadow: 0 0 5px #0004;
+  pointer-events: none;
+}
+.editor-divider span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #fff;
+  color: #252b20;
+  font-size: 16px;
+  box-shadow: 0 1px 6px #0002;
+}
+input.tone-hue {
+  background: linear-gradient(
+    to right,
+    #d66161,
+    #d8b45b,
+    #75b86a,
+    #62b6bb,
+    #6f80cd,
+    #bb70bb,
+    #d66161
+  );
+}
+@media (min-width: 1024px) {
+  .editor-preview {
+    position: sticky;
+    top: 24px;
+  }
+}

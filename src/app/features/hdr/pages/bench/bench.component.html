@@ -20,27 +20,25 @@
       <app-theme-switcher />
     </div>
   </header>
-  <a
-    routerLink="/convert"
-    class="converter-link mb-7 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 rounded-xl border border-accent/25 bg-accent/5 px-5 py-4 hover:bg-accent/10 sm:px-6"
-  >
-    <span class="flex min-w-0 items-center gap-3"
-      ><app-icon name="image" class="size-5 text-accent" /><span class="text-sm"
-        ><span class="font-medium">Need a different format?</span
-        ><span class="ml-2 hidden text-muted sm:inline"
-          >Convert, compress &amp; resize your images.</span
-        ></span
-      ></span
-    >
-    <span class="shrink-0 text-xs font-medium text-accent">Open image converter →</span>
-  </a>
+  <nav aria-label="More image tools" class="tool-grid mb-7 grid gap-3 sm:grid-cols-2">
+    <a routerLink="/convert" class="tool-card">
+      <span class="tool-card-icon"><app-icon name="image" class="size-5" /></span>
+      <span class="tool-card-copy">
+        <span class="tool-card-title">Image Converter</span>
+        <span class="tool-card-description">Convert, compress and resize your images.</span>
+        <span class="tool-card-action">Open Converter <span aria-hidden="true">→</span></span>
+      </span>
+    </a>
+    <a routerLink="/lut" class="tool-card tool-card-lut">
+      <span class="tool-card-icon"><app-icon name="sparkle" class="size-5" /></span>
+      <span class="tool-card-copy">
+        <span class="tool-card-title">LUT Studio</span>
+        <span class="tool-card-description">Explore color presets and create your own looks.</span>
+        <span class="tool-card-action">Open LUT Studio <span aria-hidden="true">→</span></span>
+      </span>
+    </a>
+  </nav>
   <app-bench-intro />
-  <p class="mb-5 text-xs leading-6 text-muted">
-    Looking for a new color mood?
-    <a routerLink="/lut" class="text-accent underline underline-offset-4"
-      >Try the SDR LUT studio →</a
-    >
-  </p>
   <section
     class="overflow-hidden rounded-2xl border border-line bg-surface shadow-2xl shadow-black/15"
     aria-label="HDR encoding workspace"

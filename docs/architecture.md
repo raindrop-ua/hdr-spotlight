@@ -80,6 +80,10 @@ The SDR LUT feature owns its `.cube` parser, presets and pixel transform. It doe
 depend on the HDR or converter features. LUT values operate on encoded sRGB channels;
 preview and full-resolution export share the same interpolation. Camera Log, HDR,
 1D tables and combined shaper/3D LUTs are outside this feature's initial contract.
+The preset catalogue describes generated and bundled looks. Browser loading and
+successful-table caching belong to the LUT service; the store owns selection
+revisions and cancellation. Bundled `.cube` assets live in `public/luts/` and are
+cached on demand by the service worker, independently of the initial route bundle.
 
 Create only the folders a feature needs. Do not add generic repositories, facades or
 base services without a real responsibility. Tests stay alongside the code they verify.

@@ -4,6 +4,17 @@ import { createPresetLut } from '@features/lut/engine/presets';
 import { DEFAULT_LUT_SETTINGS, LutSource } from '@features/lut/models/lut-workspace.model';
 import { WebpEncoderService } from '@shared/images/services/webp-encoder.service';
 
+const identityCube = `TITLE "Embedded source title"
+LUT_3D_SIZE 2
+0 0 0
+1 0 0
+0 1 0
+1 1 0
+0 0 1
+1 0 1
+0 1 1
+1 1 1`;
+
 describe('SDR LUT browser export', () => {
   let service: LutService;
   let canvas: HTMLCanvasElement;
@@ -134,5 +145,55 @@ describe('SDR LUT browser export', () => {
     expect(canvas.width).toBe(1200);
     expect(canvas.height).toBe(800);
     expect(context.drawImage).toHaveBeenCalledWith(source.image, 0, 0, 1200, 800);
+  });
+
+  it('keeps generated looks local and loads collection LUTs once under their public names', async () => {
+    const fetchPreset = vi.fn().mockResolvedValue({ ok: true, text: async () => identityCube });
+    vi.stubGlobal('fetch', fetchPreset);
+    const signal = new AbortController().signal;
+    expect((await service.loadPreset('warm', signal)).title).toBe('Warm daylight');
+    expect(fetchPreset).not.toHaveBeenCalled();
+    const lut = await service.loadPreset('silver-mist', signal);
+    expect(lut.title).toBe('Silver mist');
+    expect(fetchPreset).toHaveBeenCalledExactlyOnceWith('/luts/silver-mist.cube', { signal });
+    expect(await service.loadPreset('silver-mist', new AbortController().signal)).toBe(lut);
+    expect(fetchPreset).toHaveBeenCalledOnce();
+    const cancelled = new AbortController();
+    cancelled.abort();
+    await expect(service.loadPreset('silver-mist', cancelled.signal)).rejects.toMatchObject({
+      name: 'AbortError',
+    });
+  });
+
+  it('allows a failed collection request to be retried and then cached', async () => {
+    const fetchPreset = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: false })
+      .mockResolvedValue({ ok: true, text: async () => identityCube });
+    vi.stubGlobal('fetch', fetchPreset);
+    await expect(service.loadPreset('amber-glow', new AbortController().signal)).rejects.toThrow(
+      'Could not load Amber glow',
+    );
+    const lut = await service.loadPreset('amber-glow', new AbortController().signal);
+    expect(lut.title).toBe('Amber glow');
+    expect(await service.loadPreset('amber-glow', new AbortController().signal)).toBe(lut);
+    expect(fetchPreset).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not cache a collection response whose body finishes after cancellation', async () => {
+    let finishBody!: (text: string) => void;
+    const body = new Promise<string>((resolve) => (finishBody = resolve));
+    const readBody = vi.fn().mockReturnValue(body);
+    const fetchPreset = vi.fn().mockResolvedValue({ ok: true, text: readBody });
+    vi.stubGlobal('fetch', fetchPreset);
+    const controller = new AbortController();
+    const pending = service.loadPreset('copper-trail', controller.signal);
+    await vi.waitFor(() => expect(readBody).toHaveBeenCalledOnce());
+    controller.abort();
+    finishBody(identityCube);
+    await expect(pending).rejects.toMatchObject({ name: 'AbortError' });
+    const lut = await service.loadPreset('copper-trail', new AbortController().signal);
+    expect(lut.title).toBe('Copper trail');
+    expect(fetchPreset).toHaveBeenCalledTimes(2);
   });
 });

@@ -1,12 +1,64 @@
 import type { Lut3D } from '@features/lut/models/lut.model';
 
-export type LutPreset = 'original' | 'warm' | 'cool' | 'soft';
+export type GeneratedLutPreset = 'warm' | 'cool' | 'soft';
+export type LutPreset =
+  | 'original'
+  | GeneratedLutPreset
+  | 'silver-mist'
+  | 'amber-glow'
+  | 'copper-trail'
+  | 'alpine-film'
+  | 'desert-bloom';
+
+export interface LutPresetDefinition {
+  id: LutPreset;
+  name: string;
+  description: string;
+  asset?: string;
+}
+
+export const LUT_PRESETS: readonly LutPresetDefinition[] = [
+  { id: 'original', name: 'Original', description: 'A clean starting point' },
+  { id: 'warm', name: 'Warm daylight', description: 'A little golden warmth' },
+  { id: 'cool', name: 'Cool shade', description: 'Fresh, quieter tones' },
+  { id: 'soft', name: 'Soft matte', description: 'Gentle contrast, lifted shadows' },
+  {
+    id: 'silver-mist',
+    name: 'Silver mist',
+    description: 'Cool midtones, faded blacks',
+    asset: '/luts/silver-mist.cube',
+  },
+  {
+    id: 'amber-glow',
+    name: 'Amber glow',
+    description: 'Cool tones, warm highlights',
+    asset: '/luts/amber-glow.cube',
+  },
+  {
+    id: 'copper-trail',
+    name: 'Copper trail',
+    description: 'Rich warmth, muted blues',
+    asset: '/luts/copper-trail.cube',
+  },
+  {
+    id: 'alpine-film',
+    name: 'Alpine film',
+    description: 'Cool shadows, rosy midtones',
+    asset: '/luts/alpine-film.cube',
+  },
+  {
+    id: 'desert-bloom',
+    name: 'Desert bloom',
+    description: 'Warm highlights, teal blues',
+    asset: '/luts/desert-bloom.cube',
+  },
+];
 
 const titles = { warm: 'Warm daylight', cool: 'Cool shade', soft: 'Soft matte' } as const;
 const clamp = (value: number): number => Math.max(0, Math.min(1, value));
 
 /** Small, generated sRGB looks let the sample image work without downloading a LUT. */
-export function createPresetLut(id: Exclude<LutPreset, 'original'>): Lut3D {
+export function createPresetLut(id: GeneratedLutPreset): Lut3D {
   if (!Object.hasOwn(titles, id)) throw new Error('Unknown LUT preset.');
   const size = 17;
   const values = new Float32Array(size ** 3 * 3);

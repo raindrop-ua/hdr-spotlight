@@ -44,6 +44,18 @@ WebP image. A before/after split and intensity control update a reduced-size pre
 PNG, JPEG and WebP exports retain the source dimensions. PNG and WebP retain alpha;
 JPEG composites onto the selected background after the LUT transform.
 
+Alongside the generated Warm daylight, Cool shade and Soft matte looks, the studio
+includes five bundled creative tables: Silver mist, Amber glow, Copper trail,
+Alpine film and Desert bloom. Each `.cube` file loads only when selected and is
+cached after successful parsing. The service worker caches these assets on demand.
+Selecting another look cancels the pending request; a failed download keeps the
+previous look available and can be retried.
+
+Bundled Standard/Rec.709 tables retain their original numerical values and are
+applied directly to encoded sRGB channels as creative looks. The workspace does
+not infer a source transfer function or reproduce a color-managed video-editor
+pipeline. Display names are supplied by the preset catalogue rather than file titles.
+
 The parser accepts 2–65 points per channel, `TITLE`, `DOMAIN_MIN`, `DOMAIN_MAX` and
 comments, with a 16 MiB LUT file limit. It validates table length, finite values and
 input domains. Processing uses tetrahedral interpolation in a cancellable worker,

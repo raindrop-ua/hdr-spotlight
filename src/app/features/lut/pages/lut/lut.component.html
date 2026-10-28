@@ -138,7 +138,12 @@
       <aside class="min-w-0 border-t border-line bg-panel/40 p-5 sm:p-7 lg:border-t-0 lg:border-l">
         <h2 class="text-base font-medium">Find your look</h2>
         <p class="mt-2 text-xs leading-6 text-muted">Start with a look, or load your own LUT.</p>
-        <div class="mt-5 grid grid-cols-2 gap-2" role="group" aria-label="Built-in looks">
+        <div
+          class="mt-5 grid grid-cols-2 gap-2"
+          role="group"
+          aria-label="Built-in looks"
+          [attr.aria-busy]="store.lutLoading()"
+        >
           @for (preset of presets; track preset.id) {
             <button
               type="button"
@@ -162,12 +167,14 @@
         <button
           type="button"
           class="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-upload-border px-3 py-3 text-xs font-medium hover:border-accent hover:text-accent disabled:opacity-60"
-          [disabled]="store.lutLoading()"
           (click)="cubeInput.click()"
         >
           <app-icon name="upload" class="size-4" />
-          {{ store.lutLoading() ? 'Reading LUT…' : 'Upload .cube LUT' }}
+          Upload .cube LUT
         </button>
+        @if (store.lutLoading()) {
+          <p role="status" class="mt-3 text-xs text-muted">Loading LUT…</p>
+        }
         @if (store.lut(); as lut) {
           <div class="mt-3 min-w-0 rounded-lg border border-line bg-surface/70 px-3 py-2.5">
             <p class="truncate text-xs font-medium" [title]="lut.title">{{ lut.title }}</p>

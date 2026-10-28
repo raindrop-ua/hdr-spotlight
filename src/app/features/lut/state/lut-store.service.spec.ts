@@ -6,8 +6,12 @@ import { LutPreview, LutResult, LutSource } from '@features/lut/models/lut-works
 
 function deferred<T>() {
   let resolve!: (value: T) => void;
-  const promise = new Promise<T>((yes) => (resolve = yes));
-  return { promise, resolve };
+  let reject!: (error: unknown) => void;
+  const promise = new Promise<T>((yes, no) => {
+    resolve = yes;
+    reject = no;
+  });
+  return { promise, resolve, reject };
 }
 
 const source = (name: string): LutSource => ({
@@ -42,6 +46,7 @@ describe('LUT workspace lifecycle', () => {
     load: ReturnType<typeof vi.fn>;
     loadDemo: ReturnType<typeof vi.fn>;
     loadLut: ReturnType<typeof vi.fn>;
+    loadPreset: ReturnType<typeof vi.fn>;
     preview: ReturnType<typeof vi.fn>;
     export: ReturnType<typeof vi.fn>;
     release: ReturnType<typeof vi.fn>;
@@ -55,6 +60,7 @@ describe('LUT workspace lifecycle', () => {
       load: vi.fn().mockResolvedValue(source('photo.png')),
       loadDemo: vi.fn().mockResolvedValue({ ...source('demo.jpg'), demo: true }),
       loadLut: vi.fn().mockResolvedValue(lut),
+      loadPreset: vi.fn().mockResolvedValue(lut),
       preview: vi.fn().mockResolvedValue(preview),
       export: vi.fn().mockResolvedValue(result),
       release: vi.fn(),
@@ -185,5 +191,84 @@ describe('LUT workspace lifecycle', () => {
     await pending;
     expect(service.release).toHaveBeenCalledWith(source('late.png'));
     expect(store.source()).toBeNull();
+  });
+
+  it('cancels a collection LUT and ignores it when Original is selected', async () => {
+    const late = deferred<Lut3D>();
+    service.loadPreset.mockReturnValueOnce(late.promise);
+    const pending = store.selectPreset('silver-mist');
+    const signal = service.loadPreset.mock.calls[0][1] as AbortSignal;
+    expect(store.lutLoading()).toBe(true);
+    await store.selectPreset('original');
+    expect(signal.aborted).toBe(true);
+    late.resolve(lut);
+    await pending;
+    expect(store.preset()).toBe('original');
+    expect(store.lut()).toBeNull();
+    expect(store.lutLoading()).toBe(false);
+  });
+
+  it('keeps the newest preset when an older fetch finishes last', async () => {
+    const older = deferred<Lut3D>();
+    const newer = { ...lut, title: 'Desert bloom' };
+    service.loadPreset.mockReturnValueOnce(older.promise).mockResolvedValueOnce(newer);
+    const pending = store.selectPreset('silver-mist');
+    await store.selectPreset('desert-bloom');
+    older.resolve({ ...lut, title: 'Silver mist' });
+    await pending;
+    expect(store.preset()).toBe('desert-bloom');
+    expect(store.lut()).toBe(newer);
+    expect(store.error()).toBeNull();
+  });
+
+  it('keeps an uploaded LUT when a superseded collection request fails', async () => {
+    const late = deferred<Lut3D>();
+    service.loadPreset.mockReturnValueOnce(late.promise);
+    const pending = store.selectPreset('alpine-film');
+    const signal = service.loadPreset.mock.calls[0][1] as AbortSignal;
+    await store.loadLut(new File([], 'custom.cube'));
+    expect(signal.aborted).toBe(true);
+    late.reject(new Error('Late network error'));
+    await pending;
+    expect(store.preset()).toBe('custom');
+    expect(store.lut()).toBe(lut);
+    expect(store.error()).toBeNull();
+    expect(store.lutLoading()).toBe(false);
+  });
+
+  it('retains the prior look on failure and prevents export while a preset is loading', async () => {
+    await store.loadImage(new File([], 'photo.png'));
+    await store.selectPreset('warm');
+    await store.export();
+    const late = deferred<Lut3D>();
+    service.loadPreset.mockReturnValueOnce(late.promise);
+    const pending = store.selectPreset('amber-glow');
+    expect(store.result()).toBeNull();
+    expect(store.preset()).toBe('warm');
+    expect(store.lut()).toBe(lut);
+    await store.export();
+    expect(service.export).toHaveBeenCalledOnce();
+    late.reject(new Error('Could not load preset'));
+    await pending;
+    expect(store.preset()).toBe('warm');
+    expect(store.lut()).toBe(lut);
+    expect(store.lutLoading()).toBe(false);
+    expect(store.error()).toBe('Could not load preset');
+    await store.selectPreset('amber-glow');
+    expect(store.preset()).toBe('amber-glow');
+    expect(store.error()).toBeNull();
+  });
+
+  it('aborts a pending preset request when the page is destroyed', async () => {
+    const late = deferred<Lut3D>();
+    service.loadPreset.mockReturnValueOnce(late.promise);
+    const pending = store.selectPreset('copper-trail');
+    const signal = service.loadPreset.mock.calls[0][1] as AbortSignal;
+    TestBed.resetTestingModule();
+    expect(signal.aborted).toBe(true);
+    late.resolve(lut);
+    await pending;
+    expect(store.lut()).toBeNull();
+    expect(store.preset()).toBe('original');
   });
 });

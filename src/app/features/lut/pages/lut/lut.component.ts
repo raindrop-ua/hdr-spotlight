@@ -4,6 +4,7 @@ import { ThemeSwitcher } from '@core/theme/components/theme-switcher/theme-switc
 import { Icon } from '@shared/ui/icon/icon.component';
 import { SourceUpload } from '@shared/ui/source-upload/source-upload.component';
 import { LutStore } from '@features/lut/state/lut-store.service';
+import { LUT_PRESETS } from '@features/lut/engine/presets';
 
 @Component({
   selector: 'app-lut',
@@ -15,12 +16,7 @@ import { LutStore } from '@features/lut/state/lut-store.service';
 export class Lut {
   protected readonly store = inject(LutStore);
   protected readonly split = signal(50);
-  protected readonly presets = [
-    { id: 'original', name: 'Original', description: 'A clean starting point' },
-    { id: 'warm', name: 'Warm daylight', description: 'A little golden warmth' },
-    { id: 'cool', name: 'Cool shade', description: 'Fresh, quieter tones' },
-    { id: 'soft', name: 'Soft matte', description: 'Gentle contrast, lifted shadows' },
-  ] as const;
+  protected readonly presets = LUT_PRESETS;
   private comparePointer?: number;
 
   protected startCompare(event: PointerEvent): void {

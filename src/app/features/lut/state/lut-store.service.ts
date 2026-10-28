@@ -1,5 +1,5 @@
 import { afterNextRender, DestroyRef, inject, Injectable, signal } from '@angular/core';
-import { createPresetLut, LutPreset } from '@features/lut/engine/presets';
+import { LutPreset } from '@features/lut/engine/presets';
 import { Lut3D } from '@features/lut/models/lut.model';
 import {
   DEFAULT_LUT_SETTINGS,
@@ -31,6 +31,7 @@ export class LutStore {
   private exportRevision = 0;
   private previewController?: AbortController;
   private exportController?: AbortController;
+  private presetController?: AbortController;
   private previewTimer?: ReturnType<typeof setTimeout>;
   private destroyed = false;
 
@@ -42,6 +43,7 @@ export class LutStore {
       this.destroyed = true;
       this.sourceRevision++;
       this.lutRevision++;
+      this.presetController?.abort();
       this.cancelPreview();
       this.invalidateExport();
       this.clearPreviews();
@@ -59,6 +61,8 @@ export class LutStore {
   }
 
   async loadLut(file: File): Promise<void> {
+    this.presetController?.abort();
+    this.presetController = undefined;
     const revision = ++this.lutRevision;
     this.lutLoading.set(true);
     this.error.set(null);
@@ -76,14 +80,39 @@ export class LutStore {
     }
   }
 
-  selectPreset(preset: LutPreset): void {
-    this.lutRevision++;
-    this.lutLoading.set(false);
+  async selectPreset(preset: LutPreset): Promise<void> {
+    if (this.destroyed) return;
+    this.presetController?.abort();
+    this.presetController = undefined;
+    const revision = ++this.lutRevision;
     this.error.set(null);
-    this.preset.set(preset);
-    this.lut.set(preset === 'original' ? null : createPresetLut(preset));
     this.invalidateExport();
-    this.schedulePreview();
+    if (preset === 'original') {
+      this.lutLoading.set(false);
+      this.preset.set(preset);
+      this.lut.set(null);
+      this.schedulePreview();
+      return;
+    }
+    const controller = new AbortController();
+    this.presetController = controller;
+    this.lutLoading.set(true);
+    try {
+      const lut = await this.service.loadPreset(preset, controller.signal);
+      if (revision !== this.lutRevision || controller.signal.aborted || this.destroyed) return;
+      this.preset.set(preset);
+      this.lut.set(lut);
+      this.schedulePreview();
+    } catch (error) {
+      if (revision === this.lutRevision && !controller.signal.aborted && !this.destroyed) {
+        this.error.set(this.message(error));
+      }
+    } finally {
+      if (revision === this.lutRevision && !this.destroyed) {
+        this.lutLoading.set(false);
+        this.presetController = undefined;
+      }
+    }
   }
 
   update(patch: Partial<LutSettings>): void {

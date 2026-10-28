@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { createLutTransform } from '@features/lut/engine/apply-lut';
 import { parseCube } from '@features/lut/engine/cube';
+import { createPresetLut, LUT_PRESETS, LutPreset } from '@features/lut/engine/presets';
 import { Lut3D, LutPixels } from '@features/lut/models/lut.model';
 import {
   LutPreview,
@@ -15,6 +16,26 @@ import { WebpEncoderService } from '@shared/images/services/webp-encoder.service
 @Injectable({ providedIn: 'root' })
 export class LutService {
   private readonly webpEncoder = inject(WebpEncoderService);
+  private readonly presetCache = new Map<LutPreset, Lut3D>();
+
+  async loadPreset(preset: Exclude<LutPreset, 'original'>, signal: AbortSignal): Promise<Lut3D> {
+    signal.throwIfAborted();
+    if (preset === 'warm' || preset === 'cool' || preset === 'soft') {
+      return createPresetLut(preset);
+    }
+    const definition = LUT_PRESETS.find((item) => item.id === preset);
+    if (!definition?.asset) throw new Error('Unknown LUT preset.');
+    const cached = this.presetCache.get(preset);
+    if (cached) return cached;
+    const response = await fetch(definition.asset, { signal });
+    signal.throwIfAborted();
+    if (!response.ok) throw new Error(`Could not load ${definition.name}. Please try again.`);
+    const text = await response.text();
+    signal.throwIfAborted();
+    const lut = { ...parseCube(text, definition.name), title: definition.name };
+    this.presetCache.set(preset, lut);
+    return lut;
+  }
 
   async load(file: File): Promise<LutSource> {
     if (!/\.(png|jpe?g|webp)$/i.test(file.name) && !/^image\/(png|jpeg|webp)$/.test(file.type)) {

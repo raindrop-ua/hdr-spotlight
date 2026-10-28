@@ -123,6 +123,26 @@
   background: linear-gradient(110deg, #a49a95, #d9c9b8 45%, #b2b49b);
 }
 
+.lut-swatch-silver-mist {
+  background: linear-gradient(110deg, #4d626b, #afc1c0 45%, #e2d8bd);
+}
+
+.lut-swatch-amber-glow {
+  background: linear-gradient(110deg, #263d42, #85a8af 45%, #f1d6a7);
+}
+
+.lut-swatch-copper-trail {
+  background: linear-gradient(110deg, #655c3e, #b68b5f 45%, #d8bf91);
+}
+
+.lut-swatch-alpine-film {
+  background: linear-gradient(110deg, #4b6570, #b7a3a5 45%, #e3d9c7);
+}
+
+.lut-swatch-desert-bloom {
+  background: linear-gradient(110deg, #457c80, #bf9670 45%, #eed99f);
+}
+
 input:disabled {
   cursor: default;
   opacity: 0.45;

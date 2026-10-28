@@ -4,6 +4,7 @@ export type GeneratedLutPreset = 'warm' | 'cool' | 'soft';
 export type LutPreset =
   | 'original'
   | GeneratedLutPreset
+  | 'hollywood-teal-orange'
   | 'silver-mist'
   | 'amber-glow'
   | 'copper-trail'
@@ -15,6 +16,7 @@ export interface LutPresetDefinition {
   name: string;
   description: string;
   asset?: string;
+  downloadable?: boolean;
 }
 
 export const LUT_PRESETS: readonly LutPresetDefinition[] = [
@@ -22,6 +24,13 @@ export const LUT_PRESETS: readonly LutPresetDefinition[] = [
   { id: 'warm', name: 'Warm daylight', description: 'A little golden warmth' },
   { id: 'cool', name: 'Cool shade', description: 'Fresh, quieter tones' },
   { id: 'soft', name: 'Soft matte', description: 'Gentle contrast, lifted shadows' },
+  {
+    id: 'hollywood-teal-orange',
+    name: 'Hollywood teal & orange',
+    description: 'Teal shadows, warm cinematic color',
+    asset: '/luts/hollywood-teal-orange.cube',
+    downloadable: true,
+  },
   {
     id: 'silver-mist',
     name: 'Silver mist',

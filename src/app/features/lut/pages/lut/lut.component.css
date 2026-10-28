@@ -123,6 +123,10 @@
   background: linear-gradient(110deg, #a49a95, #d9c9b8 45%, #b2b49b);
 }
 
+.lut-swatch-hollywood-teal-orange {
+  background: linear-gradient(110deg, #164f5b, #679b9a 40%, #e9a45e 85%, #f4d7b4);
+}
+
 .lut-swatch-silver-mist {
   background: linear-gradient(110deg, #4d626b, #afc1c0 45%, #e2d8bd);
 }

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ThemeSwitcher } from '@core/theme/components/theme-switcher/theme-switcher.component';
 import { Icon } from '@shared/ui/icon/icon.component';
@@ -17,6 +17,10 @@ export class Lut {
   protected readonly store = inject(LutStore);
   protected readonly split = signal(50);
   protected readonly presets = LUT_PRESETS;
+  protected readonly downloadableLut = computed(() => {
+    const preset = this.presets.find((item) => item.id === this.store.preset());
+    return preset?.downloadable ? preset.asset : undefined;
+  });
   private comparePointer?: number;
 
   protected startCompare(event: PointerEvent): void {

@@ -94,16 +94,14 @@
         >
           <div>
             <label for="convert-format" class="control-label">Output format</label>
-            <select
-              id="convert-format"
-              class="w-full rounded-lg border border-line bg-surface px-3 py-3 text-sm"
+            <app-dropdown
+              controlId="convert-format"
+              label="Output format"
+              [options]="formatOptions"
               [value]="store.settings().format"
-              (change)="setFormat($any($event.target).value)"
-            >
-              @for (format of formats; track format.id) {
-                <option [value]="format.id">{{ format.label }}</option>
-              }
-            </select>
+              [disabled]="store.loading() || store.converting()"
+              (valueChanged)="setFormat($event)"
+            />
           </div>
           <div>
             @if (store.lossy()) {
@@ -136,16 +134,14 @@
           @if (store.settings().format === 'ico') {
             <div animate.enter="motion-enter">
               <label for="icon-size" class="control-label">Icon size</label>
-              <select
-                id="icon-size"
-                class="w-full rounded-lg border border-line bg-surface px-3 py-3 text-sm"
-                [value]="store.settings().iconSize"
-                (change)="store.update({ iconSize: +$any($event.target).value })"
-              >
-                @for (size of iconSizes; track size) {
-                  <option [value]="size">{{ size }} × {{ size }} px</option>
-                }
-              </select>
+              <app-dropdown
+                controlId="icon-size"
+                label="Icon size"
+                [options]="iconSizeOptions"
+                [value]="'' + store.settings().iconSize"
+                [disabled]="store.loading() || store.converting()"
+                (valueChanged)="store.update({ iconSize: +$event })"
+              />
               <p class="mt-3 text-xs leading-6 text-muted">
                 One size per ICO file. Your image fits inside the square with transparent padding,
                 without cropping.

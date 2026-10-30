@@ -175,19 +175,13 @@
         <section class="editor-section">
           <h2 class="mb-4 text-sm font-medium">Base look</h2>
           <label for="editor-base" class="sr-only">Base look</label>
-          <select
-            id="editor-base"
-            class="w-full rounded-lg border border-line bg-surface px-3 py-2.5 text-xs"
+          <app-dropdown
+            controlId="editor-base"
+            label="Base look"
+            [options]="baseOptions()"
             [value]="store.basePreset()"
-            (change)="setBase($any($event.target).value)"
-          >
-            @for (preset of presets; track preset.id) {
-              <option [value]="preset.id">{{ preset.name }}</option>
-            }
-            <option value="custom" [disabled]="store.basePreset() !== 'custom'">
-              {{ store.basePreset() === 'custom' ? store.document().base?.title : 'Imported LUT' }}
-            </option>
-          </select>
+            (valueChanged)="setBase($event)"
+          />
           <input
             #baseInput
             id="editor-base-file"
@@ -354,15 +348,14 @@
           <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 class="text-sm font-medium">Take your look with you</h2>
             <label for="editor-size" class="sr-only">LUT size</label>
-            <select
-              id="editor-size"
-              class="rounded-lg border border-line bg-surface px-3 py-2 text-xs"
-              [value]="store.document().size"
-              (change)="setSize($any($event.target).value)"
-            >
-              <option value="33">33 × 33 × 33</option>
-              <option value="65">65 × 65 × 65</option>
-            </select>
+            <app-dropdown
+              class="w-40"
+              controlId="editor-size"
+              label="LUT size"
+              [options]="sizeOptions"
+              [value]="'' + store.document().size"
+              (valueChanged)="setSize($event)"
+            />
           </div>
           <button
             type="button"

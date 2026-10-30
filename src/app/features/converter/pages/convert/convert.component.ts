@@ -3,20 +3,28 @@ import { RouterLink } from '@angular/router';
 import { ThemeSwitcher } from '@core/theme/components/theme-switcher/theme-switcher.component';
 import { Icon } from '@shared/ui/icon/icon.component';
 import { SourceUpload } from '@shared/ui/source-upload/source-upload.component';
+import { Dropdown, DropdownOption } from '@shared/ui/dropdown/dropdown.component';
 import { FORMATS, Format } from '@features/converter/models/conversion-format';
 import { ICON_SIZES } from '@shared/images/codecs/ico';
 import { ConverterStore } from '@features/converter/state/converter-store.service';
 
 @Component({
   selector: 'app-convert',
-  imports: [RouterLink, ThemeSwitcher, Icon, SourceUpload],
+  imports: [RouterLink, ThemeSwitcher, Icon, SourceUpload, Dropdown],
   providers: [ConverterStore],
   templateUrl: './convert.component.html',
+  styleUrl: './convert.component.css',
 })
 export class Convert {
   protected readonly store = inject(ConverterStore);
-  protected readonly formats = FORMATS;
-  protected readonly iconSizes = ICON_SIZES;
+  protected readonly formatOptions: readonly DropdownOption[] = FORMATS.map((format) => ({
+    value: format.id,
+    label: format.label,
+  }));
+  protected readonly iconSizeOptions: readonly DropdownOption[] = ICON_SIZES.map((size) => ({
+    value: String(size),
+    label: `${size} × ${size} px`,
+  }));
   protected setFormat(value: string): void {
     this.store.update({ format: value as Format });
   }

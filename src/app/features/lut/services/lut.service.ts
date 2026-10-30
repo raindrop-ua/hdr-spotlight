@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { createLutTransform } from '@features/lut/engine/apply-lut';
 import { parseCube } from '@features/lut/engine/cube';
 import { createPresetLut, LUT_PRESETS, LutPreset } from '@features/lut/engine/presets';
@@ -13,7 +13,7 @@ import { MAX_IMAGE_FILE_BYTES } from '@shared/images/constants/image-limits';
 import { dimensionsError } from '@shared/images/utils/image-geometry';
 import { WebpEncoderService } from '@shared/images/services/webp-encoder.service';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class LutService {
   private readonly webpEncoder = inject(WebpEncoderService);
   private readonly presetCache = new Map<LutPreset, Lut3D>();

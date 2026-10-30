@@ -4,9 +4,9 @@ import {
   computed,
   DestroyRef,
   inject,
-  Injectable,
   NgZone,
   PLATFORM_ID,
+  Service,
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -16,7 +16,7 @@ import { filter, take } from 'rxjs';
 const CHECK_INTERVAL = 15 * 60 * 1000;
 const FOCUS_CHECK_INTERVAL = 60 * 1000;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class AppUpdateService {
   private readonly updates = inject(SwUpdate, { optional: true });
   private readonly document = inject(DOCUMENT);

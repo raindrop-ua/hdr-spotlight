@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { ConversionSettings } from '@features/converter/models/conversion-settings.model';
 import { ConversionSource, ConversionResult } from '@features/converter/models/conversion.models';
 import { FORMATS } from '@features/converter/models/conversion-format';
@@ -9,7 +9,7 @@ import { packBmp } from '@shared/images/codecs/bmp';
 import { MAX_IMAGE_FILE_BYTES } from '@shared/images/constants/image-limits';
 import { WebpEncoderService } from '@shared/images/services/webp-encoder.service';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ConverterService {
   private readonly webpEncoder = inject(WebpEncoderService);
 

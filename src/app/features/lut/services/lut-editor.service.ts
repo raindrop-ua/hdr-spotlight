@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import { bakeEditorLut, validateEditorDocument } from '@features/lut/engine/editor-transform';
 import {
   parseEditorProject,
@@ -10,7 +10,7 @@ import { Lut3D } from '@features/lut/models/lut.model';
 
 const MAX_PROJECT_BYTES = 32 * 1024 * 1024;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class LutEditorService {
   async bake(document: LutEditorDocument, signal: AbortSignal): Promise<Lut3D> {
     signal.throwIfAborted();

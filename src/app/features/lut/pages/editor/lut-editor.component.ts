@@ -1,4 +1,4 @@
-import { afterNextRender, Component, DestroyRef, inject, signal } from '@angular/core';
+import { afterNextRender, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ThemeSwitcher } from '@core/theme/components/theme-switcher/theme-switcher.component';
 import { CurveEditor } from '@features/lut/components/curve-editor/curve-editor.component';
@@ -11,13 +11,14 @@ import {
 import { LutEditorStore } from '@features/lut/state/lut-editor-store.service';
 import { Icon } from '@shared/ui/icon/icon.component';
 import { SourceUpload } from '@shared/ui/source-upload/source-upload.component';
+import { Dropdown, DropdownOption } from '@shared/ui/dropdown/dropdown.component';
 
 type BasicControl = 'exposure' | 'contrast' | 'saturation' | 'temperature' | 'tint';
 type ToneControl = 'shadows' | 'midtones' | 'highlights';
 
 @Component({
   selector: 'app-lut-editor',
-  imports: [RouterLink, ThemeSwitcher, Icon, SourceUpload, CurveEditor],
+  imports: [RouterLink, ThemeSwitcher, Icon, SourceUpload, CurveEditor, Dropdown],
   providers: [LutEditorStore],
   templateUrl: './lut-editor.component.html',
   styleUrl: './lut-editor.component.css',
@@ -25,6 +26,21 @@ type ToneControl = 'shadows' | 'midtones' | 'highlights';
 export class LutEditor {
   protected readonly store = inject(LutEditorStore);
   protected readonly presets = LUT_PRESETS;
+  protected readonly baseOptions = computed<readonly DropdownOption[]>(() => [
+    ...this.presets.map((preset) => ({ value: preset.id, label: preset.name })),
+    {
+      value: 'custom',
+      label:
+        this.store.basePreset() === 'custom'
+          ? (this.store.document().base?.title ?? 'Imported LUT')
+          : 'Imported LUT',
+      disabled: this.store.basePreset() !== 'custom',
+    },
+  ]);
+  protected readonly sizeOptions: readonly DropdownOption[] = [
+    { value: '33', label: '33 × 33 × 33' },
+    { value: '65', label: '65 × 65 × 65' },
+  ];
   protected readonly split = signal(50);
   protected readonly controls: readonly {
     key: BasicControl;

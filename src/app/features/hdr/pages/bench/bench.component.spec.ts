@@ -4,6 +4,13 @@ import { Bench } from './bench.component';
 import { BenchStore } from '@features/hdr/state/bench-store.service';
 import { DEFAULT_SETTINGS } from '@features/hdr/models/bench.models';
 
+function chooseOutputSize(element: HTMLElement, label: string): void {
+  const option = [
+    ...element.querySelectorAll<HTMLButtonElement>('#size-listbox [role="option"]'),
+  ].find((option) => option.textContent?.trim() === label)!;
+  option.click();
+}
+
 describe('Workbench component boundaries', () => {
   beforeEach(() => TestBed.configureTestingModule({ providers: [provideRouter([])] }));
   afterEach(() => {
@@ -45,7 +52,8 @@ describe('Workbench component boundaries', () => {
     const transparency = element.querySelector('[role="switch"]') as HTMLInputElement;
     transparency.click();
     fixture.detectChanges();
-    change('#size', '800', 'change');
+    chooseOutputSize(element, '800 × 800');
+    fixture.detectChanges();
     change('#jpeg-quality', '72');
     change('[type="color"]', '#123456');
     expect(store.settings()).toMatchObject({
@@ -65,7 +73,14 @@ describe('Workbench component boundaries', () => {
     expect((element.querySelector('#boost') as HTMLInputElement).value).toBe('3');
     expect(button('Standard').getAttribute('aria-pressed')).toBe('true');
     expect((element.querySelector('#threshold') as HTMLInputElement).value).toBe('85');
-    expect((element.querySelector('#size') as HTMLSelectElement).value).toBe('400');
+    const outputSize = element.querySelector('#size')!;
+    expect(outputSize.getAttribute('role')).toBe('combobox');
+    expect(outputSize.getAttribute('aria-label')).toBe('Output size');
+    expect(outputSize.getAttribute('aria-expanded')).toBe('false');
+    expect(outputSize.textContent).toContain('400 × 400');
+    expect(element.querySelector('#size-listbox [aria-selected="true"]')?.textContent).toContain(
+      '400 × 400',
+    );
     expect(transparency.checked).toBe(false);
     expect((element.querySelector('#jpeg-quality') as HTMLInputElement).value).toBe('100');
   });
@@ -92,7 +107,8 @@ describe('Workbench component boundaries', () => {
     const encode = [...element.querySelectorAll('button')].find((button) =>
       button.textContent?.includes('Encode image'),
     )!;
-    change('#size', 'custom', 'change');
+    chooseOutputSize(element, 'Custom dimensions');
+    fixture.detectChanges();
     change('#output-width', '960');
     change('#output-height', '540');
     (element.querySelector('#preserve-aspect-ratio') as HTMLInputElement).click();
@@ -107,9 +123,11 @@ describe('Workbench component boundaries', () => {
     change('#output-width', '');
     expect(encode.disabled).toBe(true);
     expect(element.querySelector('#output-size-hint')?.textContent).toContain('whole number');
-    change('#size', '800', 'change');
+    chooseOutputSize(element, '800 × 800');
+    fixture.detectChanges();
     expect(encode.disabled).toBe(false);
-    change('#size', 'custom', 'change');
+    chooseOutputSize(element, 'Custom dimensions');
+    fixture.detectChanges();
     expect((element.querySelector('#output-height') as HTMLInputElement).value).toBe('540');
     [...element.querySelectorAll('button')]
       .find((button) => button.textContent?.trim() === 'Reset')!

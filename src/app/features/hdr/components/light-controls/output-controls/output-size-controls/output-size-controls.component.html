@@ -3,19 +3,13 @@
     <label class="control-label" for="size"
       >Output size<span class="mono text-xs text-muted">PX</span></label
     >
-    <select
-      id="size"
-      class="w-full rounded-lg border border-line bg-surface px-3 py-3 text-xs text-foreground"
-      [value]="settings().size"
-      (change)="selectSize($event)"
-    >
-      <option value="400">400 × 400</option>
-      <option value="800">800 × 800</option>
-      <option value="1200">1200 × 1200</option>
-      <option value="3840">3840 × 3840 · 4K</option>
-      <option value="0">Original dimensions</option>
-      <option value="custom">Custom dimensions</option>
-    </select>
+    <app-dropdown
+      controlId="size"
+      label="Output size"
+      [options]="sizeOptions"
+      [value]="'' + settings().size"
+      (valueChanged)="selectSize($event)"
+    />
     @if (settings().size === 'custom') {
       <div
         animate.enter="motion-enter"

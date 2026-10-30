@@ -139,30 +139,16 @@
       <aside class="min-w-0 border-t border-line bg-panel/40 p-5 sm:p-7 lg:border-t-0 lg:border-l">
         <h2 class="text-base font-medium">Find your look</h2>
         <p class="mt-2 text-xs leading-6 text-muted">Start with a look, or load your own LUT.</p>
-        <div
-          class="mt-5 grid grid-cols-2 gap-2"
-          role="group"
-          aria-label="Built-in looks"
-          [attr.aria-busy]="store.lutLoading()"
-        >
-          @for (preset of presets; track preset.id) {
-            <button
-              type="button"
-              class="lut-preset"
-              [attr.aria-pressed]="store.preset() === preset.id"
-              (click)="store.selectPreset(preset.id)"
-            >
-              <span
-                class="lut-preset-swatch"
-                [class]="'lut-preset-swatch lut-swatch-' + preset.id"
-                aria-hidden="true"
-              ></span>
-              <span class="block text-xs font-medium">{{ preset.name }}</span>
-              <span class="mt-1 block text-[10px] leading-4 text-muted">{{
-                preset.description
-              }}</span>
-            </button>
-          }
+        <div class="mt-5" [attr.aria-busy]="store.lutLoading()">
+          <label for="lut-preset" class="mb-2 block text-xs text-muted">Look preset</label>
+          <app-dropdown
+            controlId="lut-preset"
+            label="Look preset"
+            variant="cards"
+            [options]="presetOptions()"
+            [value]="store.preset()"
+            (valueChanged)="selectPreset($event)"
+          />
         </div>
         <input #cubeInput type="file" accept=".cube" class="hidden" (change)="loadLut($event)" />
         <button
@@ -216,16 +202,13 @@
         <div class="mt-6 border-t border-line pt-5">
           <h3 class="mb-4 text-sm font-medium">Save your image</h3>
           <label for="lut-format" class="mb-2 block text-xs text-muted">Output format</label>
-          <select
-            id="lut-format"
-            class="w-full rounded-lg border border-line bg-surface px-3 py-2.5 text-sm"
+          <app-dropdown
+            controlId="lut-format"
+            label="Output format"
+            [options]="formatOptions"
             [value]="store.settings().format"
-            (change)="setFormat($any($event.target).value)"
-          >
-            <option value="png">PNG · lossless</option>
-            <option value="jpeg">JPEG</option>
-            <option value="webp">WebP</option>
-          </select>
+            (valueChanged)="setFormat($event)"
+          />
           @if (store.settings().format !== 'png') {
             <div class="mt-5" animate.enter="motion-enter">
               <label for="lut-quality" class="control-label"

@@ -1,0 +1,222 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 11px 12px;
+  border: 1px solid var(--color-line);
+  border-radius: 9px;
+  background: var(--color-surface);
+  color: var(--color-foreground);
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+  transition:
+    border-color 150ms,
+    box-shadow 150ms;
+}
+
+.dropdown-trigger:hover:not(:disabled),
+.dropdown-trigger[aria-expanded='true'] {
+  border-color: var(--color-accent);
+}
+
+.dropdown-trigger[aria-expanded='true'] {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 10%, transparent);
+}
+
+.dropdown-trigger:disabled {
+  opacity: 0.5;
+}
+
+.dropdown-value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dropdown-chevron,
+.dropdown-check {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--color-muted);
+}
+
+.dropdown-chevron {
+  transition: transform 150ms;
+}
+
+[aria-expanded='true'] .dropdown-chevron {
+  transform: rotate(180deg);
+}
+
+.dropdown-trigger-swatch {
+  flex-shrink: 0;
+  width: 30px;
+  height: 24px;
+  border-radius: 5px;
+}
+
+.dropdown-panel {
+  position: fixed;
+  inset: auto;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 6px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-upload-border) transparent;
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  background: var(--color-surface);
+  color: var(--color-foreground);
+  box-shadow:
+    0 12px 36px #0003,
+    0 2px 6px #0001;
+  font: inherit;
+}
+
+.dropdown-panel:popover-open {
+  display: grid;
+  gap: 3px;
+  animation: dropdown-reveal 120ms ease-out;
+}
+
+.dropdown-panel::backdrop {
+  background: transparent;
+}
+
+.dropdown-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  padding: 10px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  transition:
+    background 120ms,
+    border-color 120ms;
+}
+
+.dropdown-option.dropdown-active {
+  background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface));
+}
+
+.dropdown-option[aria-selected='true'] {
+  color: var(--color-accent);
+}
+
+.dropdown-option:disabled {
+  opacity: 0.4;
+}
+
+.dropdown-option-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.dropdown-option-name {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.dropdown-option-description {
+  display: block;
+  margin-top: 4px;
+  color: var(--color-muted);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.dropdown-check {
+  color: var(--color-accent);
+  visibility: hidden;
+}
+
+[aria-selected='true'] .dropdown-check {
+  visibility: visible;
+}
+
+.dropdown-cards:popover-open {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 8px;
+}
+
+.dropdown-cards .dropdown-option {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  border-color: var(--color-line);
+  color: var(--color-foreground);
+}
+
+.dropdown-cards .dropdown-option.dropdown-active,
+.dropdown-cards .dropdown-option[aria-selected='true'] {
+  border-color: var(--color-accent);
+}
+
+.dropdown-cards .dropdown-option[aria-selected='true'] {
+  box-shadow: inset 0 0 0 1px var(--color-accent);
+}
+
+.dropdown-option-swatch {
+  display: block;
+  flex-shrink: 0;
+  height: 25px;
+  border-radius: 4px;
+}
+
+.dropdown-cards .dropdown-check {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  padding: 2px;
+  border-radius: 50%;
+  background: var(--color-surface);
+}
+
+@keyframes dropdown-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dropdown-panel:popover-open {
+    animation: none;
+  }
+
+  .dropdown-trigger,
+  .dropdown-chevron,
+  .dropdown-option {
+    transition: none;
+  }
+}
